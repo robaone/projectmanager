@@ -1,0 +1,91 @@
+body 
+{
+    margin:0 0 0 0;
+    font-family:Arial;
+}
+div.profile_section
+{
+    width:100%;
+    height:100px;
+}
+div.tasks_section
+{
+    width:100%;
+    
+}
+div.tasks_section td
+{
+    padding-left:10px;
+    padding-top:4px;
+    padding-bottom:4px;
+    font-family:Arial;
+    font-size:15pt;
+}
+div.search_bar
+{
+    margin:0px 0px 0px 200px;
+}
+div.search_bar form
+{
+}
+div.search_bar_form
+{
+    margin-left:20px;
+    margin-top:20px;
+    margin-bottom:20px;
+    background-image:url('searchform.png');
+    background-repeat:no-repeat;
+    background-position:left;
+    width:275px;
+    padding-left:60px;
+}
+input.search_form
+{
+    border:none;
+    background:none;
+    width:200px;
+    font-size:9pt;
+}
+div.side_bar
+{
+    position:absolute;
+    top:0px;
+    width:200px;
+}
+div.main_content
+{
+    margin:0px 0px 0px 200px;
+}
+div.profile_picture
+{
+    text-align:left;
+    padding-left:10px;
+    padding-top:10px;
+}
+div.profile_picture img {
+	display:block;
+}
+div.profile_picture a
+{
+    margin-left:5px;
+}
+div.profile_status
+{
+    text-align:left;
+}
+div.more_items
+{
+    text-align:center;
+    font-size:8pt;
+    margin:10pt;
+    font-weight:bold;
+}
+.task_col1
+{
+    width: 37px;
+    vertical-align:top;
+}
+.width_100_pct
+{
+    width: 100%;
+}
