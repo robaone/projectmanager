@@ -12,6 +12,7 @@ public class Feed extends Composite {
 	private FlowPanel flwpnl0 = new FlowPanel();
 	private FlexTable list_table = new FlexTable();
 	private Label more_items = new Label();
+	public FeedItem[] items;
 	public Feed(){
 		list_table.setStyleName("width_100_pct");
 		list_table.getFlexCellFormatter().setStyleName(0, 1, "style");
@@ -24,6 +25,8 @@ public class Feed extends Composite {
 		this.initWidget(flwpnl0);
 	}
 	public void load(final FeedItem[] items) throws Exception {
+		list_table.clear();
+		this.items = items;
 		for(int i = 0 ; i < items.length;i++){
 			Image icon = new Image();
 			Anchor link = new Anchor();
