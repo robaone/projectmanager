@@ -88,16 +88,17 @@ public class ProjectManager extends ProjectConstants implements EntryPoint {
 
 	public static void showAllModules(UserData data) {
 
+		MainContent main = new MainContent();
+		
 		ProfilePicture profile = new ProfilePicture();
 		setSection(PROFILE_SECTION,profile);
 		
-		SearchForm search = new SearchForm();
+		SearchForm search = new SearchForm(main);
 		setSection(SEARCH_BAR, search);
 		
 		TasksList tasks = new TasksList();
 		setSection(TASKS_SECTION, tasks);
 		
-		MainContent main = new MainContent();
 		setSection(MAIN_CONTENT, main);
 		if(main.isAttached()){
 			main.load();

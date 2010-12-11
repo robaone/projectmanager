@@ -2,14 +2,17 @@ package com.robaone.gwt.projectmanager.client.ui;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
+import com.robaone.gwt.projectmanager.client.ui.TasksList.TASK;
 
 public class SearchForm extends Composite {
 	private FlowPanel flwpnl0 = new FlowPanel();
 	private FormPanel form = new FormPanel();
 	private TextBox input = new TextBox();
-	public SearchForm(){
+	public SearchForm(final MainContent main){
 		FlowPanel flwpnl2 = new FlowPanel();
 		form.getElement().setAttribute("method","post");
 		input.getElement().setAttribute("id","search");
@@ -22,6 +25,23 @@ public class SearchForm extends Composite {
 		flwpnl0.add(form);
 		this.initWidget(flwpnl0);
 		this.setStyleName("search_bar_form");
+		
+		/*
+		 * Handlers
+		 */
+		input.addKeyUpHandler(new KeyUpHandler(){
+
+			@Override
+			public void onKeyUp(KeyUpEvent event) {
+				String search_str = input.getValue().trim();
+				
+				if(search_str.length() >= 3){
+					main.showSection(TASK.SEARCH);
+					main.updateSearchResults(search_str);
+				}
+			}
+			
+		});
 	}
 	public void load() throws Exception {
 	}

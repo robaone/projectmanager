@@ -79,6 +79,11 @@ public class MainContent extends Composite {
 					this.getDecoratedTabPanel().selectTab(i);
 					return;
 				}
+			}else if(action.equals(TASK.SEARCH)){
+				if(w instanceof SearchResultsUI){
+					this.getDecoratedTabPanel().selectTab(i);
+					return;
+				}
 			}
 		}
 		Widget w = null;
@@ -95,9 +100,27 @@ public class MainContent extends Composite {
 		}else if(action.equals(TASK.PROJECT)){
 			w = new ProjectListUI();
 			tabindex = this.getDecoratedTabPanel().addTab(w, "Projects",true);
+		}else if(action.equals(TASK.SEARCH)){
+			w = new SearchResultsUI();
+			tabindex = this.getDecoratedTabPanel().addTab(w, "Search Results",true);
 		}
 		if(tabindex > -1){
 			this.getDecoratedTabPanel().selectTab(tabindex);
+		}
+	}
+
+	public void updateSearchResults(String searchStr) {
+		SearchResultsUI results = null;
+		Integer[] keys = this.getDecoratedTabPanel().getTabContents().keySet().toArray(new Integer[0]);
+		for(int i = 0; i < keys.length;i++){
+			Widget w = this.getDecoratedTabPanel().getTabContents().get(keys[i]);
+			if(w instanceof SearchResultsUI){
+				results = (SearchResultsUI)w;
+				break;
+			}
+		}
+		if(results != null){
+			results.updateSearch(searchStr);
 		}
 	}
 }

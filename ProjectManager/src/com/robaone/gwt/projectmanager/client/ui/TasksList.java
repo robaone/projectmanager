@@ -17,7 +17,7 @@ public class TasksList extends Composite {
 	private Image project_icon = new Image();
 	private InlineLabel projects = new InlineLabel();
 	private MainContent m_main_content;
-	public static enum TASK { ALERT, NOTICE , JOB, PROJECT, };
+	public static enum TASK { ALERT, NOTICE , JOB, PROJECT, SEARCH, };
 	public TasksList(){
 		FlexTable flxtbl1 = new FlexTable();
 		FlowPanel flwpnl2 = new FlowPanel();
