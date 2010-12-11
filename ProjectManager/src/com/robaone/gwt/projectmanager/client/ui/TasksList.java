@@ -66,6 +66,31 @@ public class TasksList extends Composite {
 		flxtbl1.setWidget(3,0,flwpnl11);
 		flxtbl1.setWidget(3,1,flwpnl13);
 		this.initWidget(flwpnl0);
+		
+		class Action implements ClickHandler {
+			private String action;
+			public Action(String string) {
+				action = string;
+			}
+
+			@Override
+			public void onClick(ClickEvent event) {
+				Window.alert(action);
+				showTask(action);
+			}
+			
+		}
+		this.job_icon.addClickHandler(new Action("jobs"));
+		this.jobs.addClickHandler(new Action("jobs"));
+		this.alert_icon.addClickHandler(new Action("alert"));
+		this.alerts.addClickHandler(new Action("alert"));
+		this.notice_icon.addClickHandler(new Action("notice"));
+		this.notices.addClickHandler(new Action("notice"));
+		this.project_icon.addClickHandler(new Action("project"));
+		this.projects.addClickHandler(new Action("project"));
+	}
+	public void showTask(String action) {
+		System.out.println("Show task "+action);
 	}
 	public void load() throws Exception {
 	}
