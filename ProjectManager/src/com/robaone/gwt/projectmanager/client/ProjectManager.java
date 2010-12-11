@@ -102,6 +102,8 @@ public class ProjectManager extends ProjectConstants implements EntryPoint {
 		if(main.isAttached()){
 			main.load();
 		}
+		
+		tasks.setMainContent(main);
 	}
 
 	public static void showGeneralError(Throwable caught) {
