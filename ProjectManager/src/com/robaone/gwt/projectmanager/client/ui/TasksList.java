@@ -16,6 +16,8 @@ public class TasksList extends Composite {
 	private InlineLabel jobs = new InlineLabel();
 	private Image project_icon = new Image();
 	private InlineLabel projects = new InlineLabel();
+	private MainContent m_main_content;
+	public static enum TASK { ALERT, NOTICE , JOB, PROJECT, };
 	public TasksList(){
 		FlexTable flxtbl1 = new FlexTable();
 		FlowPanel flwpnl2 = new FlowPanel();
@@ -68,29 +70,29 @@ public class TasksList extends Composite {
 		this.initWidget(flwpnl0);
 		
 		class Action implements ClickHandler {
-			private String action;
-			public Action(String string) {
-				action = string;
+			private TASK action;
+			public Action(TASK task) {
+				action = task;
 			}
 
 			@Override
 			public void onClick(ClickEvent event) {
-				Window.alert(action);
 				showTask(action);
 			}
 			
 		}
-		this.job_icon.addClickHandler(new Action("jobs"));
-		this.jobs.addClickHandler(new Action("jobs"));
-		this.alert_icon.addClickHandler(new Action("alert"));
-		this.alerts.addClickHandler(new Action("alert"));
-		this.notice_icon.addClickHandler(new Action("notice"));
-		this.notices.addClickHandler(new Action("notice"));
-		this.project_icon.addClickHandler(new Action("project"));
-		this.projects.addClickHandler(new Action("project"));
+		this.job_icon.addClickHandler(new Action(TASK.JOB));
+		this.jobs.addClickHandler(new Action(TASK.JOB));
+		this.alert_icon.addClickHandler(new Action(TASK.ALERT));
+		this.alerts.addClickHandler(new Action(TASK.ALERT));
+		this.notice_icon.addClickHandler(new Action(TASK.NOTICE));
+		this.notices.addClickHandler(new Action(TASK.NOTICE));
+		this.project_icon.addClickHandler(new Action(TASK.PROJECT));
+		this.projects.addClickHandler(new Action(TASK.PROJECT));
 	}
-	public void showTask(String action) {
+	public void showTask(TASK action) {
 		System.out.println("Show task "+action);
+		this.m_main_content.showSection(action);
 	}
 	public void load() throws Exception {
 	}
@@ -117,5 +119,8 @@ public class TasksList extends Composite {
 	}
 	public InlineLabel getProjects(){
 		return this.projects;
+	}
+	public void setMainContent(MainContent main) {
+		this.m_main_content = main;
 	}
 }
