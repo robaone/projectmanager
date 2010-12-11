@@ -89,3 +89,16 @@ div.more_items
 {
     width: 100%;
 }
+.scrollable_x{
+	overflow-x: hidden;
+}
+.gwt-TabPanelBottom{
+	border-width: 0px 0px 0px 0px;
+	padding: 0px;
+}
+div.tab_content{
+	border-width: 1px 0px 0px 0px;
+	border-color: gray;
+	border-style: solid;
+}
+}
