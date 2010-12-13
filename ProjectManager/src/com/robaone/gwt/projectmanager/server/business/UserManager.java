@@ -83,4 +83,13 @@ public class UserManager extends ProjectConstants implements UserManagerInterfac
 		}
 		return retval;
 	}
+	@Override
+	public DataServiceResponse<UserData> createAccount(String email,
+			String password, String zip) throws Exception {
+		DataServiceResponse<UserData> response = new DataServiceResponse<UserData>();
+		UserData data = new UserData();
+		data.setUsername(email);
+		response.addData(data);
+		return response;
+	}
 }

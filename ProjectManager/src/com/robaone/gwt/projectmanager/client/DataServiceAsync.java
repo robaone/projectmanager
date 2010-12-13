@@ -13,4 +13,7 @@ public interface DataServiceAsync {
 			AsyncCallback<DataServiceResponse<UserData>> asyncCallback);
 
 	void handleLogoff(AsyncCallback<DataServiceResponse> asyncCallback);
+
+	void createAccount(String value, String value2, String value3,
+			AsyncCallback<DataServiceResponse<UserData>> asyncCallback);
 }

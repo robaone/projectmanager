@@ -13,4 +13,7 @@ public interface DataService extends RemoteService {
 	DataServiceResponse<UserData> login(String username, String password) throws Exception;
 
 	DataServiceResponse handleLogoff() throws Exception;
+
+	DataServiceResponse<UserData> createAccount(String email, String password,
+			String zip) throws Exception;
 }

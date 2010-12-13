@@ -1,12 +1,18 @@
 package com.robaone.gwt.projectmanager.client.ui;
 
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Hyperlink;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -41,8 +47,14 @@ public class LoginInterface extends Composite {
 		table.setWidget(2, 1, password);
 		table.setWidget(2, 2, password_error);
 		submit_button = new Button("Login");
+		FlowPanel flwpnl1 = new FlowPanel();
+		flwpnl1.add(submit_button);
+		InlineLabel or = new InlineLabel(" or ");
+		flwpnl1.add(or);
+		Anchor register = new Anchor("Register");
+		flwpnl1.add(register);
 		table.setText(3, 0, "");
-		table.setWidget(3, 1, submit_button);
+		table.setWidget(3, 1, flwpnl1);
 		submit_button.addClickHandler(new ClickHandler(){
 
 			@Override
@@ -96,6 +108,80 @@ public class LoginInterface extends Composite {
 
 			}
 
+		});
+		
+		register.addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				if(parent instanceof DialogBox){
+					((DialogBox)parent).hide();
+					final DialogBox register = new DialogBox();
+					register.setHTML("Registration");
+					final RegistrationInterface ri = new RegistrationInterface();
+					register.add(ri);
+					register.setAnimationEnabled(true);
+					register.setGlassEnabled(true);
+					register.center();
+					class CancelHandler implements ClickHandler{
+						
+						@Override
+						public void onClick(ClickEvent event) {
+							register.hide();
+							((DialogBox)parent).center();
+						}
+						
+					}
+					ri.getCancel().addClickHandler(new ClickHandler(){
+
+						@Override
+						public void onClick(ClickEvent event) {
+							try{
+							String url = Document.get().getElementById("_appsettings").getAttribute("logon_cancel_url");
+							Window.Location.assign(url);
+							}catch(Exception e){}
+						}
+						
+					});
+					ri.getSign_in().addClickHandler(new CancelHandler());
+					ri.getCreate_account().addClickHandler(new ClickHandler(){
+
+						@Override
+						public void onClick(ClickEvent event) {
+							ProjectManager.dataService.createAccount(ri.getEmail().getValue(),ri.getPassword1().getValue(),
+									ri.getZip_code().getValue(),new AsyncCallback<DataServiceResponse<UserData>>(){
+
+										@Override
+										public void onFailure(Throwable caught) {
+											// TODO Auto-generated method stub
+											
+										}
+
+										@Override
+										public void onSuccess(
+												DataServiceResponse<UserData> result) {
+											try{
+												if(result.getStatus() == 0){
+													UserData data = result.getData(0);
+													register.hide();
+													ProjectManager.showAllModules(data);
+												}else{
+													onFailure(new Throwable(result.getError()));
+												}
+											}catch(Exception e){
+												onFailure(new Throwable(e));
+											}
+										}
+								
+							});
+							register.hide();
+							
+						}
+						
+					});
+				}
+			}
+			
 		});
 	}
 

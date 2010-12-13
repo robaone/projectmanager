@@ -48,4 +48,11 @@ public class DataServiceImpl extends RemoteServiceServlet implements
 		this.getThreadLocalRequest().getSession().removeAttribute(ProjectConstants.SESSIONDATA);
 	}
 
+	@Override
+	public DataServiceResponse<UserData> createAccount(String email,
+			String password, String zip) throws Exception {
+		UserManagerInterface man = ManagerFactory.getUserManager(this);
+		return man.createAccount(email,password,zip);
+	}
+
 }

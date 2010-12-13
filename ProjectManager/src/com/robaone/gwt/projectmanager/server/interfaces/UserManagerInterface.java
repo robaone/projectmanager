@@ -11,4 +11,7 @@ public interface UserManagerInterface {
 
 	DataServiceResponse handleLogoff();
 
+	DataServiceResponse<UserData> createAccount(String email, String password,
+			String zip) throws Exception;
+
 }

@@ -11,12 +11,14 @@ import com.robaone.gwt.projectmanager.client.ui.TasksList;
 import com.robaone.gwt.projectmanager.shared.FieldVerifier;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HTML;
@@ -53,7 +55,10 @@ public class ProjectManager extends ProjectConstants implements EntryPoint {
 	 * This is the entry point method.
 	 */
 	public void onModuleLoad() {
-		
+		try{
+			String url = Document.get().getElementById("appsettings").getAttribute("url");
+			((ServiceDefTarget)dataService).setServiceEntryPoint(url);
+		}catch(Exception e){}
 		/**
 		 * Initialize the stuff
 		 */
