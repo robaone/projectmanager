@@ -94,7 +94,7 @@ public class MainContent extends Composite {
 			w = new NoticeListUI();
 			tabindex = this.getDecoratedTabPanel().addTab(w, "Notices",true);
 		}else if(action.equals(TASK.PROJECT)){
-			w = new ProjectListUI();
+			w = new ProjectListUI(this);
 			tabindex = this.getDecoratedTabPanel().addTab(w, "Projects",true);
 		}else if(action.equals(TASK.SEARCH)){
 			w = new SearchResultsUI();
