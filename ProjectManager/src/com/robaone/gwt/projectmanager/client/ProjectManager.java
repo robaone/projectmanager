@@ -56,8 +56,10 @@ public class ProjectManager extends ProjectConstants implements EntryPoint {
 	 */
 	public void onModuleLoad() {
 		try{
-			String url = Document.get().getElementById("appsettings").getAttribute("url");
-			((ServiceDefTarget)dataService).setServiceEntryPoint(url);
+			String url = Document.get().getElementById("_appsettings").getAttribute("url");
+			if(url != null && url.length() > 0){
+				((ServiceDefTarget)dataService).setServiceEntryPoint(url);
+			}
 		}catch(Exception e){}
 		/**
 		 * Initialize the stuff

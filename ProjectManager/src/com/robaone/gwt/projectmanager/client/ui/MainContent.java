@@ -1,5 +1,7 @@
 package com.robaone.gwt.projectmanager.client.ui;
 
+import java.util.HashMap;
+
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DecoratedTabPanel;
@@ -12,12 +14,12 @@ import com.robaone.gwt.projectmanager.client.ui.tabs.SectionTabs;
 public class MainContent extends Composite {
 	private FlowPanel live_feed;
 	private SectionTabs decoratedTabPanel;
-
+	private HashMap<String,Widget> tabs = new HashMap<String,Widget>();
 	public MainContent() {
 
 		decoratedTabPanel = new SectionTabs();
 		initWidget(decoratedTabPanel);
-		
+		decoratedTabPanel.setWidth("100%");
 		live_feed = new FlowPanel();
 		decoratedTabPanel.addTab(live_feed, "Live Feed");
 
@@ -40,11 +42,6 @@ public class MainContent extends Composite {
 
 		}
 		this.getLive_feed().add(feed);
-		/*
-		for(int i = 0 ; i < 20;i++){
-			this.getDecoratedTabPanel().addTab(new Feed(),"Tab "+i);
-		}
-		 */
 		this.getDecoratedTabPanel().selectTab(0);
 	}
 
@@ -56,9 +53,8 @@ public class MainContent extends Composite {
 	}
 
 	public void showSection(TASK action) {
-		Integer[] keys = this.getDecoratedTabPanel().getTabContents().keySet().toArray(new Integer[0]);
-		for(int i = 0; i < keys.length;i++){
-			Widget w = this.getDecoratedTabPanel().getTabContents().get(keys[i]);
+		for(int i = 0; i < this.getDecoratedTabPanel().getTabCount();i++){
+			Widget w = this.getDecoratedTabPanel().getTab(i);
 			if(action.equals(TASK.ALERT)){
 				if(w instanceof AlertListUI){
 					this.getDecoratedTabPanel().selectTab(i);
@@ -111,9 +107,8 @@ public class MainContent extends Composite {
 
 	public void updateSearchResults(String searchStr) {
 		SearchResultsUI results = null;
-		Integer[] keys = this.getDecoratedTabPanel().getTabContents().keySet().toArray(new Integer[0]);
-		for(int i = 0; i < keys.length;i++){
-			Widget w = this.getDecoratedTabPanel().getTabContents().get(keys[i]);
+		for(int i = 0; i < this.getDecoratedTabPanel().getTabCount();i++){
+			Widget w = this.getDecoratedTabPanel().getTab(i);
 			if(w instanceof SearchResultsUI){
 				results = (SearchResultsUI)w;
 				break;

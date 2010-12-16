@@ -101,4 +101,85 @@ div.tab_content{
 	border-color: gray;
 	border-style: solid;
 }
+table.tab{
+    float:left;
+}
+
+td.tab_tl{
+ width:10px;
+ height:10px;
+ background-image:url('content_tl.png');
+ background-repeat:no-repeat;
+}
+td.tab_tm{
+ height:10px;
+ background-image:url('content_t.png');
+ background-repeat:repeat-x;
+ background-position:top;
+}
+td.tab_tr{
+ width:10px;
+ height:10px;
+ background-image:url('content_tr.png');
+ background-repeat:no-repeat;
+}
+td.tab_m
+{
+    font-family:'Trebuchet MS';
+    font-size:9pt;
+    cursor:pointer;
+    color:brown;
+}
+td.tab_l
+{
+ background-image:url('content_l.png');
+ background-repeat:repeat-y;
+ background-position:left;
+}
+td.tab_r
+{
+ background-image:url('content_r.png');
+ background-repeat:repeat-y;
+ background-position:right;
+}
+
+table.tab_selected{
+    float:left;
+}
+
+td.tab_tl_selected{
+ width:10px;
+ height:10px;
+ background-image:url('content_tl.png');
+ background-repeat:no-repeat;
+}
+td.tab_tm_selected{
+ height:10px;
+ background-image:url('content_t.png');
+ background-repeat:repeat-x;
+ background-position:top;
+}
+td.tab_tr_selected{
+ width:10px;
+ height:10px;
+ background-image:url('content_tr.png');
+ background-repeat:no-repeat;
+}
+td.tab_m_selected
+{
+    font-weight:bold;
+    cursor:pointer;
+    color:brown;
+}
+td.tab_l_selected
+{
+ background-image:url('content_l.png');
+ background-repeat:repeat-y;
+ background-position:left;
+}
+td.tab_r_selected
+{
+ background-image:url('content_r.png');
+ background-repeat:repeat-y;
+ background-position:right;
 }

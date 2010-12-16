@@ -13,6 +13,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DecoratedTabBar;
 import com.google.gwt.user.client.ui.DecoratedTabPanel;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
@@ -23,212 +24,122 @@ import com.google.gwt.user.client.ui.TabBar;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.TabBar.Tab;
+import com.robaone.gwt.projectmanager.client.ui.ProjectTab;
 import com.robaone.gwt.projectmanager.client.ui.TasksList.TASK;
 
 public class SectionTabs extends Composite {
-	private DecoratedTabBar m_tabs;
-	private SimplePanel m_content;
-	private HorizontalPanel m_hp;
-	private VerticalPanel m_vp;
-	private ScrollPanel m_scroller;
-	private Button left = new Button("<");
-	private Button right = new Button(">");
-	private HashMap<Integer,Widget> m_contents = new HashMap<Integer,Widget>();
-	private Integer m_history = 0; 
+	private VerticalPanel vp = new VerticalPanel();
+	private FlowPanel tab_flow = new FlowPanel();
+	private SimplePanel content_panel = new SimplePanel();
+	private HashMap<Widget,Widget> tabs = new HashMap<Widget,Widget>();
+	private HashMap<Widget,Widget> contents = new HashMap<Widget,Widget>();
 	public SectionTabs() {
-		DecoratedTabBar tabs = new DecoratedTabBar();
-		m_content = new SimplePanel();
-		m_content.setStyleName("tab_content");
-		m_tabs = tabs;
-		VerticalPanel vp = new VerticalPanel();
-		HorizontalPanel hp = new HorizontalPanel();
-		m_hp = hp;
-		m_vp = vp;
-		final ScrollPanel scroller = new ScrollPanel();
-		this.m_scroller = scroller;
-
-		hp.setWidth("550px");
-		vp.setWidth("550px");
-		scroller.add(tabs);
-		scroller.setAlwaysShowScrollBars(false);
-		scroller.getElement().setAttribute("style", "overflow:hidden");
-		hp.add(scroller);
-		hp.add(left);
-		hp.add(right);
-		vp.add(hp);
-		vp.add(m_content);
-		scroller.setWidth(500+"px");
+		vp.add(tab_flow);
+		vp.add(content_panel);
 		this.initWidget(vp);
-
-
-		left.addClickHandler(new ClickHandler(){
-
-			@Override
-			public void onClick(ClickEvent event) {
-				int position = scroller.getHorizontalScrollPosition() - scroller.getElement().getClientWidth();
-				if(position < 0) position = 0;
-				scroller.setHorizontalScrollPosition(position);
-			}
-
-		});
-
-		right.addClickHandler(new ClickHandler(){
-
-			@Override
-			public void onClick(ClickEvent event) {
-				int position = scroller.getHorizontalScrollPosition() + scroller.getElement().getClientWidth();
-				scroller.setHorizontalScrollPosition(position);
-			}
-
-		});
-
-		tabs.addSelectionHandler(new SelectionHandler<Integer>(){
-
-			@Override
-			public void onSelection(SelectionEvent<Integer> event) {
-				setHistory(event.getSelectedItem());
-				Object o = event.getSource();
-				if ( o instanceof Widget ){
-					Widget w = (Widget)o;
-					NodeList node_list = w.getElement().getElementsByTagName("table");
-					int position = 0;
-					int tab_width = 0;
-					for(int i = 0; i < node_list.getLength();i++){
-						try{
-							String classes = node_list.getItem(i).getFirstChild().getParentElement().getAttribute("class");
-							if(classes.contains("selected")){
-								Element p = node_list.getItem(i).getFirstChild().getParentElement();
-								position = p.getAbsoluteLeft();
-								tab_width = p.getClientWidth();
-								break;
-							}
-						}catch(Exception e){}
-					}
-
-					System.out.print(position + " ");
-					position =  position - scroller.getElement().getAbsoluteLeft();
-					int width = scroller.getElement().getClientWidth();
-
-					System.out.println(position);
-					if((position + tab_width) > (width - 10)){
-						position = (position + tab_width - (width + 10));
-						scroller.setHorizontalScrollPosition(scroller.getHorizontalScrollPosition() + position + 13);
-					}else if(position < 11){
-						scroller.setHorizontalScrollPosition(position + scroller.getHorizontalScrollPosition() - 11);
-					}
-
-
-				}
-			}
-
-		});
-	}
-	protected void setHistory(Integer selectedItem) {
-		this.m_history = selectedItem;
 	}
 	public void setWidth(String width){
-		m_hp.setWidth(width);
-		m_vp.setWidth(width);
+		vp.setWidth(width);
 	}
-	public HashMap<Integer,Widget> getTabContents(){
-		return this.m_contents;
-	}
-	public void addTab(final Widget content,Widget title){
-		HTML h = new HTML("");
-		this.m_tabs.addTab(title);
-		this.m_contents.put(new Integer(m_tabs.getTabCount()-1), content);
-		this.m_tabs.getTab(m_tabs.getTabCount()-1).addClickHandler(new ClickHandler(){
+	public int addTab(final Widget content, String string) {
+		Label title = new Label(string);
+		title.addClickHandler(new ClickHandler(){
 
 			@Override
 			public void onClick(ClickEvent event) {
-				m_content.clear();
-				m_content.add(content);
+				int index = SectionTabs.this.getTabIndex(content);
+				SectionTabs.this.selectTab(index);
 			}
-
+			
 		});
-		int tab_width = this.m_tabs.getElement().getClientWidth();
-		if(tab_width > m_scroller.getElement().getClientWidth()){
-			showButtons();
-		}else{
-			hidebuttons();
-		}
+		return this.addTab(content, title);
 	}
-	private void hidebuttons() {
-		left.setVisible(false);
-		right.setVisible(false);
+	private int addTab(Widget content, Widget title) {
+		ProjectTab tab = new ProjectTab();
+		tab.load(title);
+		this.tab_flow.add(tab);
+		tabs.put(title, content);
+		contents.put(content, title);
+		
+		return this.tab_flow.getWidgetCount()-1;
 	}
-	private void showButtons() {
-		left.setVisible(true);
-		right.setVisible(true);
-	}
-	public int addTab(Widget content,String title){
-		Label l = new Label(title);
-		l.setWidth(title.length()*10+"px");
-		this.addTab(content,l);
-		return this.getTabs().getTabCount()-1;
-	}
-	public void selectTab(int index){
-		this.m_tabs.selectTab(index);
-		this.m_content.clear();
-		this.m_content.add(m_contents.get(new Integer(index)));
-	}
-	public void removeTab(int index){
-		this.m_tabs.removeTab(index);
-		this.m_content.clear();
-		this.m_contents.remove(new Integer(index));
-		Integer[] keys = this.m_contents.keySet().toArray(new Integer[0]);
-		HashMap<Integer,Widget> new_list = new HashMap<Integer,Widget>();
-		for(int i = 0; i < keys.length;i++){
-			if(keys[i].intValue() > index){
-				new_list.put(new Integer(keys[i].intValue()-1), m_contents.get(keys[i]));
-			}else{
-				new_list.put(keys[i], m_contents.get(keys[i]));
+	public void selectTab(int i) {
+		Widget w = this.tab_flow.getWidget(i);
+		for(int index = 0; index < this.tab_flow.getWidgetCount();index++){
+			if(this.tab_flow.getWidget(index) instanceof ProjectTab){
+				((ProjectTab)this.tab_flow.getWidget(index)).setSelected(false);
 			}
 		}
-		this.m_contents = new_list;
-		int selected = this.m_history;
-		if(m_tabs.getTab(m_history) == null){
-			selected = 0;
+		if(w instanceof ProjectTab){
+			ProjectTab tab = (ProjectTab)this.tab_flow.getWidget(i);
+			tab.setSelected(true);
+			Widget content = tabs.get(tab.getContent().getWidget());
+			this.getContentPanel().clear();
+			this.getContentPanel().add(content);
 		}
-		this.selectTab(selected);
-		int tab_width = this.m_tabs.getElement().getClientWidth();
-		if(tab_width > m_scroller.getElement().getClientWidth()){
-			showButtons();
+	}
+	public SimplePanel getContentPanel() {
+		return content_panel;
+	}
+	public void removeTab(int i) {
+		ProjectTab tab = (ProjectTab)this.tab_flow.getWidget(i);
+		Widget content = tabs.get(tab.getContent().getWidget());
+		tabs.remove(tab.getContent().getWidget());
+		contents.remove(content);
+		this.tab_flow.remove(i);
+		try{this.selectTab(i-1);}catch(Exception e){}
+	}
+	public int getTabCount(){
+		return this.tab_flow.getWidgetCount();
+	}
+	public int getTabIndex(Widget w){
+		Widget tab = contents.get(w);
+		for(int i = 0; i < this.tab_flow.getWidgetCount();i++){
+			Widget widget = ((ProjectTab)this.tab_flow.getWidget(i)).getContent().getWidget();
+			if(widget.equals(tab)){
+				return i;
+			}
+		}
+		return -1;
+	}
+	public Widget getTab(int i) {
+		Widget w = this.tab_flow.getWidget(i);
+		if(w instanceof ProjectTab){
+			ProjectTab tab = (ProjectTab)w;
+			return this.tabs.get(tab.getContent().getWidget());
 		}else{
-			hidebuttons();
+			return null;
 		}
 	}
-	public TabBar getTabs(){
-		return this.m_tabs;
-	}
-	public int addTab(final Widget content, final String title, boolean closable) {
-		if(closable){
-			final HorizontalPanel hp = new HorizontalPanel();
+	public int addTab(final Widget w, String title, boolean b) {
+		if(b){
+			ProjectTab tab = new ProjectTab();
+			HorizontalPanel hp = new HorizontalPanel();
 			Label l = new Label(title);
-			l.setWidth(title.length()*10+"px");
-			hp.add(l);
-			Image img = new Image(GWT.getModuleBaseURL()+"close.gif");
-			hp.add(img);
-			img.getElement().setAttribute("style", "z-index:5");
-			this.addTab(content,hp);
-			img.addClickHandler(new ClickHandler(){
+			l.addClickHandler(new ClickHandler(){
 
 				@Override
 				public void onClick(ClickEvent event) {
-					String html = hp.getElement().getParentElement().getInnerHTML();
-					for(int i = 0; i < m_tabs.getTabCount();i++){
-						String tabhtml = m_tabs.getTabHTML(i);
-						if(tabhtml.contains(html)){
-							removeTab(i);
-							return;
-						}
-					}
+					int index = SectionTabs.this.getTabIndex(w);
+					SectionTabs.this.selectTab(index);
 				}
-
+				
 			});
-			return this.getTabs().getTabCount()-1;
+			Label x = new Label("x");
+			x.addClickHandler(new ClickHandler(){
+
+				@Override
+				public void onClick(ClickEvent event) {
+					int index = SectionTabs.this.getTabIndex(w);
+					SectionTabs.this.removeTab(index);
+				}
+				
+			});
+			hp.add(l);
+			hp.add(x);
+			return this.addTab(w, hp);
 		}else{
-			return this.addTab(content, title);
+			return this.addTab(w, title);
 		}
 	}
 }
