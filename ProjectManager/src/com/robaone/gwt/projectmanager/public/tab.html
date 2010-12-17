@@ -1,0 +1,60 @@
+﻿<html xmlns:g="http://www.robaone.com/gwt">
+<head>
+<style g:name="helloworld">
+table.tab
+{
+    display:inline;
+    margin:0px;
+}
+table.tab td{
+}
+td.tab_tl{
+ width:10px;
+ height:10px;
+ background-image:url('file:///X:/Consulting/trey/sohvac v2/images/content_tl.png');
+ background-repeat:no-repeat;
+}
+td.tab_tm{
+ height:10px;
+ background-image:url('file:///X:/Consulting/trey/sohvac v2/images/content_t.png');
+ background-repeat:repeat-x;
+ background-position:top;
+}
+td.tab_tr{
+ width:10px;
+ height:10px;
+ background-image:url('file:///X:/Consulting/trey/sohvac v2/images/content_tr.png');
+ background-repeat:no-repeat;
+}
+td.tab_m
+{
+    font-family:'Trebuchet MS';
+    font-size:9pt;
+    cursor:pointer;
+    color:brown;
+}
+td.tab_l
+{
+ background-image:url('file:///X:/Consulting/trey/sohvac v2/images/content_l.png');
+ background-repeat:repeat-y;
+ background-position:left;
+}
+td.tab_r
+{
+ background-image:url('file:///X:/Consulting/trey/sohvac v2/images/content_r.png');
+ background-repeat:repeat-y;
+ background-position:right;
+}
+</style>
+</head>
+<body g:class="ROTabUI" g:package="com.robaone.gwt.client.ui">
+<div>
+<table class="tab" g:name="table" cellpadding="0" cellspacing="0">
+<tbody>
+<tr><td class="tab_tl"></td><td class="tab_tm"></td><td class="tab_tr"></td></tr>
+<tr><td class="tab_l"></td><td class="tab_m" g:name="content"><span>hello world</span></td><td class="tab_r"></td></tr>
+</tbody>
+</table>
+</div>
+</body>
+</html>
