@@ -111,20 +111,12 @@ public class SectionTabs extends Composite {
 			return null;
 		}
 	}
-	public int addTab(final Widget w, String title, boolean b) {
-		if(b){
-			ProjectTab tab = new ProjectTab();
-			HorizontalPanel hp = new HorizontalPanel();
-			Label l = new Label(title);
-			l.addClickHandler(new ClickHandler(){
-
-				@Override
-				public void onClick(ClickEvent event) {
-					int index = SectionTabs.this.getTabIndex(w);
-					SectionTabs.this.selectTab(index);
-				}
-				
-			});
+	public class Closable extends Composite {
+		private Widget m_tab_widget;
+		private Widget m_content_widget;
+		public Closable(final Widget w, Widget l, SectionTabs sectionTabs){
+			this.m_tab_widget = l;
+			this.m_content_widget = w;
 			Label x = new Label("x");
 			x.addClickHandler(new ClickHandler(){
 
@@ -135,11 +127,53 @@ public class SectionTabs extends Composite {
 				}
 				
 			});
+			HorizontalPanel hp = new HorizontalPanel();
 			hp.add(l);
 			hp.add(x);
-			return this.addTab(w, hp);
+			this.initWidget(hp);
+		}
+		public Widget getTabWidget(){
+			return this.m_tab_widget;
+		}
+		public Widget getContentWidget(){
+			return this.m_content_widget;
+		}
+	}
+	public int addTab(final Widget w, String title, boolean b) {
+		if(b){
+			Label l = new Label(title);
+			Closable c = new Closable(w,l,this);
+			l.addClickHandler(new ClickHandler(){
+
+				@Override
+				public void onClick(ClickEvent event) {
+					int index = SectionTabs.this.getTabIndex(w);
+					SectionTabs.this.selectTab(index);
+				}
+				
+			});
+			return this.addTab(w, c);
 		}else{
 			return this.addTab(w, title);
 		}
+	}
+	public Widget getTabWidget(int tabIndex) {
+		Widget w = this.tab_flow.getWidget(tabIndex);
+		if(w instanceof ProjectTab){
+			ProjectTab tab = (ProjectTab)w;
+			Widget c = tab.getContent();
+			if(c instanceof SimplePanel){
+				Widget cw = ((SimplePanel)c).getWidget();
+				if(cw instanceof Closable){
+					Widget retval = ((Closable)cw).getTabWidget();
+					return retval;
+				}else{
+					Widget retval = cw;
+					return retval;
+				}
+			}else
+				return c;
+		}
+		return null;
 	}
 }
