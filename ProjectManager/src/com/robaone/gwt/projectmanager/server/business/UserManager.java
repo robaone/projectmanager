@@ -68,7 +68,7 @@ public class UserManager extends ProjectConstants implements UserManagerInterfac
 				}
 			}
 			retval.setStatus(NOT_LOGGED_IN);
-			retval.setError("Username not found");
+			retval.setError("Username '"+username+"' not found");
 		}
 		return retval;
 	}
