@@ -1,23 +1,12 @@
 package com.robaone.gwt.projectmanager.client.ui;
 
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.datepicker.client.DateBox;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.MouseOutEvent;
-import com.google.gwt.event.dom.client.MouseOutHandler;
-import com.google.gwt.event.dom.client.MouseOverEvent;
-import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.robaone.gwt.projectmanager.client.ui.editable.EditableDateBox;
 import com.robaone.gwt.projectmanager.client.ui.editable.EditableInput;
+import com.robaone.gwt.projectmanager.client.ui.editable.EditableSuggestBox;
 import com.robaone.gwt.projectmanager.client.ui.editable.EditableTextBox;
+import com.robaone.gwt.projectmanager.client.ui.editable.EditableSaveHandler;
 
 public class ProjectUI extends Composite {
 	public ProjectUI(final MainContent main) {
@@ -33,6 +22,9 @@ public class ProjectUI extends Composite {
 		
 		EditableInput targetdate = new EditableDateBox("Target Date:","",null);
 		verticalPanel.add(targetdate);
+		
+		EditableSuggestBox status = new EditableSuggestBox("Status:", "", (EditableSaveHandler) null);
+		verticalPanel.add(status);
 	}
 
 }
