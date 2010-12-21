@@ -120,6 +120,16 @@ public class RegistrationInterface extends Composite {
 		flxtbl6.setWidget(6,0,nlnlbl31);
 		flxtbl6.setWidget(6,1,flwpnl32);
 		this.initWidget(flwpnl0);
+		
+		terms_and_conditions.addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				TermsAndConditionsPopup tc = new TermsAndConditionsPopup();
+				tc.center();
+			}
+			
+		});
 	}
 	public void load() throws Exception {
 	}
