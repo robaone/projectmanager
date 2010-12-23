@@ -1,0 +1,1 @@
+google.load('friendconnect', '0.8');

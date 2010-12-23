@@ -1,0 +1,309 @@
+/*
+Theme Name: SOHVAC
+Theme URI: http://www.sohvac.com
+Description: Second Opinion Heating and Cooling theme
+Version: 3.02
+Author: Ansel Robateau
+Author URI: http://www.robaone.com
+Tags: SOHVAC
+*/
+
+body 
+{
+    padding:0;
+    margin:0;
+    background-color:rgb(242,242,242);
+    font-family:Trebuchet MS;
+    font-size:10pt;
+}
+
+img
+{
+    border:none;
+}
+
+table.content_table 
+{
+    position:absolute;
+    top: 20px;
+    left: 55px;
+    width: 800px;
+}
+
+/* Main table boxes */
+td.content_tl
+{
+    height:10px;
+    background-image:url('images/content_tl.png');
+    background-position:top left;
+    background-repeat:no-repeat;
+}
+td.content_t
+{
+    height:10px;
+    background-image:url('images/content_t.png');
+    background-position:top;
+    background-repeat:repeat-x;
+}
+td.content_tr
+{
+    height:10px;
+    background-image:url('images/content_tr.png');
+    background-position:top right;
+    background-repeat:no-repeat;
+}
+td.content_l
+{
+    background-image:url('images/content_l.png');
+    background-position:left;
+    background-repeat:repeat-y;
+}
+td.content_r
+{
+    background-image:url('images/content_r.png');
+    background-position:right;
+    background-repeat:repeat-y;
+}
+td.content_bl
+{
+    background-image:url('images/content_bl.png');
+    background-position:left bottom;
+    background-repeat:no-repeat;
+    height:16px;
+}
+td.content_b
+{
+    background-image:url('images/content_b.png');
+    background-position:bottom;
+    background-repeat:repeat-x;
+    height:16px;
+}
+
+td.content_br
+{
+    background-image:url('images/content_br.png');
+    background-position:bottom right;
+    background-repeat:no-repeat;
+    height:16px;
+}
+td.content
+{
+    background-color:White;
+    padding: 15px;
+    vertical-align:top;
+    height:400px;
+}
+td.suffix_l
+{
+    background-image:url('images/suffix_l.png');
+    background-position:left;
+    background-repeat:repeat-y;
+}
+td.suffix
+{
+    background-color:rgb(172,167,147);
+    padding:15px;
+}
+td.suffix_r
+{
+    background-image:url('images/suffix_r.png');
+    background-position:right;
+    background-repeat:repeat-y;
+}
+td.suffix_bl
+{
+    background-image:url('images/suffix_bl.png');
+    background-position:left bottom;
+    background-repeat:no-repeat;
+    height:10px;
+}
+td.suffix_b
+{
+    background-image:url('images/suffix_b.png');
+    background-position:bottom;
+    background-repeat:repeat-x;
+    height:10px;
+}
+td.suffix_br
+{
+    background-image:url('images/suffix_br.png');
+    background-position:bottom right;
+    background-repeat:no-repeat;
+    height:10px;
+}
+div.side_tabs
+{
+    position:absolute;
+    top: 45px;
+    left: 26px;
+    font-family:Trebuchet MS;
+    font-weight:bold;
+}
+
+div.side_tabs ul
+{
+    margin:0;
+    padding:0;
+}
+
+div.side_tabs ul li
+{
+    margin:0;
+    padding:0;
+    list-style-type:none;
+    height: 96px;
+    background-image:url('images/inactive_tab.png');
+    background-position:left center;
+    background-repeat:no-repeat;
+    width: 29px;
+    cursor:pointer;
+}
+
+div.side_tabs ul li span
+{
+    top:35px;
+    position:absolute;
+    display:block;
+    -webkit-transform: rotate(-90deg); -moz-transform:rotate(-90deg);
+    filter:progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+    left: 0px;
+}
+
+td.footer div
+{
+    text-align:center;
+}
+div.footer_links a
+{
+    color:rgb(212,170,0);
+    text-decoration:none;
+}
+div.footer_links a:visited
+{
+    color:rgb(212,170,0);
+    text-decoration:none;
+}
+div.copyright
+{
+    color:rgb(172,167,147);
+}
+/* Search area */
+div.search_area
+{
+    position:absolute;
+   
+    top:70px;
+    left:400px;
+}
+div.search_area_description
+{
+     font-size:8pt;
+    color:#aaaaff;
+}
+input.search_area
+{
+    border:solid 1px rgb(140,140,140);
+    font-size:18pt;
+    width:370px;
+    background-image:url('images/magnifying_glass.png');
+    background-position:center right;
+    background-repeat:no-repeat;
+}
+img.search_area
+{
+    position:absolute;
+    left:340px;
+    top:20px;
+}
+
+/* Contractor listing */
+div.contractor_listing
+{
+    position:absolute;
+    left:470px;
+}
+div.contractor_listing a
+{
+    border:none;
+}
+/* Side Tab */
+table.action_tab
+{
+    position:absolute;
+    width:250px;
+    top: 45px;
+    left: 850px;
+    height:300px;
+}
+td.action_tab_tl
+{
+    height:10px;
+    background-image:url('images/action_tab_tl.png');
+    background-position:top left;
+    background-repeat:no-repeat;
+}
+td.action_tab_t
+{
+    height:10px;
+    background-image:url('images/action_tab_t.png');
+    background-position:top;
+    background-repeat:repeat-x;
+}
+td.action_tab_tr
+{
+    height:10px;
+    background-image:url('images/action_tab_tr.png');
+    background-position:top right;
+    background-repeat:no-repeat;
+}
+td.action_tab_l
+{
+    background-image:url('images/action_tab_l.png');
+    background-position:left;
+    background-repeat:repeat-y;
+}
+td.action_tab_r
+{
+    background-image:url('images/action_tab_r.png');
+    background-position:right;
+    background-repeat:repeat-y;
+}
+td.action_tab_bl
+{
+    background-image:url('images/action_tab_bl.png');
+    background-position:bottom left;
+    background-repeat:no-repeat;
+    height:10px;
+}
+td.action_tab_b
+{
+    background-image:url('images/action_tab_b.png');
+    background-position:bottom;
+    background-repeat:repeat-x;
+    height:10px;
+}
+td.action_tab_br
+{
+    background-image:url('images/action_tab_br.png');
+    background-position:bottom right;
+    background-repeat:no-repeat;
+    height:10px;
+}
+td.action_tab
+{
+    background-color:rgb(172,200,203);
+    vertical-align:top;
+}
+
+img.bbb_logo
+{
+    left: 722px;
+    position: absolute;
+    top: 17px;
+}
+
+/* Main content */
+#main_content
+        {
+            margin: 0px 27px 0px 27px;
+        }
