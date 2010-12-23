@@ -2,6 +2,7 @@ package com.robaone.gwt.projectmanager.server.interfaces;
 
 import com.robaone.gwt.projectmanager.client.DataServiceResponse;
 import com.robaone.gwt.projectmanager.client.UserData;
+import com.robaone.gwt.projectmanager.client.data.PasswordResetResponse;
 
 public interface UserManagerInterface {
 
@@ -13,5 +14,7 @@ public interface UserManagerInterface {
 
 	DataServiceResponse<UserData> createAccount(String email, String password,
 			String zip) throws Exception;
+
+	DataServiceResponse<PasswordResetResponse> sendPasswordReset(String value) throws Exception;
 
 }
