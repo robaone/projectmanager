@@ -2,6 +2,7 @@ package com.robaone.gwt.projectmanager.client;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.robaone.gwt.projectmanager.client.data.PasswordResetResponse;
 
 /**
  * The client side stub for the RPC service.
@@ -16,4 +17,6 @@ public interface DataService extends RemoteService {
 
 	DataServiceResponse<UserData> createAccount(String email, String password,
 			String zip) throws Exception;
+
+	DataServiceResponse<PasswordResetResponse> sendPasswordReset(String value) throws Exception;
 }

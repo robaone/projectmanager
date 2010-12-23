@@ -84,13 +84,8 @@ public class ProjectManager extends ProjectConstants implements EntryPoint {
 	}
 
 	public static void showLogin() {
-		DialogBox logindialog = new DialogBox();
-		logindialog.setAnimationEnabled(true);
-		logindialog.setGlassEnabled(true);
-		logindialog.setText("Login");
-		LoginInterface login = new LoginInterface(logindialog);
-		logindialog.setWidget(login);
-		logindialog.center();
+		LoginInterface login = new LoginInterface(null);
+		setSection(PROFILE_SECTION,login);
 	}
 
 	public static void showAllModules(UserData data) {
