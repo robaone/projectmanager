@@ -4,6 +4,7 @@ import com.robaone.gwt.projectmanager.client.DataService;
 import com.robaone.gwt.projectmanager.client.DataServiceResponse;
 import com.robaone.gwt.projectmanager.client.ProjectConstants;
 import com.robaone.gwt.projectmanager.client.UserData;
+import com.robaone.gwt.projectmanager.client.data.PasswordResetResponse;
 import com.robaone.gwt.projectmanager.server.interfaces.UserManagerInterface;
 import com.robaone.gwt.projectmanager.shared.FieldVerifier;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -53,6 +54,13 @@ public class DataServiceImpl extends RemoteServiceServlet implements
 			String password, String zip) throws Exception {
 		UserManagerInterface man = ManagerFactory.getUserManager(this);
 		return man.createAccount(email,password,zip);
+	}
+
+	@Override
+	public DataServiceResponse<PasswordResetResponse> sendPasswordReset(
+			String value) throws Exception {
+		UserManagerInterface man = ManagerFactory.getUserManager(this);
+		return man.sendPasswordReset(value);
 	}
 
 }
