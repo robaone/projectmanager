@@ -3,9 +3,11 @@ package com.robaone.gwt.projectmanager.server.business;
 import com.robaone.gwt.projectmanager.client.DataServiceResponse;
 import com.robaone.gwt.projectmanager.client.ProjectConstants;
 import com.robaone.gwt.projectmanager.client.UserData;
+import com.robaone.gwt.projectmanager.client.data.PasswordResetResponse;
 import com.robaone.gwt.projectmanager.server.DataServiceImpl;
 import com.robaone.gwt.projectmanager.server.SessionData;
 import com.robaone.gwt.projectmanager.server.interfaces.UserManagerInterface;
+import com.robaone.gwt.projectmanager.shared.FieldVerifier;
 
 public class UserManager extends ProjectConstants implements UserManagerInterface {
 	private DataServiceImpl parent;
@@ -91,5 +93,21 @@ public class UserManager extends ProjectConstants implements UserManagerInterfac
 		data.setUsername(email);
 		response.addData(data);
 		return response;
+	}
+	@Override
+	public DataServiceResponse<PasswordResetResponse> sendPasswordReset(
+			String value) throws Exception {
+		DataServiceResponse<PasswordResetResponse> retval = new DataServiceResponse<PasswordResetResponse>();
+		if(FieldVerifier.isEmailValid(value)){
+			retval.setStatus(0);
+			PasswordResetResponse response = new PasswordResetResponse();
+			response.setMessage("The e-mail as been sent.  Please check your inbox for e-mail from ###@sohvac.com.");
+			response.setPasswordSent(true);
+			retval.addData(response);
+		}else{
+			retval.setStatus(FIELD_VERIFICATION_ERROR);
+			retval.setError("You must enter a valid e-mail address.");
+		}
+		return retval;
 	}
 }
