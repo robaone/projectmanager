@@ -1,14 +1,17 @@
 package com.robaone.gwt.projectmanager.client;
 
+import com.robaone.gwt.projectmanager.client.ui.ArticleFeedUI;
+import com.robaone.gwt.projectmanager.client.ui.FeaturedUI;
 import com.robaone.gwt.projectmanager.client.ui.GeneralError;
 import com.robaone.gwt.projectmanager.client.ui.LoggedOutUI;
 import com.robaone.gwt.projectmanager.client.ui.LoginInterface;
 import com.robaone.gwt.projectmanager.client.ui.MainContent;
 import com.robaone.gwt.projectmanager.client.ui.ProfilePicture;
 import com.robaone.gwt.projectmanager.client.ui.ProjectManagerLayout;
+import com.robaone.gwt.projectmanager.client.ui.RegistrationInterface;
 import com.robaone.gwt.projectmanager.client.ui.SearchForm;
 import com.robaone.gwt.projectmanager.client.ui.TasksList;
-import com.robaone.gwt.projectmanager.shared.FieldVerifier;
+import com.robaone.gwt.projectmanager.server.FieldVerifier;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Document;
@@ -17,6 +20,8 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.Button;
@@ -49,11 +54,15 @@ public class ProjectManager extends ProjectConstants implements EntryPoint {
 	private static final String PROFILE_SECTION = "profile_section";
 	private static final String SEARCH_BAR = "search_bar";
 	private static final String TASKS_SECTION = "tasks_section";
-	private static final String MAIN_CONTENT = "main_content";
+	private static final String MAIN_CONTENT = "app_main_content";
+	private static final String FEATURED_CONTRACTORS = "featured_contractors";
+	private static final String RECENT_WORK = "recent_work";
+	private static final String NEWS_TICKER = "news_ticker_container";
 
 	/**
 	 * This is the entry point method.
 	 */
+	private BasicHistoryChangeHandler change_handler;
 	public void onModuleLoad() {
 		try{
 			String url = Document.get().getElementById("_appsettings").getAttribute("url");
@@ -61,6 +70,8 @@ public class ProjectManager extends ProjectConstants implements EntryPoint {
 				((ServiceDefTarget)dataService).setServiceEntryPoint(url);
 			}
 		}catch(Exception e){}
+		change_handler = new BasicHistoryChangeHandler(this);
+		History.addValueChangeHandler(change_handler);
 		/**
 		 * Initialize the stuff
 		 */
@@ -77,9 +88,77 @@ public class ProjectManager extends ProjectConstants implements EntryPoint {
 					showAllModules(result.getData(0));
 				}else if(result.getStatus() == NOT_LOGGED_IN){
 					showLogin();
+					String token = History.getToken();
+					System.out.println("History token = "+token);
+					if(token.equals("register")){
+						showRegister();
+					}
 				}
 			}
 			
+		});
+		/**
+		 * Add history change handler
+		 */
+		FeaturedUI featured = new FeaturedUI();
+		this.setSection(FEATURED_CONTRACTORS, featured);
+		featured.setText("featured contractors");
+		
+		FeaturedUI work = new FeaturedUI();
+		this.setSection(RECENT_WORK, work);
+		work.setText("recent work");
+		
+		if(RootPanel.get(NEWS_TICKER) != null){
+			ArticleFeedUI feed = new ArticleFeedUI();
+			this.setSection(NEWS_TICKER, feed);
+		}
+	}
+
+	protected void showRegister() {
+		final RegistrationInterface ri = new RegistrationInterface();
+		this.setSection(MAIN_CONTENT, ri);
+		ri.getCancel().addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				try{
+					String url = Document.get().getElementById("_appsettings").getAttribute("logon_cancel_url");
+					Window.Location.assign(url);
+				}catch(Exception e){}
+			}
+
+		});
+		ri.getCreate_account().addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				ProjectManager.dataService.createAccount(ri.getEmail().getValue(),ri.getPassword1().getValue(),
+						ri.getZip_code().getValue(),new AsyncCallback<DataServiceResponse<UserData>>(){
+
+					@Override
+					public void onFailure(Throwable caught) {
+						// TODO Auto-generated method stub
+
+					}
+
+					@Override
+					public void onSuccess(
+							DataServiceResponse<UserData> result) {
+						try{
+							if(result.getStatus() == 0){
+								UserData data = result.getData(0);
+								ProjectManager.showAllModules(data);
+							}else{
+								onFailure(new Throwable(result.getError()));
+							}
+						}catch(Exception e){
+							onFailure(new Throwable(e));
+						}
+					}
+
+				});
+
+			}
 		});
 	}
 
@@ -95,8 +174,14 @@ public class ProjectManager extends ProjectConstants implements EntryPoint {
 		ProfilePicture profile = new ProfilePicture();
 		setSection(PROFILE_SECTION,profile);
 		
-		SearchForm search = new SearchForm(main);
-		setSection(SEARCH_BAR, search);
+		if("true".equals(Document.get().getElementById("_appsettings").getAttribute("replace_search"))){
+			if(RootPanel.get("searchform") != null){
+				Document.get().getElementById("searchform").setInnerHTML("");
+				Document.get().getElementById("searchform").setAttribute("action", "javascript:void(0)");
+				SearchForm search = new SearchForm(main);
+				RootPanel.get("searchform").add(search);
+			}
+		}
 		
 		TasksList tasks = new TasksList();
 		setSection(TASKS_SECTION, tasks);
@@ -143,5 +228,6 @@ public class ProjectManager extends ProjectConstants implements EntryPoint {
 		if(RootPanel.get(ProjectManager.MAIN_CONTENT) != null){
 			RootPanel.get(ProjectManager.MAIN_CONTENT).add(logout);
 		}
+		showLogin();
 	}
 }

@@ -16,21 +16,10 @@ public class LoggedOutUI extends Composite {
 		VerticalPanel vp = new VerticalPanel();
 		Label l = new Label("Logged out");
 		vp.add(l);
-		Button login = new Button("Log In");
-		vp.add(login);
-		login.addClickHandler(new ClickHandler(){
-
-			@Override
-			public void onClick(ClickEvent event) {
-				ProjectManager.showLogin();
-			}
-			
-		});
+		
 		this.initWidget(vp);
 		
-		try{
-			Window.Location.assign(Document.get().getElementById("_appsettings").getAttribute("logout_url"));
-		}catch(Exception e){}
+		
 	}
 
 }

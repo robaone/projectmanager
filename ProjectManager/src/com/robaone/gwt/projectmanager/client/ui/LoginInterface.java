@@ -6,6 +6,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.Window.Location;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
@@ -234,6 +235,9 @@ public class LoginInterface extends Composite {
 						}
 
 					});
+				}else{
+					String url = Document.get().getElementById("_appsettings").getAttribute("dashbaard_url");
+					Location.assign(url+"#register");
 				}
 			}
 
@@ -257,7 +261,8 @@ public class LoginInterface extends Composite {
 					if(parent instanceof DialogBox){
 						((DialogBox)parent).hide();
 					}
-					ProjectManager.showAllModules(result.getData(0));
+					String url = Document.get().getElementById("_appsettings").getAttribute("dashboard_url");
+					Window.Location.assign(url);
 				}else if(result.getStatus() == ProjectConstants.FIELD_VERIFICATION_ERROR){
 					/*
 					 * Show field errors

@@ -16,7 +16,7 @@ public class SearchForm extends Composite {
 		FlowPanel flwpnl2 = new FlowPanel();
 		form.getElement().setAttribute("method","post");
 		input.getElement().setAttribute("id","search");
-		input.setStyleName("search_form");
+		input.setStyleName("search_area");
 		input.setText("");
 		FlowPanel form_child = new FlowPanel();
 		form.add(form_child);
@@ -24,7 +24,7 @@ public class SearchForm extends Composite {
 		form_child.add(flwpnl2);
 		flwpnl0.add(form);
 		this.initWidget(flwpnl0);
-		this.setStyleName("search_bar_form");
+		//this.setStyleName("search_bar_form");
 		
 		/*
 		 * Handlers

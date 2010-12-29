@@ -1,0 +1,29 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style>
+		.style1{
+			font-family:Trebuchet MS;width:200px;
+		}
+		.style2{
+			font-weight:bold;
+		}
+		.style3{
+			width:200px;margin-top:7px;height:50px;background-color:rgb(70,70,70);text-align:right;border:black solid 1px;
+		}
+		.style4{
+			color:White;margin-right:10px;margin-bottom:7px;font-style:italic;margin-top:20px;
+		}
+	</ui:style>
+	<g:HTMLPanel>
+		<g:FlowPanel styleName="{style.style1}" ui:field="listing">
+			<g:Label styleName="{style.style2}" ui:field="title">featured contractors</g:Label>
+			<g:FlowPanel styleName="{style.style3}" ui:field="f1">
+				<g:Label styleName="{style.style4}" ui:field="contractor1">contractor 1</g:Label>
+			</g:FlowPanel>
+			<g:FlowPanel styleName="{style.style3}" ui:field="f2">
+				<g:Label styleName="{style.style4}" ui:field="contractor2">contractor 1</g:Label>
+			</g:FlowPanel>
+		</g:FlowPanel>
+	</g:HTMLPanel>
+</ui:UiBinder> 
