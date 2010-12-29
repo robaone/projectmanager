@@ -51,13 +51,13 @@ public class ProjectManager extends ProjectConstants implements EntryPoint {
 	public static final DataServiceAsync dataService = GWT
 			.create(DataService.class);
 
-	private static final String PROFILE_SECTION = "profile_section";
-	private static final String SEARCH_BAR = "search_bar";
-	private static final String TASKS_SECTION = "tasks_section";
-	private static final String MAIN_CONTENT = "app_main_content";
-	private static final String FEATURED_CONTRACTORS = "featured_contractors";
-	private static final String RECENT_WORK = "recent_work";
-	private static final String NEWS_TICKER = "news_ticker_container";
+	public static final String PROFILE_SECTION = "profile_section";
+	public static final String SEARCH_BAR = "search_bar";
+	public static final String TASKS_SECTION = "tasks_section";
+	public static final String MAIN_CONTENT = "app_main_content";
+	public static final String FEATURED_CONTRACTORS = "featured_contractors";
+	public static final String RECENT_WORK = "recent_work";
+	public static final String NEWS_TICKER = "news_ticker_container";
 
 	/**
 	 * This is the entry point method.
@@ -87,13 +87,10 @@ public class ProjectManager extends ProjectConstants implements EntryPoint {
 				if(result.getStatus() == OK){
 					showAllModules(result.getData(0));
 				}else if(result.getStatus() == NOT_LOGGED_IN){
-					showLogin();
-					String token = History.getToken();
-					System.out.println("History token = "+token);
-					if(token.equals("register")){
-						showRegister();
-					}
+					showLogin();	
 				}
+				String token = History.getToken();
+				ProjectManager.this.change_handler.handleChange(token);
 			}
 			
 		});
@@ -211,6 +208,19 @@ public class ProjectManager extends ProjectConstants implements EntryPoint {
 				p.add(section_widget);
 			}
 		}catch(Exception e){}
+	}
+	
+	public static Widget getSection(String section){
+		try{
+			RootPanel p = RootPanel.get(section);
+			if(p != null){
+				return p.getWidget(0);
+			}else{
+				return null;
+			}
+		}catch(Exception e){
+			return null;
+		}
 	}
 
 	public static void showLogout() {

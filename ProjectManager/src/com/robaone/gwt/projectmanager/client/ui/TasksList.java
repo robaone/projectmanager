@@ -1,8 +1,10 @@
 package com.robaone.gwt.projectmanager.client.ui;
 
+import com.gargoylesoftware.htmlunit.javascript.host.Document;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 
@@ -77,7 +79,13 @@ public class TasksList extends Composite {
 
 			@Override
 			public void onClick(ClickEvent event) {
-				showTask(action);
+				if("true".equals(com.google.gwt.dom.client.Document.get().getElementById("_appsettings").getAttribute("is_dashboard"))){
+					History.newItem("task="+action, false);
+					showTask(action);
+				}else{
+					String url = com.google.gwt.dom.client.Document.get().getElementById("_appsettings").getAttribute("dashboard_url");
+					Window.Location.assign(url+"#task="+action);
+				}
 			}
 			
 		}
