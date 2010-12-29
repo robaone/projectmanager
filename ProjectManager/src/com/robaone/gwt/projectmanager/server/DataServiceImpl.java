@@ -6,7 +6,6 @@ import com.robaone.gwt.projectmanager.client.ProjectConstants;
 import com.robaone.gwt.projectmanager.client.UserData;
 import com.robaone.gwt.projectmanager.client.data.PasswordResetResponse;
 import com.robaone.gwt.projectmanager.server.interfaces.UserManagerInterface;
-import com.robaone.gwt.projectmanager.shared.FieldVerifier;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 /**

@@ -5,9 +5,9 @@ import com.robaone.gwt.projectmanager.client.ProjectConstants;
 import com.robaone.gwt.projectmanager.client.UserData;
 import com.robaone.gwt.projectmanager.client.data.PasswordResetResponse;
 import com.robaone.gwt.projectmanager.server.DataServiceImpl;
+import com.robaone.gwt.projectmanager.server.FieldVerifier;
 import com.robaone.gwt.projectmanager.server.SessionData;
 import com.robaone.gwt.projectmanager.server.interfaces.UserManagerInterface;
-import com.robaone.gwt.projectmanager.shared.FieldVerifier;
 
 public class UserManager extends ProjectConstants implements UserManagerInterface {
 	private DataServiceImpl parent;
