@@ -5,6 +5,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Window.Location;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -174,7 +175,7 @@ public class LoginInterface extends Composite {
 					((DialogBox)parent).hide();
 					final DialogBox register = new DialogBox();
 					register.setHTML("Registration");
-					final RegistrationInterface ri = new RegistrationInterface();
+					final RegistrationUI ri = new RegistrationUI();
 					register.add(ri);
 					register.setAnimationEnabled(true);
 					register.setGlassEnabled(true);
@@ -199,13 +200,12 @@ public class LoginInterface extends Composite {
 						}
 
 					});
-					ri.getSign_in().addClickHandler(new CancelHandler());
 					ri.getCreate_account().addClickHandler(new ClickHandler(){
 
 						@Override
 						public void onClick(ClickEvent event) {
 							ProjectManager.dataService.createAccount(ri.getEmail().getValue(),ri.getPassword1().getValue(),
-									ri.getZip_code().getValue(),new AsyncCallback<DataServiceResponse<UserData>>(){
+									ri.getZip_code().getValue(),ri.getAccountType(),new AsyncCallback<DataServiceResponse<UserData>>(){
 
 								@Override
 								public void onFailure(Throwable caught) {
@@ -236,8 +236,13 @@ public class LoginInterface extends Composite {
 
 					});
 				}else{
-					String url = Document.get().getElementById("_appsettings").getAttribute("dashbaard_url");
-					Location.assign(url+"#register");
+					String url = Document.get().getElementById("_appsettings").getAttribute("dashboard_url");
+					String is_dashboard = Document.get().getElementById("_appsettings").getAttribute("is_dashboard");
+					if("true".equals(is_dashboard)){
+						History.newItem("register", true);
+					}else{
+						Location.assign(url+"#register");
+					}
 				}
 			}
 

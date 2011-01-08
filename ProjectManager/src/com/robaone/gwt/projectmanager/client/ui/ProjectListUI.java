@@ -71,7 +71,7 @@ public class ProjectListUI extends Composite {
 			@Override
 			public void onClick(ClickEvent event) {
 				NewProjectUI newproject = new NewProjectUI(main);
-				int index = main.getDecoratedTabPanel().addTab(newproject, "New Project",true);
+				int index = main.getDecoratedTabPanel().addTab(newproject, "New Project",true,null);
 				main.getDecoratedTabPanel().selectTab(index);
 			}
 			

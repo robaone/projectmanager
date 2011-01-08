@@ -1,6 +1,7 @@
 package com.robaone.gwt.projectmanager.client;
 
 import com.robaone.gwt.projectmanager.client.ui.ArticleFeedUI;
+import com.robaone.gwt.projectmanager.client.ui.ContractorListingUI;
 import com.robaone.gwt.projectmanager.client.ui.FeaturedUI;
 import com.robaone.gwt.projectmanager.client.ui.GeneralError;
 import com.robaone.gwt.projectmanager.client.ui.LoggedOutUI;
@@ -8,7 +9,7 @@ import com.robaone.gwt.projectmanager.client.ui.LoginInterface;
 import com.robaone.gwt.projectmanager.client.ui.MainContent;
 import com.robaone.gwt.projectmanager.client.ui.ProfilePicture;
 import com.robaone.gwt.projectmanager.client.ui.ProjectManagerLayout;
-import com.robaone.gwt.projectmanager.client.ui.RegistrationInterface;
+import com.robaone.gwt.projectmanager.client.ui.RegistrationUI;
 import com.robaone.gwt.projectmanager.client.ui.SearchForm;
 import com.robaone.gwt.projectmanager.client.ui.TasksList;
 import com.robaone.gwt.projectmanager.server.FieldVerifier;
@@ -22,6 +23,7 @@ import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.Window.Location;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
 import com.google.gwt.user.client.ui.Button;
@@ -58,11 +60,13 @@ public class ProjectManager extends ProjectConstants implements EntryPoint {
 	public static final String FEATURED_CONTRACTORS = "featured_contractors";
 	public static final String RECENT_WORK = "recent_work";
 	public static final String NEWS_TICKER = "news_ticker_container";
+	public static final String LISTING_SECTION = "listing_app_container";
 
 	/**
 	 * This is the entry point method.
 	 */
-	private BasicHistoryChangeHandler change_handler;
+	public static BasicHistoryChangeHandler change_handler;
+	public static MainContent m_maincontent;
 	public void onModuleLoad() {
 		try{
 			String url = Document.get().getElementById("_appsettings").getAttribute("url");
@@ -98,22 +102,29 @@ public class ProjectManager extends ProjectConstants implements EntryPoint {
 		 * Add history change handler
 		 */
 		FeaturedUI featured = new FeaturedUI();
-		this.setSection(FEATURED_CONTRACTORS, featured);
+		ProjectManager.setSection(FEATURED_CONTRACTORS, featured);
 		featured.setText("featured contractors");
 		
 		FeaturedUI work = new FeaturedUI();
-		this.setSection(RECENT_WORK, work);
+		ProjectManager.setSection(RECENT_WORK, work);
 		work.setText("recent work");
 		
 		if(RootPanel.get(NEWS_TICKER) != null){
 			ArticleFeedUI feed = new ArticleFeedUI();
-			this.setSection(NEWS_TICKER, feed);
+			ProjectManager.setSection(NEWS_TICKER, feed);
+		}
+		/**
+		 * Add listing app
+		 */
+		if(RootPanel.get(ProjectManager.LISTING_SECTION) != null){
+			ContractorListingUI listing = new ContractorListingUI();
+			ProjectManager.setSection(LISTING_SECTION, listing);
 		}
 	}
 
 	protected void showRegister() {
-		final RegistrationInterface ri = new RegistrationInterface();
-		this.setSection(MAIN_CONTENT, ri);
+		final RegistrationUI ri = new RegistrationUI();
+		setSection(MAIN_CONTENT, ri);
 		ri.getCancel().addClickHandler(new ClickHandler(){
 
 			@Override
@@ -130,7 +141,7 @@ public class ProjectManager extends ProjectConstants implements EntryPoint {
 			@Override
 			public void onClick(ClickEvent event) {
 				ProjectManager.dataService.createAccount(ri.getEmail().getValue(),ri.getPassword1().getValue(),
-						ri.getZip_code().getValue(),new AsyncCallback<DataServiceResponse<UserData>>(){
+						ri.getZip_code().getValue(),ri.getAccountType(),new AsyncCallback<DataServiceResponse<UserData>>(){
 
 					@Override
 					public void onFailure(Throwable caught) {
@@ -144,7 +155,16 @@ public class ProjectManager extends ProjectConstants implements EntryPoint {
 						try{
 							if(result.getStatus() == 0){
 								UserData data = result.getData(0);
-								ProjectManager.showAllModules(data);
+								/*
+								 * if the person is a professional.  Take them to the profile edit
+								 * to finish their profile information.
+								 */
+								if(data.getAccountType().equals(ProjectConstants.USER_TYPE.HVACPROFESSIONAL)){
+									History.newItem("profile=edit",true);
+								}else{
+									History.newItem("", false);
+									ProjectManager.showAllModules(data);
+								}
 							}else{
 								onFailure(new Throwable(result.getError()));
 							}
@@ -166,11 +186,46 @@ public class ProjectManager extends ProjectConstants implements EntryPoint {
 
 	public static void showAllModules(UserData data) {
 
-		MainContent main = new MainContent();
 		
-		ProfilePicture profile = new ProfilePicture();
-		setSection(PROFILE_SECTION,profile);
+		MainContent main;
+		if(ProjectManager.m_maincontent != null){
+			main = ProjectManager.m_maincontent;
+		}else{
+			main = new MainContent();
+			ProjectManager.m_maincontent = main;
+		}
 		
+		ProjectManager.dataService.getLoginStatus(new AsyncCallback<DataServiceResponse<UserData>>(){
+
+			@Override
+			public void onFailure(Throwable caught) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onSuccess(DataServiceResponse<UserData> result) {
+				ProfilePicture profile = new ProfilePicture();
+				profile.getUsername().setText(result.getData(0).getUsername());
+				profile.getPicture().setUrl(result.getData(0).getPictureUrl());
+				ProjectManager.setSection(PROFILE_SECTION, profile);
+				
+				profile.getEditlink().addClickHandler(new ClickHandler(){
+
+					@Override
+					public void onClick(ClickEvent event) {
+						String url = Document.get().getElementById("_appsettings").getAttribute("dashboard_url");
+						String is_dashboard = Document.get().getElementById("_appsettings").getAttribute("is_dashboard");
+						if("true".equals(is_dashboard)){
+							History.newItem("profile=edit", true);
+						}else{
+							Location.assign(url+"#profile=edit");
+						}
+					}
+					
+				});
+			}
+		});
 		if("true".equals(Document.get().getElementById("_appsettings").getAttribute("replace_search"))){
 			if(RootPanel.get("searchform") != null){
 				Document.get().getElementById("searchform").setInnerHTML("");
@@ -200,7 +255,7 @@ public class ProjectManager extends ProjectConstants implements EntryPoint {
 		}
 	}
 
-	private static void setSection(String section, Widget section_widget) {
+	public static void setSection(String section, Widget section_widget) {
 		try{
 			RootPanel p = RootPanel.get(section);
 			if(p != null){
@@ -234,10 +289,18 @@ public class ProjectManager extends ProjectConstants implements EntryPoint {
 				}
 			}catch(Exception e){}
 		}
+		ProjectManager.m_maincontent = null;
 		LoggedOutUI logout = new LoggedOutUI();
 		if(RootPanel.get(ProjectManager.MAIN_CONTENT) != null){
 			RootPanel.get(ProjectManager.MAIN_CONTENT).add(logout);
 		}
 		showLogin();
+	}
+
+	public static Widget getMainContent() {
+		if(ProjectManager.m_maincontent == null){
+			ProjectManager.m_maincontent = new MainContent();
+		}
+		return ProjectManager.m_maincontent;
 	}
 }

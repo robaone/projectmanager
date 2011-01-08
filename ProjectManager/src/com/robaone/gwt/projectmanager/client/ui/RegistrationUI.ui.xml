@@ -1,0 +1,128 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style>
+		.important {
+			font-weight: bold;
+		}
+		.textinput {
+			padding-top: 2px; padding-right: 2px; padding-bottom: 2px; padding-left: 2px; 
+		}
+		table.vtop td {
+			vertical-align:top;
+		}
+		.button {
+		}
+	</ui:style>
+	<g:HTMLPanel>
+		<h1>
+			Create an account</h1>
+		<div>
+			<span>
+				If you already have an account, please sign in.
+			</span>
+		</div>
+		<div>
+			New Account information</div>
+		<table styleName="{style.vtop}" >
+			<colgroup>
+				<col />
+			</colgroup>
+			<tr>
+				<td>
+					Current Email Address:
+				</td>
+				<td>
+					<div>
+						<g:TextBox ui:field="email" styleName="{style.textinput}" />
+						<div>
+							eg. user@domain.com. This will be used as your login id.</div>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					Password:
+				</td>
+				<td>
+					<div>
+						<g:PasswordTextBox ui:field="password" styleName="{style.textinput}" />
+						<div class="gwt-Label">
+							Minimum 8 characters</div>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					Re-enter password:
+				</td>
+				<td>
+					<div>
+						<g:PasswordTextBox ui:field="password2" styleName="{style.textinput}" />
+						<g:Label ui:field="password_ok" >OK</g:Label>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<div colspan="2">
+						<hr />
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					Zip Code:
+				</td>
+				<td>
+					<div>
+						<g:TextBox ui:field="zip" styleName="{style.textinput}" width="50px"/>
+						<div>
+							Why are we asking this?</div>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					Account Type</td>
+				<td>
+					<g:RadioButton ui:field="customer" name="type" checked="true"/>Customer
+					<g:RadioButton ui:field="professional" name="type"/>HVA/C(R) Professional
+				</td>
+			</tr>
+			<tr>
+				<td>
+					&nbsp;
+				</td>
+				<td>
+					<div>
+						<div>
+							<span class="gwt-CheckBox" name="agree">
+								<g:CheckBox ui:field="accept" />
+							</span>
+							<span>I accept the</span>
+							<g:Anchor ui:field="terms_and_conditions_link" href="javascript:void(0)">Terms &amp; Conditions</g:Anchor>
+						</div>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<span></span>
+				</td>
+				<td>
+					<div>
+						<g:Button ui:field="create_new">Create new profile</g:Button>
+						<span>
+							<span class="Apple-converted-space">&nbsp;</span>
+							or
+							<span class="Apple-converted-space">&nbsp;</span>
+						</span>
+						<g:Anchor ui:field="cancel" href="javascript:void(0)">Cancel</g:Anchor>
+					</div>
+				</td>
+			</tr>
+		</table>
+
+	</g:HTMLPanel>
+</ui:UiBinder> 

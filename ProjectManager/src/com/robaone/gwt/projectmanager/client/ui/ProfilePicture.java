@@ -27,6 +27,7 @@ public class ProfilePicture extends Composite {
 		//nlnhtml3.setHTML("<br></br>");
 		username.setText("username");
 		editlink.setHTML("edit");
+		editlink.setHref("javascript:void(0)");
 		flwpnl1.add(picture);
 		flwpnl1.add(nlnhtml3);
 		flwpnl1.add(username);

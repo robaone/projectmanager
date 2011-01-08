@@ -39,7 +39,7 @@ public class NewProjectUI extends Composite {
 				int index = main.getDecoratedTabPanel().getTabIndex(NewProjectUI.this);
 				main.getDecoratedTabPanel().removeTab(index);
 				ProjectUI project = new ProjectUI(main);
-				index = main.getDecoratedTabPanel().addTab(project, project_name.getValue(),true);
+				index = main.getDecoratedTabPanel().addTab(project, project_name.getValue(),true,null);
 				main.getDecoratedTabPanel().selectTab(index);
 			}
 		});

@@ -6,6 +6,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DecoratedTabPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.InlineHTML;
 import com.google.gwt.user.client.ui.Widget;
 import com.robaone.gwt.projectmanager.client.data.FeedItem;
 import com.robaone.gwt.projectmanager.client.ui.TasksList.TASK;
@@ -14,18 +15,24 @@ import com.robaone.gwt.projectmanager.client.ui.tabs.SectionTabs;
 public class MainContent extends Composite {
 	private FlowPanel live_feed;
 	private SectionTabs decoratedTabPanel;
+	private FlowPanel root = new FlowPanel();
 	private HashMap<String,Widget> tabs = new HashMap<String,Widget>();
+	private boolean loaded = false;
 	public MainContent() {
-
+		InlineHTML h = new InlineHTML("<h1>Project Dashboard</h1>");
 		decoratedTabPanel = new SectionTabs();
-		initWidget(decoratedTabPanel);
+		root.add(h);
+		root.add(decoratedTabPanel);
+		initWidget(root);
 		decoratedTabPanel.setWidth("100%");
 		live_feed = new FlowPanel();
-		decoratedTabPanel.addTab(live_feed, "Live Feed");
-
+		decoratedTabPanel.addTab(live_feed, "Live Feed","task=FEED");
 	}
 
 	public void load() {
+		if(this.loaded){
+			return;
+		}
 		Feed feed = new Feed();
 		/*
 		 * Do request and callback
@@ -43,6 +50,7 @@ public class MainContent extends Composite {
 		}
 		this.getLive_feed().add(feed);
 		this.getDecoratedTabPanel().selectTab(0);
+		this.loaded = true;
 	}
 
 	public FlowPanel getLive_feed() {
@@ -86,19 +94,19 @@ public class MainContent extends Composite {
 		int tabindex = -1;
 		if(action.equals(TASK.ALERT)){
 			w = new AlertListUI();
-			tabindex = this.getDecoratedTabPanel().addTab(w, "Alerts",true);
+			tabindex = this.getDecoratedTabPanel().addTab(w, "Alerts",true,"task="+TASK.ALERT);
 		}else if(action.equals(TASK.JOB)){
 			w = new JobListUI();
-			tabindex = this.getDecoratedTabPanel().addTab(w, "Jobs",true);
+			tabindex = this.getDecoratedTabPanel().addTab(w, "Jobs",true,"task="+TASK.JOB);
 		}else if(action.equals(TASK.NOTICE)){
 			w = new NoticeListUI();
-			tabindex = this.getDecoratedTabPanel().addTab(w, "Notices",true);
+			tabindex = this.getDecoratedTabPanel().addTab(w, "Notices",true,"task="+TASK.NOTICE);
 		}else if(action.equals(TASK.PROJECT)){
 			w = new ProjectListUI(this);
-			tabindex = this.getDecoratedTabPanel().addTab(w, "Projects",true);
+			tabindex = this.getDecoratedTabPanel().addTab(w, "Projects",true,"task="+TASK.PROJECT);
 		}else if(action.equals(TASK.SEARCH)){
 			w = new SearchResultsUI();
-			tabindex = this.getDecoratedTabPanel().addTab(w, "Search Results",true);
+			tabindex = this.getDecoratedTabPanel().addTab(w, "Search Results",true,"task="+TASK.SEARCH);
 		}
 		if(tabindex > -1){
 			this.getDecoratedTabPanel().selectTab(tabindex);

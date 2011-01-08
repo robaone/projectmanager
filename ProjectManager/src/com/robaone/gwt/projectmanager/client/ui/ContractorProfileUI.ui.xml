@@ -1,0 +1,44 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style>
+		.important {
+			font-weight: bold;
+		}
+		table td {
+			vertical-align:top;
+		}
+		table {
+			border:solid 1px gray;
+		}
+		div {
+			border:solid 1px gray;
+		}
+	</ui:style>
+	<g:HTMLPanel>
+		<table style="width:100%">
+			<tbody>
+				<tr>
+					<td style="width:190px">
+						<g:Image ui:field="logo"></g:Image>
+					</td>
+					<td>
+						<g:HTML ui:field="header"></g:HTML>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<table style="width:100%">
+			<tbody>
+				<tr>
+					<td>
+						<g:HTML ui:field="info"></g:HTML>
+					</td>
+					<td style="width:250px">
+						<g:FlowPanel ui:field="comment_flow"></g:FlowPanel>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</g:HTMLPanel>
+</ui:UiBinder> 

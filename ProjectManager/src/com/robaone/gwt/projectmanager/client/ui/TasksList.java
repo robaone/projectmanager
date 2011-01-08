@@ -7,6 +7,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
+import com.robaone.gwt.projectmanager.client.ProjectManager;
 
 public class TasksList extends Composite {
 	private FlowPanel flwpnl0 = new FlowPanel();
@@ -100,6 +101,7 @@ public class TasksList extends Composite {
 	}
 	public void showTask(TASK action) {
 		System.out.println("Show task "+action);
+		ProjectManager.setSection(ProjectManager.MAIN_CONTENT, ProjectManager.getMainContent());
 		this.m_main_content.showSection(action);
 	}
 	public void load() throws Exception {

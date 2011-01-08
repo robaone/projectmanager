@@ -9,6 +9,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DecoratedTabBar;
@@ -41,14 +42,21 @@ public class SectionTabs extends Composite {
 	public void setWidth(String width){
 		vp.setWidth(width);
 	}
-	public int addTab(final Widget content, String string) {
+	public int addTab(Widget content,String string){
+		return this.addTab(content, string,null);
+	}
+	public int addTab(final Widget content, String string,String token) {
 		Label title = new Label(string);
+		final String tab_history_token = token;
 		title.addClickHandler(new ClickHandler(){
 
 			@Override
 			public void onClick(ClickEvent event) {
 				int index = SectionTabs.this.getTabIndex(content);
 				SectionTabs.this.selectTab(index);
+				if(tab_history_token != null){
+					History.newItem(tab_history_token, false);
+				}
 			}
 			
 		});
@@ -114,7 +122,7 @@ public class SectionTabs extends Composite {
 	public class Closable extends Composite {
 		private Widget m_tab_widget;
 		private Widget m_content_widget;
-		public Closable(final Widget w, Widget l, SectionTabs sectionTabs){
+		public Closable(final Widget w, Widget l, SectionTabs sectionTabs,final String token){
 			this.m_tab_widget = l;
 			this.m_content_widget = w;
 			Label x = new Label("x");
@@ -124,6 +132,9 @@ public class SectionTabs extends Composite {
 				public void onClick(ClickEvent event) {
 					int index = SectionTabs.this.getTabIndex(w);
 					SectionTabs.this.removeTab(index);
+					if(token != null){
+						History.newItem(token, false);
+					}
 				}
 				
 			});
@@ -139,22 +150,25 @@ public class SectionTabs extends Composite {
 			return this.m_content_widget;
 		}
 	}
-	public int addTab(final Widget w, String title, boolean b) {
+	public int addTab(final Widget w, String title, boolean b,final String token) {
 		if(b){
 			Label l = new Label(title);
-			Closable c = new Closable(w,l,this);
+			Closable c = new Closable(w,l,this,token);
 			l.addClickHandler(new ClickHandler(){
 
 				@Override
 				public void onClick(ClickEvent event) {
 					int index = SectionTabs.this.getTabIndex(w);
 					SectionTabs.this.selectTab(index);
+					if(token != null){
+						History.newItem(token, false);
+					}
 				}
 				
 			});
 			return this.addTab(w, c);
 		}else{
-			return this.addTab(w, title);
+			return this.addTab(w, title,token);
 		}
 	}
 	public Widget getTabWidget(int tabIndex) {
