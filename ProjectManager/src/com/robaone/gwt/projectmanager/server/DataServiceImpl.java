@@ -4,7 +4,11 @@ import com.robaone.gwt.projectmanager.client.DataService;
 import com.robaone.gwt.projectmanager.client.DataServiceResponse;
 import com.robaone.gwt.projectmanager.client.ProjectConstants;
 import com.robaone.gwt.projectmanager.client.UserData;
+import com.robaone.gwt.projectmanager.client.data.Category;
+import com.robaone.gwt.projectmanager.client.data.Contractor;
+import com.robaone.gwt.projectmanager.client.data.ContractorData;
 import com.robaone.gwt.projectmanager.client.data.PasswordResetResponse;
+import com.robaone.gwt.projectmanager.server.interfaces.ContractorManagerInterface;
 import com.robaone.gwt.projectmanager.server.interfaces.UserManagerInterface;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -38,6 +42,7 @@ public class DataServiceImpl extends RemoteServiceServlet implements
 		return sdata;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public DataServiceResponse handleLogoff() throws Exception {
 		UserManagerInterface man = ManagerFactory.getUserManager(this);
@@ -50,9 +55,9 @@ public class DataServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public DataServiceResponse<UserData> createAccount(String email,
-			String password, String zip) throws Exception {
+			String password, String zip, ProjectConstants.USER_TYPE type) throws Exception {
 		UserManagerInterface man = ManagerFactory.getUserManager(this);
-		return man.createAccount(email,password,zip);
+		return man.createAccount(email,password,zip,type);
 	}
 
 	@Override
@@ -60,6 +65,52 @@ public class DataServiceImpl extends RemoteServiceServlet implements
 			String value) throws Exception {
 		UserManagerInterface man = ManagerFactory.getUserManager(this);
 		return man.sendPasswordReset(value);
+	}
+
+	@Override
+	public DataServiceResponse<ContractorData> getContractorsbyCategory(String zipcode,int category)
+			throws Exception {
+		ContractorManagerInterface man = ManagerFactory.getContractorManager(this);
+		return man.getContractors(zipcode,category);
+	}
+
+	@Override
+	public DataServiceResponse<Category> getContractorCategories(
+			String zipcode) throws Exception {
+		ContractorManagerInterface man = ManagerFactory.getContractorManager(this);
+		return man.getContractorCategories(zipcode);
+	}
+
+	@Override
+	public String getCurrentZipCode() throws Exception {
+		SessionData data = this.getSessionData();
+		if(data == null){
+			data = this.createSessionData();
+		}
+		String zipcode = data.getCurrentZip();
+		return zipcode;
+	}
+
+	@Override
+	public boolean setZipcode(String value) throws Exception {
+		SessionData data = this.getSessionData();
+		if(data == null){
+			data = this.createSessionData();
+		}
+		data.setCurrentZip(value);
+		return true;
+	}
+
+	@Override
+	public Category getCategory(int cat) throws Exception {
+		ContractorManagerInterface man = ManagerFactory.getContractorManager(this);
+		return man.getCategory(cat);
+	}
+
+	@Override
+	public Contractor getContractor(int id) throws Exception {
+		ContractorManagerInterface man = ManagerFactory.getContractorManager(this);
+		return man.getContractor(id);
 	}
 
 }

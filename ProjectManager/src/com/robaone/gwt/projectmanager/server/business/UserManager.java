@@ -87,11 +87,14 @@ public class UserManager extends ProjectConstants implements UserManagerInterfac
 	}
 	@Override
 	public DataServiceResponse<UserData> createAccount(String email,
-			String password, String zip) throws Exception {
+			String password, String zip,ProjectConstants.USER_TYPE type) throws Exception {
 		DataServiceResponse<UserData> response = new DataServiceResponse<UserData>();
 		UserData data = new UserData();
 		data.setUsername(email);
+		data.setAccountType(type);
 		response.addData(data);
+		SessionData sdata = this.parent.createSessionData();
+		sdata.setUserData(data);
 		return response;
 	}
 	@Override
