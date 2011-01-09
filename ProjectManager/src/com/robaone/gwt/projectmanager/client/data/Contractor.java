@@ -8,6 +8,7 @@ public class Contractor implements IsSerializable {
 	private String summary;
 	private String info;
 	private String logo_url;
+	private Question[] questions;
 	public void setId(int id) {
 		this.id = id;
 	}
@@ -37,5 +38,11 @@ public class Contractor implements IsSerializable {
 	}
 	public String getLogo_url() {
 		return logo_url;
+	}
+	public Question[] getQuestions() {
+		return this.questions;
+	}
+	public void setQuestions(Question[] q){
+		this.questions = q;
 	}
 }

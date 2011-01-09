@@ -76,7 +76,7 @@ public class BasicHistoryChangeHandler implements ValueChangeHandler<String> {
 							}
 						}
 					}else if(token.startsWith("profile=")){
-						ProfileEditUI pe = new ProfileEditUI();
+						ProfileEditUI pe = new ProfileEditUI(result.getData(0));
 						ProjectManager.setSection(ProjectManager.MAIN_CONTENT, pe);
 					}
 				}else if(token.equals("register")){

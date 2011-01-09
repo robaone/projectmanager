@@ -9,10 +9,10 @@
 			vertical-align:top;
 		}
 		table {
-			border:solid 1px gray;
+			
 		}
 		div {
-			border:solid 1px gray;
+			
 		}
 	</ui:style>
 	<g:HTMLPanel>

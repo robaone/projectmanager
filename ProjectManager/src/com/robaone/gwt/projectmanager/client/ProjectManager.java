@@ -154,12 +154,16 @@ public class ProjectManager extends ProjectConstants implements EntryPoint {
 							DataServiceResponse<UserData> result) {
 						try{
 							if(result.getStatus() == 0){
+								ProjectManager.writeLog("User ,"+result.getData(0).getUsername()+", is created.");
 								UserData data = result.getData(0);
+								ProjectManager.writeLog("User type is "+data.getAccountType());
 								/*
 								 * if the person is a professional.  Take them to the profile edit
 								 * to finish their profile information.
 								 */
 								if(data.getAccountType().equals(ProjectConstants.USER_TYPE.HVACPROFESSIONAL)){
+									
+									ProjectManager.updateProfileSection(data);
 									History.newItem("profile=edit",true);
 								}else{
 									History.newItem("", false);
@@ -183,7 +187,23 @@ public class ProjectManager extends ProjectConstants implements EntryPoint {
 		LoginInterface login = new LoginInterface(null);
 		setSection(PROFILE_SECTION,login);
 	}
+	public static void writeLog(String message){
+		ProjectManager.dataService.writeLog(message, new AsyncCallback<Void>(){
 
+			@Override
+			public void onFailure(Throwable caught) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onSuccess(Void result) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		});
+	}
 	public static void showAllModules(UserData data) {
 
 		
@@ -205,25 +225,7 @@ public class ProjectManager extends ProjectConstants implements EntryPoint {
 
 			@Override
 			public void onSuccess(DataServiceResponse<UserData> result) {
-				ProfilePicture profile = new ProfilePicture();
-				profile.getUsername().setText(result.getData(0).getUsername());
-				profile.getPicture().setUrl(result.getData(0).getPictureUrl());
-				ProjectManager.setSection(PROFILE_SECTION, profile);
-				
-				profile.getEditlink().addClickHandler(new ClickHandler(){
-
-					@Override
-					public void onClick(ClickEvent event) {
-						String url = Document.get().getElementById("_appsettings").getAttribute("dashboard_url");
-						String is_dashboard = Document.get().getElementById("_appsettings").getAttribute("is_dashboard");
-						if("true".equals(is_dashboard)){
-							History.newItem("profile=edit", true);
-						}else{
-							Location.assign(url+"#profile=edit");
-						}
-					}
-					
-				});
+				try{updateProfileSection(result.getData(0));}catch(Exception e){}
 			}
 		});
 		if("true".equals(Document.get().getElementById("_appsettings").getAttribute("replace_search"))){
@@ -246,6 +248,32 @@ public class ProjectManager extends ProjectConstants implements EntryPoint {
 		tasks.setMainContent(main);
 	}
 
+	public static void updateProfileSection(
+			UserData data) {
+		ProjectManager.writeLog("Updating Profile Section");
+		ProfilePicture profile = new ProfilePicture();
+		profile.getUsername().setText(data.getUsername());
+		if(data.getPictureUrl() != null){
+			profile.getPicture().setUrl("/images/profiles/"+data.getPictureUrl());
+		}
+		ProjectManager.setSection(PROFILE_SECTION, profile);
+		
+		profile.getEditlink().addClickHandler(new ClickHandler(){
+
+			@Override
+			public void onClick(ClickEvent event) {
+				String url = Document.get().getElementById("_appsettings").getAttribute("dashboard_url");
+				String is_dashboard = Document.get().getElementById("_appsettings").getAttribute("is_dashboard");
+				if("true".equals(is_dashboard)){
+					History.newItem("profile=edit", true);
+				}else{
+					Location.assign(url+"#profile=edit");
+				}
+			}
+			
+		});
+	}
+
 	public static void showGeneralError(Throwable caught) {
 		GeneralError error = new GeneralError(caught);
 		RootPanel p = RootPanel.get(MAIN_CONTENT);
@@ -257,10 +285,13 @@ public class ProjectManager extends ProjectConstants implements EntryPoint {
 
 	public static void setSection(String section, Widget section_widget) {
 		try{
+			ProjectManager.writeLog("Setting section, "+section+" with Widget, "+section_widget.getClass().getName());
+			
 			RootPanel p = RootPanel.get(section);
 			if(p != null){
 				p.clear();
 				p.add(section_widget);
+				ProjectManager.writeLog(" - Section is added to page");
 			}
 		}catch(Exception e){}
 	}

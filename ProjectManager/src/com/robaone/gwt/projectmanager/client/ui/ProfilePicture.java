@@ -21,6 +21,7 @@ public class ProfilePicture extends Composite {
 		InlineHTML nlnhtml3 = new InlineHTML();
 		flwpnl1.setStyleName("profile_picture");
 		logoff.setStyleName("logoff_link");
+		picture.setSize("58px", "59px");
 		picture.getElement().setAttribute("alt","profie picture");
 		picture.getElement().setAttribute("src",GWT.getModuleBaseURL()+"profilepicture.png");
 		picture.getElement().setAttribute("style","width: 58px; height: 59px");

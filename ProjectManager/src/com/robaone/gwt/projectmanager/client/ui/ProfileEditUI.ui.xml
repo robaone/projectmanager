@@ -10,17 +10,16 @@
 			<tbody>
 				<tr>
 					<td>
-						<img src="profilepicture.png" />
+						<g:Image ui:field="profile_image" />
 					</td>
 					<td>
-						<div>Upload a profile picture</div>
-						<div>
-							<input type="text" />
-							<button>Browse</button>
-						</div>
-						<div>
-							<input type="button" value="Upload" />
-						</div>
+						<g:FormPanel ui:field="picture_upload">
+  							<g:VerticalPanel>
+    							<g:Label>Upload a profile picture</g:Label>
+								<g:FileUpload name="pic"></g:FileUpload>
+								<g:Button ui:field="upload">Upload</g:Button>
+  							</g:VerticalPanel>
+						</g:FormPanel>
 					</td>
 				</tr>
 			</tbody>
@@ -32,26 +31,25 @@
 				<tr>
 					<td>First Name</td>
 					<td>
-						<input type="text" style="width: 181px" />
+						<g:TextBox ui:field="first_name" width="181px" />
 					</td>
 				</tr>
 				<tr>
 					<td>Last Name</td>
 					<td>
-						<input type="text" style="width: 181px" />
+						<g:TextBox ui:field="last_name" width="181px" />
 					</td>
 				</tr>
 				<tr>
 					<td>Phone Number</td>
 					<td>
-						<input type="text" />
-						<input type="text" style="margin-left:7px; width: 46px;" />
+						<g:TextBox ui:field="phone_number"></g:TextBox>
 					</td>
 				</tr>
 				<tr>
 					<td>Zip Code</td>
 					<td>
-						<input type="text" style="width: 66px" />
+						<g:TextBox ui:field="zipcode" width="66px" />
 					</td>
 				</tr>
 			</tbody>
@@ -59,6 +57,6 @@
 		<g:HTMLPanel>
 			<g:FlowPanel ui:field="more_fields" />
 		</g:HTMLPanel>
-		<input type="button" value="Update" />
+		<g:Button ui:field="update">Update</g:Button>
 	</g:HTMLPanel>
 </ui:UiBinder> 

@@ -36,4 +36,10 @@ public interface DataService extends RemoteService {
 
 	Contractor getContractor(int id) throws Exception;
 
+	UserData createContractor(UserData mUser) throws Exception;
+
+	DataServiceResponse<UserData> updateProfile(UserData user) throws Exception;
+	
+	void writeLog(String message);
+
 }

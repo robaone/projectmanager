@@ -43,4 +43,11 @@ public interface DataServiceAsync {
 
 	void getContractor(int id, AsyncCallback<Contractor> asyncCallback);
 
+	void createContractor(UserData mUser, AsyncCallback<UserData> asyncCallback);
+
+	void updateProfile(UserData user,
+			AsyncCallback<DataServiceResponse<UserData>> asyncCallback);
+
+	void writeLog(String message, AsyncCallback<Void> callback);
+
 }
