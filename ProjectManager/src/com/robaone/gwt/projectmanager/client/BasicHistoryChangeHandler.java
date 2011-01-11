@@ -28,12 +28,12 @@ public class BasicHistoryChangeHandler implements ValueChangeHandler<String> {
 
 	@Override
 	public void onValueChange(ValueChangeEvent<String> event) {
-		System.out.println("New history value = "+event.getValue());
+		ProjectManager.writeLog("New history value = "+event.getValue());
 		this.handleChange(event.getValue());
 	}
 
 	public void handleChange(final String token) {
-		System.out.println("History token = "+token);
+		ProjectManager.writeLog("HandleChange('"+token+"')");
 		ProjectManager.dataService.getLoginStatus(new AsyncCallback<DataServiceResponse<UserData>>(){
 
 			@Override
@@ -46,6 +46,7 @@ public class BasicHistoryChangeHandler implements ValueChangeHandler<String> {
 			public void onSuccess(DataServiceResponse<UserData> result) {
 				if(result.getStatus() == ProjectConstants.OK){
 					if(ProjectManager.m_maincontent == null){
+						ProjectManager.writeLog("creating MainContent object");
 						ProjectManager.m_maincontent = new MainContent();
 					}
 					ProjectManager.m_maincontent.setVisible(true);
@@ -105,7 +106,8 @@ public class BasicHistoryChangeHandler implements ValueChangeHandler<String> {
 
 					});
 
-				}else if(token.startsWith("contractor=")){
+				}
+				if(token.startsWith("contractor=")){
 					showContractor(token.split("=")[1]);
 				}
 				
@@ -126,7 +128,7 @@ public class BasicHistoryChangeHandler implements ValueChangeHandler<String> {
 		}
 	}
 	protected void showContractor(String id) {
-		System.out.println("Showing contractor "+id);
+		ProjectManager.writeLog("Showing contractor "+id);
 		ContractorProfileUI contractor = new ContractorProfileUI(Integer.parseInt(id));
 		ProjectManager.setSection(ProjectManager.LISTING_SECTION, contractor);
 	}

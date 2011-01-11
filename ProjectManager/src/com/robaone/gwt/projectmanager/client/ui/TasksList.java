@@ -100,7 +100,7 @@ public class TasksList extends Composite {
 		this.projects.addClickHandler(new Action(TASK.PROJECT));
 	}
 	public void showTask(TASK action) {
-		System.out.println("Show task "+action);
+		ProjectManager.writeLog("Show task "+action);
 		ProjectManager.setSection(ProjectManager.MAIN_CONTENT, ProjectManager.getMainContent());
 		this.m_main_content.showSection(action);
 	}
