@@ -9,6 +9,7 @@ import com.robaone.gwt.projectmanager.client.data.Contractor;
 import com.robaone.gwt.projectmanager.client.data.ContractorData;
 import com.robaone.gwt.projectmanager.client.data.PasswordResetResponse;
 import com.robaone.gwt.projectmanager.server.interfaces.ContractorManagerInterface;
+import com.robaone.gwt.projectmanager.server.interfaces.ProjectLogManagerInterface;
 import com.robaone.gwt.projectmanager.server.interfaces.UserManagerInterface;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -22,7 +23,7 @@ public class DataServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public DataServiceResponse<UserData> getLoginStatus() throws Exception {
 		UserManagerInterface man = ManagerFactory.getUserManager(this);
-		return man.getUserData();
+		return man.getLoginStatus();
 	}
 
 	public SessionData getSessionData() {
@@ -111,6 +112,39 @@ public class DataServiceImpl extends RemoteServiceServlet implements
 	public Contractor getContractor(int id) throws Exception {
 		ContractorManagerInterface man = ManagerFactory.getContractorManager(this);
 		return man.getContractor(id);
+	}
+
+	@Override
+	public UserData createContractor(UserData mUser) throws Exception {
+		ContractorManagerInterface man = ManagerFactory.getContractorManager(this);
+		Contractor con = man.createContractor();
+		mUser.setContractorid(con);
+		return mUser;
+	}
+
+	@Override
+	public DataServiceResponse<UserData> updateProfile(UserData user)
+			throws Exception {
+		DataServiceResponse<UserData> retval = new DataServiceResponse<UserData>();
+		if(this.getLoginStatus().getStatus() == 0){
+			UserManagerInterface man = ManagerFactory.getUserManager(this);
+			try{
+				UserData data = man.updateProfile(user);
+				retval.addData(data);
+			}catch(Exception e){
+				retval.setStatus(ProjectConstants.GENERAL_ERROR);
+				retval.setError(e.getMessage());
+			}
+		}else{
+			retval.setStatus(ProjectConstants.NOT_LOGGED_IN);
+		}
+		return retval;
+	}
+
+	@Override
+	public void writeLog(String message) {
+		ProjectLogManagerInterface man = ManagerFactory.getProjectManager(this);
+		man.writeLog(message);
 	}
 
 }

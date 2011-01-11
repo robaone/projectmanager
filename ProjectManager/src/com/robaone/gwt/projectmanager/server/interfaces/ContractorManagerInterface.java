@@ -15,4 +15,6 @@ public interface ContractorManagerInterface {
 
 	Contractor getContractor(int id) throws Exception;
 
+	Contractor createContractor() throws Exception;
+
 }

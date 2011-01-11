@@ -6,6 +6,7 @@ import com.robaone.gwt.projectmanager.client.UserData;
 import com.robaone.gwt.projectmanager.client.data.PasswordResetResponse;
 import com.robaone.gwt.projectmanager.server.DataServiceImpl;
 import com.robaone.gwt.projectmanager.server.FieldVerifier;
+import com.robaone.gwt.projectmanager.server.ProjectDebug;
 import com.robaone.gwt.projectmanager.server.SessionData;
 import com.robaone.gwt.projectmanager.server.interfaces.UserManagerInterface;
 
@@ -30,9 +31,11 @@ public class UserManager extends ProjectConstants implements UserManagerInterfac
 			 */
 			retval.setStatus(NOT_LOGGED_IN);
 			retval.setError("No session data");
+			ProjectDebug.write(ProjectDebug.SOURCE.LOCAL, "User not logged in");
 		}else{
 			retval.setStatus(OK);
 			retval.addData(sdata.getUserData());
+			ProjectDebug.write(ProjectDebug.SOURCE.LOCAL, "User, "+sdata.getUserData().getUsername()+", is logged in");
 		}
 		return retval;
 	}
@@ -112,5 +115,18 @@ public class UserManager extends ProjectConstants implements UserManagerInterfac
 			retval.setError("You must enter a valid e-mail address.");
 		}
 		return retval;
+	}
+	@Override
+	public UserData updateProfile(UserData user) throws Exception {
+		if(user != null){
+			this.getParent().getSessionData().setUserData(user);
+			return user;
+		}else{
+			return null;
+		}
+	}
+	@Override
+	public DataServiceResponse<UserData> getLoginStatus() throws Exception {
+		return this.getUserData();
 	}
 }

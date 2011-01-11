@@ -18,4 +18,8 @@ public interface UserManagerInterface {
 
 	DataServiceResponse<PasswordResetResponse> sendPasswordReset(String value) throws Exception;
 
+	UserData updateProfile(UserData user) throws Exception;
+
+	DataServiceResponse<UserData> getLoginStatus() throws Exception;
+
 }
