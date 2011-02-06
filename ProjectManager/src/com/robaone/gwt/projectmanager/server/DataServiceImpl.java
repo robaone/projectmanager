@@ -1,5 +1,8 @@
 package com.robaone.gwt.projectmanager.server;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 import com.robaone.gwt.projectmanager.client.DataService;
 import com.robaone.gwt.projectmanager.client.DataServiceResponse;
 import com.robaone.gwt.projectmanager.client.ProjectConstants;
@@ -7,7 +10,9 @@ import com.robaone.gwt.projectmanager.client.UserData;
 import com.robaone.gwt.projectmanager.client.data.Category;
 import com.robaone.gwt.projectmanager.client.data.Contractor;
 import com.robaone.gwt.projectmanager.client.data.ContractorData;
+import com.robaone.gwt.projectmanager.client.data.ContractorListing;
 import com.robaone.gwt.projectmanager.client.data.PasswordResetResponse;
+import com.robaone.gwt.projectmanager.server.ProjectDebug.SOURCE;
 import com.robaone.gwt.projectmanager.server.interfaces.ContractorManagerInterface;
 import com.robaone.gwt.projectmanager.server.interfaces.ProjectLogManagerInterface;
 import com.robaone.gwt.projectmanager.server.interfaces.UserManagerInterface;
@@ -111,7 +116,15 @@ public class DataServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public Contractor getContractor(int id) throws Exception {
 		ContractorManagerInterface man = ManagerFactory.getContractorManager(this);
-		return man.getContractor(id);
+		try{
+			return man.getContractor(id);
+		}catch(Exception e){
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			e.printStackTrace(pw);
+			ProjectDebug.write(SOURCE.LOCAL, sw.toString());
+			return null;
+		}
 	}
 
 	@Override
@@ -145,6 +158,16 @@ public class DataServiceImpl extends RemoteServiceServlet implements
 	public void writeLog(String message) {
 		ProjectLogManagerInterface man = ManagerFactory.getProjectManager(this);
 		man.writeLog(message);
+	}
+
+	@Override
+	public ContractorListing getContractorListing(int id) throws Exception {
+		try{
+			ContractorManagerInterface man = ManagerFactory.getContractorManager(this);
+			return man.getContractorListing(id);
+		}catch(Exception e){
+			throw new Exception(e.getMessage());
+		}
 	}
 
 }

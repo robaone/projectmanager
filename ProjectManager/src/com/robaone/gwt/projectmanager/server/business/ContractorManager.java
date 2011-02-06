@@ -5,6 +5,7 @@ import com.robaone.gwt.projectmanager.client.data.AnswerType;
 import com.robaone.gwt.projectmanager.client.data.Category;
 import com.robaone.gwt.projectmanager.client.data.Contractor;
 import com.robaone.gwt.projectmanager.client.data.ContractorData;
+import com.robaone.gwt.projectmanager.client.data.ContractorListing;
 import com.robaone.gwt.projectmanager.client.data.Question;
 import com.robaone.gwt.projectmanager.client.data.Question.TYPE;
 import com.robaone.gwt.projectmanager.server.DataServiceImpl;
@@ -97,6 +98,13 @@ public class ContractorManager implements ContractorManagerInterface {
 		retval.setId(20);
 		retval.setQuestions(this.questions);
 		return retval;
+	}
+	@Override
+	public ContractorListing getContractorListing(int id) throws Exception {
+		ContractorListing listing = new ContractorListing();
+		listing.setTitle("Listing Title");
+		listing.setContent("Content");
+		return listing;
 	}
 
 }

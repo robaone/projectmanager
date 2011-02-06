@@ -4,6 +4,7 @@ import com.robaone.gwt.projectmanager.client.DataServiceResponse;
 import com.robaone.gwt.projectmanager.client.ProjectConstants;
 import com.robaone.gwt.projectmanager.client.UserData;
 import com.robaone.gwt.projectmanager.client.data.PasswordResetResponse;
+import com.robaone.gwt.projectmanager.client.ui.RegistrationUI;
 import com.robaone.gwt.projectmanager.server.DataServiceImpl;
 import com.robaone.gwt.projectmanager.server.FieldVerifier;
 import com.robaone.gwt.projectmanager.server.ProjectDebug;
@@ -92,6 +93,15 @@ public class UserManager extends ProjectConstants implements UserManagerInterfac
 	public DataServiceResponse<UserData> createAccount(String email,
 			String password, String zip,ProjectConstants.USER_TYPE type) throws Exception {
 		DataServiceResponse<UserData> response = new DataServiceResponse<UserData>();
+		if(this.validateEmail(email) == false){
+			response.addFieldError(RegistrationUI.FIELDS.EMAIL.toString(), "E-mail address is not valid");
+			response.setStatus(ProjectConstants.FIELD_VERIFICATION_ERROR);
+		}
+		try{
+			this.validatePassword(password);
+		}catch(Exception e){
+			response.addFieldError(RegistrationUI.FIELDS.PASSWORD.toString(),e.getMessage());
+		}
 		UserData data = new UserData();
 		data.setUsername(email);
 		data.setAccountType(type);
@@ -99,6 +109,14 @@ public class UserManager extends ProjectConstants implements UserManagerInterfac
 		SessionData sdata = this.parent.createSessionData();
 		sdata.setUserData(data);
 		return response;
+	}
+	private void validatePassword(String password) throws Exception {
+		if(password.trim().length() < 8){
+			throw new Exception("Password must be at least 8 characters in length");
+		}
+	}
+	private boolean validateEmail(String email) {
+		return FieldVerifier.isEmailValid(email);
 	}
 	@Override
 	public DataServiceResponse<PasswordResetResponse> sendPasswordReset(

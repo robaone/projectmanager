@@ -4,6 +4,7 @@ import com.robaone.gwt.projectmanager.client.DataServiceResponse;
 import com.robaone.gwt.projectmanager.client.data.Category;
 import com.robaone.gwt.projectmanager.client.data.Contractor;
 import com.robaone.gwt.projectmanager.client.data.ContractorData;
+import com.robaone.gwt.projectmanager.client.data.ContractorListing;
 
 public interface ContractorManagerInterface {
 
@@ -16,5 +17,7 @@ public interface ContractorManagerInterface {
 	Contractor getContractor(int id) throws Exception;
 
 	Contractor createContractor() throws Exception;
+
+	ContractorListing getContractorListing(int id) throws Exception;
 
 }
