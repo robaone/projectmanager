@@ -1,5 +1,8 @@
 package com.robaone.gwt.projectmanager.client;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 import com.robaone.gwt.projectmanager.client.ui.ArticleFeedUI;
 import com.robaone.gwt.projectmanager.client.ui.ContractorListingUI;
 import com.robaone.gwt.projectmanager.client.ui.FeaturedUI;
@@ -115,11 +118,12 @@ public class ProjectManager extends ProjectConstants implements EntryPoint {
 		}
 		/**
 		 * Add listing app
-		 */
+		 *
 		if(RootPanel.get(ProjectManager.LISTING_SECTION) != null){
 			ContractorListingUI listing = new ContractorListingUI();
 			ProjectManager.setSection(LISTING_SECTION, listing);
 		}
+		*/
 	}
 
 	protected void showRegister() {
@@ -168,6 +172,11 @@ public class ProjectManager extends ProjectConstants implements EntryPoint {
 								}else{
 									History.newItem("", false);
 									ProjectManager.showAllModules(data);
+								}
+							}else if(result.getStatus() == ProjectManager.FIELD_VERIFICATION_ERROR){
+								String[] names = result.getFieldErrorNames();
+								for(int i = 0; i < names.length;i++){
+									ri.showError(names[i],result.getFieldError(names[i]));
 								}
 							}else{
 								onFailure(new Throwable(result.getError()));
@@ -333,5 +342,19 @@ public class ProjectManager extends ProjectConstants implements EntryPoint {
 			ProjectManager.m_maincontent = new MainContent();
 		}
 		return ProjectManager.m_maincontent;
+	}
+
+	public static void writeLog(Throwable caught) {
+		ProjectManager.writeLog(caught.getMessage());
+		for(int i = 0; i < caught.getStackTrace().length;i++){
+			ProjectManager.writeLog(caught.getStackTrace()[i].getClassName()+": "+caught.getStackTrace()[i].getMethodName()+": "+caught.getStackTrace()[i].getLineNumber());
+		}
+	}
+	
+	public static void writeLog(Exception caught) {
+		ProjectManager.writeLog(caught.getMessage());
+		for(int i = 0; i < caught.getStackTrace().length;i++){
+			ProjectManager.writeLog(caught.getStackTrace()[i].getClassName()+": "+caught.getStackTrace()[i].getMethodName()+": "+caught.getStackTrace()[i].getLineNumber());
+		}
 	}
 }

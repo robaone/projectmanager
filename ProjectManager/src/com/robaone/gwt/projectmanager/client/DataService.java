@@ -5,6 +5,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import com.robaone.gwt.projectmanager.client.data.Category;
 import com.robaone.gwt.projectmanager.client.data.Contractor;
 import com.robaone.gwt.projectmanager.client.data.ContractorData;
+import com.robaone.gwt.projectmanager.client.data.ContractorListing;
 import com.robaone.gwt.projectmanager.client.data.PasswordResetResponse;
 
 /**
@@ -41,5 +42,7 @@ public interface DataService extends RemoteService {
 	DataServiceResponse<UserData> updateProfile(UserData user) throws Exception;
 	
 	void writeLog(String message);
+
+	ContractorListing getContractorListing(int id) throws Exception;
 
 }

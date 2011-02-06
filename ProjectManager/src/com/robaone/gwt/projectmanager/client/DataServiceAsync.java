@@ -5,6 +5,7 @@ import com.robaone.gwt.projectmanager.client.ProjectConstants.USER_TYPE;
 import com.robaone.gwt.projectmanager.client.data.Category;
 import com.robaone.gwt.projectmanager.client.data.Contractor;
 import com.robaone.gwt.projectmanager.client.data.ContractorData;
+import com.robaone.gwt.projectmanager.client.data.ContractorListing;
 import com.robaone.gwt.projectmanager.client.data.PasswordResetResponse;
 
 /**
@@ -49,5 +50,8 @@ public interface DataServiceAsync {
 			AsyncCallback<DataServiceResponse<UserData>> asyncCallback);
 
 	void writeLog(String message, AsyncCallback<Void> callback);
+
+	void getContractorListing(int id,
+			AsyncCallback<ContractorListing> asyncCallback);
 
 }

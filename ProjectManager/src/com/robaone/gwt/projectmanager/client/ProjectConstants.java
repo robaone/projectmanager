@@ -6,6 +6,6 @@ abstract public class ProjectConstants {
 	public static final int FIELD_VERIFICATION_ERROR = 2;
 	public static final int GENERAL_ERROR = 3;
 	public static final String SESSIONDATA = "sessiondata";
-	public static enum USER_TYPE {HVACPROFESSIONAL,CUSTOMER};
+	public static enum USER_TYPE {HVACPROFESSIONAL,CUSTOMER,SUPERUSER,ADMINISTRATOR,CSR};
 	
 }

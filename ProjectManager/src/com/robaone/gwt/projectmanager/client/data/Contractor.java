@@ -3,16 +3,16 @@ package com.robaone.gwt.projectmanager.client.data;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class Contractor implements IsSerializable {
-	private int id;
+	private Integer id;
 	private String name;
 	private String summary;
 	private String info;
 	private String logo_url;
 	private Question[] questions;
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
 	public void setName(String name) {
@@ -39,10 +39,10 @@ public class Contractor implements IsSerializable {
 	public String getLogo_url() {
 		return logo_url;
 	}
-	public Question[] getQuestions() {
-		return this.questions;
+	public void setQuestions(Question[] questions) {
+		this.questions = questions;
 	}
-	public void setQuestions(Question[] q){
-		this.questions = q;
+	public Question[] getQuestions() {
+		return questions;
 	}
 }

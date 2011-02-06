@@ -13,8 +13,14 @@
 		}
 		.button {
 		}
+		.font {
+			font-family:Trebuchet MS;
+		}
+		.error {
+			border: solid 5px red; width:480px; background-color:Maroon; color:White; font-family:Trebuchet MS; font-weight:bold; padding:3pt;
+		}
 	</ui:style>
-	<g:HTMLPanel>
+	<g:HTMLPanel styleName="{style.font}">
 		<h1>
 			Create an account</h1>
 		<div>
@@ -22,6 +28,7 @@
 				If you already have an account, please sign in.
 			</span>
 		</div>
+		<g:Label styleName="{style.error}" ui:field="error">This is an error message</g:Label>
 		<div>
 			New Account information</div>
 		<table styleName="{style.vtop}" >

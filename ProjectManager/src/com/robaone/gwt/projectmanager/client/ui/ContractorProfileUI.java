@@ -1,5 +1,9 @@
 package com.robaone.gwt.projectmanager.client.ui;
 
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -17,6 +21,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.robaone.gwt.projectmanager.client.ProjectManager;
 import com.robaone.gwt.projectmanager.client.data.Contractor;
+import com.robaone.gwt.projectmanager.client.data.ContractorListing;
 
 public class ContractorProfileUI extends Composite {
 
@@ -27,30 +32,12 @@ public class ContractorProfileUI extends Composite {
 			UiBinder<Widget, ContractorProfileUI> {
 	}
 
-	public ContractorProfileUI(int id) {
+	public ContractorProfileUI() {
+		ProjectManager.writeLog("Creating ContractorProfileUI()");
 		initWidget(uiBinder.createAndBindUi(this));
+		/*
 		
-		ProjectManager.dataService.getContractor(id, new AsyncCallback<Contractor>(){
-
-			@Override
-			public void onFailure(Throwable caught) {
-				caught.printStackTrace();
-				
-			}
-
-			@Override
-			public void onSuccess(Contractor result) {
-				logo.setUrl(result.getLogo_url());
-				FlowPanel p = new FlowPanel();
-				Label l = new Label(result.getName());
-				HTML h = new HTML(result.getSummary());
-				p.add(l);
-				p.add(h);
-				header.setHTML(p.toString());
-				info.setHTML(result.getInfo());
-			}
-			
-		});
+		*/
 	}
 
 	@UiField Image logo;
@@ -58,5 +45,28 @@ public class ContractorProfileUI extends Composite {
 	@UiField HTML info;
 	@UiField FlowPanel comment_flow;
 
+	public void load(int id){
+		ProjectManager.writeLog("calling ContractorProfileUI.load("+id+")");
+		ProjectManager.dataService.getContractorListing(id, new AsyncCallback<ContractorListing>(){
+
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+				ProjectManager.writeLog(caught);
+			}
+
+			@Override
+			public void onSuccess(ContractorListing result) {
+				ProjectManager.writeLog("Building contractor page");
+				
+				FlowPanel p = new FlowPanel();
+				Label l = new Label(result.getTitle());
+				p.add(l);
+				header.setHTML(p.toString());
+				info.setHTML(result.getContent());
+			}
+			
+		});
+	}
 
 }

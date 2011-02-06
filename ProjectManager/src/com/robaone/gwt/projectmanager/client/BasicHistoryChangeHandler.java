@@ -8,6 +8,7 @@ import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.robaone.gwt.projectmanager.client.data.Category;
 import com.robaone.gwt.projectmanager.client.data.ContractorData;
@@ -54,6 +55,7 @@ public class BasicHistoryChangeHandler implements ValueChangeHandler<String> {
 						try{
 							ProjectManager.m_maincontent.getDecoratedTabPanel().selectTab(0);
 						}catch(Exception e){}
+						
 					}else if(token.startsWith("task=")){
 						ProjectManager.setSection(ProjectManager.MAIN_CONTENT, ProjectManager.getMainContent());
 						Widget w = ProjectManager.getSection(ProjectManager.TASKS_SECTION);
@@ -111,13 +113,16 @@ public class BasicHistoryChangeHandler implements ValueChangeHandler<String> {
 					showContractor(token.split("=")[1]);
 				}
 				
+				if(token.equals("") && RootPanel.get(ProjectManager.LISTING_SECTION) != null){
+					showListingCategories();
+				}
 
 			}
 
 		});
 
 	}
-	protected void showListingCategories(){
+	private void showListingCategories(){
 		Widget w = ProjectManager.getSection(ProjectManager.LISTING_SECTION);
 		ContractorListingUI listing;
 		if(w instanceof ContractorListingUI){
@@ -129,8 +134,9 @@ public class BasicHistoryChangeHandler implements ValueChangeHandler<String> {
 	}
 	protected void showContractor(String id) {
 		ProjectManager.writeLog("Showing contractor "+id);
-		ContractorProfileUI contractor = new ContractorProfileUI(Integer.parseInt(id));
+		ContractorProfileUI contractor = new ContractorProfileUI();
 		ProjectManager.setSection(ProjectManager.LISTING_SECTION, contractor);
+		try{contractor.load(Integer.parseInt(id));}catch(Exception e){ProjectManager.writeLog("Error: "+e.getMessage());}
 	}
 
 	protected void showContractorsinCategory(String token,String zipcode) {
@@ -156,6 +162,7 @@ public class BasicHistoryChangeHandler implements ValueChangeHandler<String> {
 							ProjectManager.setSection(ProjectManager.LISTING_SECTION,listing);
 						}else{
 							listing = (ContractorListingUI)w;
+							
 						}
 						listing.getList().clear();
 						if(result.getDataCount() > 0){
