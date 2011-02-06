@@ -183,3 +183,7 @@ td.tab_r_selected
  background-repeat:repeat-y;
  background-position:right;
 }
+
+.logoff_link{
+	display:block;
+}
