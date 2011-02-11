@@ -1,7 +1,13 @@
 package com.robaone.gwt.projectmanager.server;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.sql.SQLException;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import com.robaone.gwt.projectmanager.client.DataService;
 import com.robaone.gwt.projectmanager.client.DataServiceResponse;
@@ -13,6 +19,7 @@ import com.robaone.gwt.projectmanager.client.data.ContractorData;
 import com.robaone.gwt.projectmanager.client.data.ContractorListing;
 import com.robaone.gwt.projectmanager.client.data.PasswordResetResponse;
 import com.robaone.gwt.projectmanager.server.ProjectDebug.SOURCE;
+import com.robaone.gwt.projectmanager.server.business.TestDatabase;
 import com.robaone.gwt.projectmanager.server.interfaces.ContractorManagerInterface;
 import com.robaone.gwt.projectmanager.server.interfaces.ProjectLogManagerInterface;
 import com.robaone.gwt.projectmanager.server.interfaces.UserManagerInterface;
@@ -24,7 +31,18 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 @SuppressWarnings("serial")
 public class DataServiceImpl extends RemoteServiceServlet implements
 		DataService {
+	private static TestDatabase testdb;
+	protected void service(HttpServletRequest request, HttpServletResponse response) throws IOException , ServletException{
+		super.service(request, response);
+		if(testdb == null){
+			try {
+				testdb = new TestDatabase();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 
+	}
 	@Override
 	public DataServiceResponse<UserData> getLoginStatus() throws Exception {
 		UserManagerInterface man = ManagerFactory.getUserManager(this);
@@ -48,7 +66,7 @@ public class DataServiceImpl extends RemoteServiceServlet implements
 		return sdata;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	@Override
 	public DataServiceResponse handleLogoff() throws Exception {
 		UserManagerInterface man = ManagerFactory.getUserManager(this);
