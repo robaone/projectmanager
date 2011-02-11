@@ -1,10 +1,13 @@
 package com.robaone.gwt.projectmanager.server;
 
+
 import com.robaone.gwt.projectmanager.client.UserData;
 
 public class SessionData {
 	private UserData user_data;
 	private String zipcode = null;
+	public SessionData(){
+	}
 	public UserData getUserData() {
 		return this.user_data;
 	}
