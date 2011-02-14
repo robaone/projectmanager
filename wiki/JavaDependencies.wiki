@@ -5,4 +5,4 @@ Java depencencies
 
   * HSQLDB http://hsqldb.org/
   * lightweightjdo http://code.google.com/p/lightweightjdo
-  * rolib.jar
+  * rolib.jar http://code.google.com/p/projectmanager/downloads/detail?name=rolib-1.2.jar
