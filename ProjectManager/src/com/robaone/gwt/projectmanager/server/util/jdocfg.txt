@@ -1,7 +1,7 @@
 driver=org.hsqldb.jdbc.JDBCDriver
 url=jdbc:hsqldb:mem:mymemdb
 username=SA
-password=
+password= 
 
 tables=config
 
