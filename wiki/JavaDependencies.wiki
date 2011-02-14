@@ -1,0 +1,8 @@
+#labels Featured
+Java depencencies
+
+*These are the dependencies of the project.*
+
+  * HSQLDB http://hsqldb.org/
+  * lightweightjdo http://code.google.com/p/lightweightjdo
+  * rolib.jar
