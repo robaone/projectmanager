@@ -48,7 +48,9 @@ public class DataServiceImpl extends RemoteServiceServlet implements
 		UserManagerInterface man = ManagerFactory.getUserManager(this);
 		return man.getLoginStatus();
 	}
-
+	public static TestDatabase getDatabase(){
+		return testdb;
+	}
 	public SessionData getSessionData() {
 		return (SessionData)this.getThreadLocalRequest().getSession().getAttribute(ProjectConstants.SESSIONDATA);
 	}
