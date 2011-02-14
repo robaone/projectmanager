@@ -28,6 +28,8 @@ public class TestDatabase {
 		" name varchar(128) not null,\n"+
 		" parent numeric(18,0),\n"+
 		" type varchar(32) not null,\n"+
+		" title varchar(128) not null,\n"+
+		" description clob,\n"+
 		" value clob\n"+
 		");";
 		java.util.Vector<Object> parameters = new java.util.Vector<Object>();
@@ -38,7 +40,7 @@ public class TestDatabase {
 		java.sql.ResultSet rs = null;
 		int updated = 0;
 		try{
-			ps = this.getConnection().prepareStatement(str);
+			ps = this.m_con.prepareStatement(str);
 			for(int i = 0 ; i < parameters.size();i++){
 				ps.setObject(i+1, parameters.get(i));
 			}
@@ -53,7 +55,7 @@ public class TestDatabase {
 		}
 		return updated;
 	}
-	public java.sql.Connection getConnection(){
-		return this.m_con;
+	public java.sql.Connection getConnection() throws SQLException{
+		return DriverManager.getConnection("jdbc:hsqldb:mem:mymemdb", "SA", "");
 	}
 }
