@@ -136,10 +136,36 @@ public class ConfigManager {
 		}
 	}
 	public ConfigManager(String path) throws Exception {
-		
+		ConfigManager cfg = new ConfigManager();
+		try{
+			cfg.m_cfg = cfg.findValue(path, false);
+		}catch(Exception e){
+			throw new Exception("Config Value not found");
+		}
 	}
-	public ConfigManager(int id) throws Exception {
-		
+	public ConfigManager(BigDecimal id) throws Exception {
+		java.sql.Connection con = null;
+		java.sql.PreparedStatement ps = null;
+		java.sql.ResultSet rs = null;
+		try{
+			con = DataServiceImpl.getDatabase().getConnection();
+			Config_jdoManager man = new Config_jdoManager(con);
+			Config_jdo record = man.getConfig(id);
+			if(record == null){
+				throw new Exception("Config Value not found");
+			}
+			this.m_cfg = record;
+		}catch(Exception e){
+			e.printStackTrace();
+			throw e;
+		}finally{
+			try{rs.close();}catch(Exception e){}
+			try{ps.close();}catch(Exception e){}
+			try{con.close();}catch(Exception e){}
+		}
+	}
+	private ConfigManager(){
+
 	}
 	public String getString(){
 		return this.m_cfg.getValue();
@@ -155,5 +181,27 @@ public class ConfigManager {
 	}
 	public BigDecimal getFolderID(){
 		return this.m_cfg.getParent();
+	}
+	public static ConfigManager findConfig(String path, String variable) {
+		ConfigManager cfg = new ConfigManager();
+		Config_jdo val = null;
+		try{
+			val = cfg.findValue(path + "/" + variable, false);
+			cfg.m_cfg = val;
+			return cfg;
+		}catch(Exception e){
+
+		}
+		return null;
+	}
+	public static ConfigManager findConfig(String path) {
+		ConfigManager cfg = new ConfigManager();
+		try{
+			cfg.m_cfg = cfg.findValue(path, false);
+			return cfg;
+		}catch(Exception e){
+			
+		}
+		return null;
 	}
 }

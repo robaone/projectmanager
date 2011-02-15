@@ -5,6 +5,7 @@ import com.robaone.gwt.projectmanager.client.ProjectConstants;
 import com.robaone.gwt.projectmanager.client.UserData;
 import com.robaone.gwt.projectmanager.client.data.PasswordResetResponse;
 import com.robaone.gwt.projectmanager.client.ui.RegistrationUI;
+import com.robaone.gwt.projectmanager.server.ConfigManager;
 import com.robaone.gwt.projectmanager.server.DataServiceImpl;
 import com.robaone.gwt.projectmanager.server.FieldVerifier;
 import com.robaone.gwt.projectmanager.server.ProjectDebug;
@@ -42,7 +43,6 @@ public class UserManager extends ProjectConstants implements UserManagerInterfac
 	}
 	@Override
 	public DataServiceResponse<UserData> login(String username, String password) {
-		String[][] users = {{"robaone","dodobird"}};
 		DataServiceResponse<UserData> retval = new DataServiceResponse<UserData>();
 		if(username == null || username.trim().length() == 0){
 			retval.setStatus(FIELD_VERIFICATION_ERROR);
@@ -57,25 +57,27 @@ public class UserManager extends ProjectConstants implements UserManagerInterfac
 			password = password.trim();
 		}
 		if(retval.getStatus() == OK){
-			for(int i = 0; i < users.length;i++){
-				if(users[i][0].equalsIgnoreCase(username)){
-					if(users[i][1].equals(password)){
-						UserData data = new UserData();
-						data.setUsername(username);
-						SessionData sdata = this.parent.createSessionData();
-						sdata.setUserData(data);
-						retval.addData(data);
-						return retval;
-					}else{
-						retval.setStatus(NOT_LOGGED_IN);
-						retval.setError("Incorrect password");
-						return retval;
-					}
-				}
+			String path = "administration/users/"+username+"/password";
+			ConfigManager user_password = ConfigManager.findConfig(path);
+			if(user_password == null){
+				retval.setStatus(NOT_LOGGED_IN);
+				retval.setError("Username '"+username+"' not found");
 			}
-			retval.setStatus(NOT_LOGGED_IN);
-			retval.setError("Username '"+username+"' not found");
+			if(user_password.getString().equals(password)){
+				UserData data = new UserData();
+				data.setUsername(username);
+				SessionData sdata = this.parent.createSessionData();
+				sdata.setUserData(data);
+				retval.addData(data);
+				return retval;
+			}else{
+				retval.setStatus(NOT_LOGGED_IN);
+				retval.setError("Incorrect password");
+				return retval;
+			}
 		}
+
+
 		return retval;
 	}
 	@Override
