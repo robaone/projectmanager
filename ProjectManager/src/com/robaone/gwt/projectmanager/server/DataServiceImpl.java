@@ -19,7 +19,7 @@ import com.robaone.gwt.projectmanager.client.data.ContractorData;
 import com.robaone.gwt.projectmanager.client.data.ContractorListing;
 import com.robaone.gwt.projectmanager.client.data.PasswordResetResponse;
 import com.robaone.gwt.projectmanager.server.ProjectDebug.SOURCE;
-import com.robaone.gwt.projectmanager.server.business.TestDatabase;
+import com.robaone.gwt.projectmanager.server.business.ProjectDatabase;
 import com.robaone.gwt.projectmanager.server.interfaces.ContractorManagerInterface;
 import com.robaone.gwt.projectmanager.server.interfaces.ProjectLogManagerInterface;
 import com.robaone.gwt.projectmanager.server.interfaces.UserManagerInterface;
@@ -31,12 +31,12 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 @SuppressWarnings("serial")
 public class DataServiceImpl extends RemoteServiceServlet implements
 		DataService {
-	private static TestDatabase testdb;
+	private static ProjectDatabase testdb;
 	protected void service(HttpServletRequest request, HttpServletResponse response) throws IOException , ServletException{
 		super.service(request, response);
 		if(testdb == null){
 			try {
-				testdb = new TestDatabase();
+				testdb = new ProjectDatabase();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -48,7 +48,7 @@ public class DataServiceImpl extends RemoteServiceServlet implements
 		UserManagerInterface man = ManagerFactory.getUserManager(this);
 		return man.getLoginStatus();
 	}
-	public static TestDatabase getDatabase(){
+	public static ProjectDatabase getDatabase(){
 		return testdb;
 	}
 	public SessionData getSessionData() {

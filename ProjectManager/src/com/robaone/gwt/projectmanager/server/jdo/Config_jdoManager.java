@@ -1,5 +1,5 @@
 /*
-* Created on Feb 11, 2011
+* Created on Feb 14, 2011
 *
 */
 package com.robaone.gwt.projectmanager.server.jdo;
@@ -21,7 +21,7 @@ public class Config_jdoManager {
   private final static String DELETE = "delete from #TABLE# where #TABLE#.ID = ?";
   private final static String IDENTITY = "ID";
   private final static String NEXT_SQL = "Select max(id) +1 from #TABLE#";
-  public final static String FIELDS = "#TABLE#.ID,#TABLE#.NAME,#TABLE#.PARENT,#TABLE#.TYPE,#TABLE#.VALUE";
+  public final static String FIELDS = "#TABLE#.ID,#TABLE#.NAME,#TABLE#.PARENT,#TABLE#.TYPE,#TABLE#.TITLE,#TABLE#.DESCRIPTION,#TABLE#.VALUE";
   private String TABLE = "CONFIG";
   public Config_jdoManager(Connection con){
     this.m_con = con;

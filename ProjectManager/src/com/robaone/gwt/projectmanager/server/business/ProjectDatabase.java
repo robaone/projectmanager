@@ -4,9 +4,9 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Vector;
 
-public class TestDatabase {
+public class ProjectDatabase {
 	private java.sql.Connection m_con;
-	public TestDatabase() throws SQLException{
+	public ProjectDatabase() throws SQLException{
 		try {
 		      Class.forName("org.hsqldb.jdbc.JDBCDriver" );
 		  } catch (Exception e) {

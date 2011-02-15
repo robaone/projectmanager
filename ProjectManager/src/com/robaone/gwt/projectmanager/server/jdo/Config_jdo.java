@@ -1,5 +1,5 @@
 /*
-* Created on Feb 11, 2011
+* Created on Feb 14, 2011
 *
 */
 package com.robaone.gwt.projectmanager.server.jdo;
@@ -14,6 +14,8 @@ public class Config_jdo extends RO_JDO{
   public final static String NAME = "NAME";
   public final static String PARENT = "PARENT";
   public final static String TYPE = "TYPE";
+  public final static String TITLE = "TITLE";
+  public final static String DESCRIPTION = "DESCRIPTION";
   public final static String VALUE = "VALUE";
   protected Config_jdo(){
     
@@ -56,6 +58,28 @@ public class Config_jdo extends RO_JDO{
   }
   public String getType(){
     Object[] val = this.getField(TYPE);
+    if(val != null && val[0] != null){
+      return (String)val[0];
+    }else{
+      return null;
+    }
+  }
+  public void setTitle(String title){
+    this.setField(TITLE,title);
+  }
+  public String getTitle(){
+    Object[] val = this.getField(TITLE);
+    if(val != null && val[0] != null){
+      return (String)val[0];
+    }else{
+      return null;
+    }
+  }
+  public void setDescription(String description){
+    this.setField(DESCRIPTION,description);
+  }
+  public String getDescription(){
+    Object[] val = this.getField(DESCRIPTION);
     if(val != null && val[0] != null){
       return (String)val[0];
     }else{
