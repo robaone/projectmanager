@@ -1,19 +1,21 @@
 package com.robaone.gwt.projectmanager.server;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 
-import com.robaone.gwt.projectmanager.server.ConfigManager.TYPE;
 import com.robaone.gwt.projectmanager.server.business.ProjectDatabase;
 import com.robaone.gwt.projectmanager.server.jdo.Config_jdo;
 import com.robaone.gwt.projectmanager.server.jdo.Config_jdoManager;
 
 public class ConfigManager {
-	public static enum TYPE {STRING,INT,DOUBLE,BOOLEAN,FOLDER}
+	public static enum TYPE {STRING,INT,DOUBLE,BOOLEAN,FOLDER, DATETIME, TEXT, BINARY}
 	private String m_default_value;
 	private String m_title;
 	private TYPE m_type;
 	private String m_description;
 	private Config_jdo m_cfg;
+	private byte[] m_bin_value;
+	private Timestamp m_date_value;
 	public ConfigManager(String path,String default_value,TYPE type,String title,String description){
 		try {
 			this.createConfigValue(path,default_value,type,title,description);
@@ -24,8 +26,6 @@ public class ConfigManager {
 	private void createConfigValue(String path, String default_value,
 			TYPE type, String title, String description) throws Exception {
 		java.sql.Connection con = null;
-		java.sql.PreparedStatement ps = null;
-		java.sql.ResultSet rs = null;
 		this.m_default_value = default_value;
 		this.m_title = title;
 		this.m_type = type;
@@ -39,7 +39,6 @@ public class ConfigManager {
 		try{
 			ProjectDatabase db = DataServiceImpl.getDatabase();
 			con = db.getConnection();
-			Config_jdoManager man = new Config_jdoManager(con);
 			Config_jdo record = this.findValue(path,true);
 			this.m_cfg = record;
 			if(record == null){
@@ -48,8 +47,6 @@ public class ConfigManager {
 		}catch(Exception e){
 			throw e;
 		}finally{
-			try{rs.close();}catch(Exception e){}
-			try{ps.close();}catch(Exception e){}
 			try{con.close();}catch(Exception e){}
 		}
 	}
@@ -85,8 +82,8 @@ public class ConfigManager {
 						record = man.newConfig();
 						record.setName(tokens[i]);
 						record.setParent(parent == null ? null : parent.getId());
-						record.setType(m_type.toString());
-						record.setValue(m_default_value);
+						record.setType(this.getDBType(m_type));
+						this.setDBValue(record);
 						record.setTitle(m_title);
 						record.setDescription(m_description);
 						man.save(record);
@@ -98,6 +95,45 @@ public class ConfigManager {
 					throw e;
 				}
 			}
+		}
+		return null;
+	}
+	private void setDBValue(Config_jdo record) throws Exception {
+		if(this.m_type.equals(TYPE.BINARY)){
+			record.setBinary_value(this.m_bin_value);
+		}else if(this.m_type.equals(TYPE.BOOLEAN)){
+			record.setBool_value(new Integer(this.m_default_value));
+		}else if(this.m_type.equals(TYPE.DATETIME)){
+			record.setDate_value(this.m_date_value);
+		}else if(this.m_type.equals(TYPE.DOUBLE)){
+			record.setNumber_value(new BigDecimal(this.m_default_value));
+		}else if(this.m_type.equals(TYPE.INT)){
+			record.setNumber_value(new BigDecimal(this.m_default_value));
+		}else if(this.m_type.equals(TYPE.STRING)){
+			record.setString_value(this.m_default_value);
+		}else if(this.m_type.equals(TYPE.TEXT)){
+			record.setText_value(this.m_default_value);
+		}else{
+			throw new Exception("Invalid type");
+		}
+	}
+	private Integer getDBType(TYPE mType) {
+		if(mType.equals(TYPE.BOOLEAN)){
+			return 1;
+		}else if(mType.equals(TYPE.DOUBLE)){
+			return 2;
+		}else if(mType.equals(TYPE.FOLDER)){
+			return 0;
+		}else if(mType.equals(TYPE.INT)){
+			return 3;
+		}else if(mType.equals(TYPE.STRING)){
+			return 4;
+		}else if(mType.equals(TYPE.DATETIME)){
+			return 5;
+		}else if(mType.equals(TYPE.TEXT)){
+			return 6;
+		}else if(mType.equals(TYPE.BINARY)){
+			return 7;
 		}
 		return null;
 	}
@@ -124,7 +160,7 @@ public class ConfigManager {
 			}else if(create){
 				Config_jdo record = man.newConfig();
 				record.setParent(object.getId());
-				record.setType(TYPE.FOLDER.toString());
+				record.setType(this.getDBType(TYPE.FOLDER));
 				record.setName(folder);
 				man.save(record);
 				return record;
@@ -150,8 +186,6 @@ public class ConfigManager {
 	}
 	public ConfigManager(BigDecimal id) throws Exception {
 		java.sql.Connection con = null;
-		java.sql.PreparedStatement ps = null;
-		java.sql.ResultSet rs = null;
 		try{
 			con = DataServiceImpl.getDatabase().getConnection();
 			Config_jdoManager man = new Config_jdoManager(con);
@@ -164,25 +198,68 @@ public class ConfigManager {
 			e.printStackTrace();
 			throw e;
 		}finally{
-			try{rs.close();}catch(Exception e){}
-			try{ps.close();}catch(Exception e){}
 			try{con.close();}catch(Exception e){}
 		}
 	}
 	private ConfigManager(){
 
 	}
-	public String getString(){
-		return this.m_cfg.getValue();
+	public String getString() throws Exception{
+		if(this.getType().equals(TYPE.STRING)){
+			return this.m_cfg.getString_value();
+		}else if(this.getType().equals(TYPE.TEXT)){
+			return this.m_cfg.getText_value();
+		}else{
+			throw new Exception("Invalid type");
+		}
 	}
-	public Integer getInt(){
-		return Integer.parseInt(this.m_cfg.getValue());
+	private TYPE getType() throws Exception {
+		switch (this.m_cfg.getType().intValue()){
+		case 0:
+			return TYPE.FOLDER;
+		case 1:
+			return TYPE.BOOLEAN;
+		case 2:
+			return TYPE.DOUBLE;
+		case 3:
+			return TYPE.INT;
+		case 4:
+			return TYPE.STRING;
+		case 5:
+			return TYPE.DATETIME;
+		case 6:
+			return TYPE.TEXT;
+		case 7:
+			return TYPE.BINARY;
+		default:
+			throw new Exception("Invalid type");
+		}
+		
 	}
-	public Double getDouble(){
-		return Double.parseDouble(this.m_cfg.getValue());
+	public Integer getInt() throws Exception {
+		if(this.getType().equals(TYPE.INT)){
+			return this.m_cfg.getNumber_value().intValue();
+		}else{
+			throw new Exception("Invalid type");
+		}
 	}
-	public Boolean getBoolean(){
-		return this.m_cfg.getValue().equals("true") ? true : false;
+	public Double getDouble() throws Exception {
+		if(this.getType().equals(TYPE.DOUBLE)){
+			return this.m_cfg.getNumber_value().doubleValue();
+		}else{
+			throw new Exception("Invalid type");
+		}
+	}
+	public Boolean getBoolean() throws Exception {
+		if(this.getType().equals(TYPE.BOOLEAN)){
+			if(this.m_cfg.getBool_value() == null){
+				return null;
+			}else{
+				return this.m_cfg.getBool_value() == 1 ? true : false;
+			}
+		}else{
+			throw new Exception("Invalid type");
+		}
 	}
 	public BigDecimal getFolderID(){
 		return this.m_cfg.getParent();
