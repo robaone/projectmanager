@@ -24,20 +24,50 @@ public class ProjectDatabase {
 	}
 	private void createDatabaseTables() throws Exception {
 		String str = "create table config (\n"+
-		" id numeric(18,0) primary key not null,\n"+
-		" name varchar(128) not null,\n"+
-		" parent numeric(18,0),\n"+
-		" type varchar(32) not null,\n"+
-		" title varchar(128) not null,\n"+
-		" description clob,\n"+
-		" value clob\n"+
+		"  id numeric(18,0) primary key not null,\n"+
+		"  name varchar(128) not null,\n"+
+		"  parent numeric(18,0),\n"+
+		"  type integer not null,\n"+
+		"  title varchar(128) not null,\n"+
+		"  description clob,\n"+
+		"  string_value varchar(128),\n"+
+		"  number_value numeric(18,4),\n"+
+		"  bool_value tinyint,\n"+
+		"  date_value timestamp,\n"+
+		"  text_value clob,\n"+
+		"  binary_value blob,\n"+
+		"  created_by varchar(128) not null,\n"+
+		"  created_date timestamp not null,\n"+
+		"  modified_by varchar(128),\n"+
+		"  modified_date timestamp,\n"+
+		"  modifier_host varchar(32) not null\n"+
 		");";
 		java.util.Vector<Object> parameters = new java.util.Vector<Object>();
 		this.executeUpdate(str,parameters);
+		
+		str = "create table history (\n"+
+		"  id numeric(18,0) primary key not null,\n"+
+		"  objectid numeric(18,0) not null,\n"+
+		"  name varchar(128) not null,\n"+
+		"  parent numeric(18,0),\n"+
+		"  type integer not null,\n"+
+		"  title varchar(128) not null,\n"+
+		"  description clob,\n"+
+		"  string_value varchar(128),\n"+
+		"  number_value numeric(18,4),\n"+
+		"  bool_value tinyint,\n"+
+		"  date_value timestamp,\n"+
+		"  text_value clob,\n"+
+		"  binary_value blob,\n"+
+		"  modified_by varchar(128),\n"+
+		"  modified_date timestamp,\n"+
+		"  modifier_host varchar(32) not null\n"+
+		");";
+		
+		this.executeUpdate(str, parameters);
 	}
 	private int executeUpdate(String str, Vector<Object> parameters) throws Exception{
 		java.sql.PreparedStatement ps = null;
-		java.sql.ResultSet rs = null;
 		int updated = 0;
 		try{
 			ps = this.m_con.prepareStatement(str);
