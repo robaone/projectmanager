@@ -61,6 +61,9 @@ public class ConfigManager {
 				String folder = tokens[i];
 				Config_jdo folder_record = this.findFolder(parent,folder,create);
 				parent = folder_record;
+				if(parent == null){
+					return null;
+				}
 			}else{
 				Config_jdo record = null;
 				java.sql.Connection con = null;
@@ -88,6 +91,8 @@ public class ConfigManager {
 						record.setDescription(m_description);
 						man.save(record);
 						return record;
+					}else{
+						return null;
 					}
 				}catch(Exception e){
 					throw e;
