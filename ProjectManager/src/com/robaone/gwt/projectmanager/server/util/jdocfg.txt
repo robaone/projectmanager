@@ -3,8 +3,12 @@ url=jdbc:hsqldb:mem:mymemdb
 username=SA
 password= 
 
-tables=config
+tables=config,history
 
 config.fields=*
 config.identity=id
 config.idmanager=max+1
+
+history.fields=*
+history.identity=id
+history.idmanager=max+1
