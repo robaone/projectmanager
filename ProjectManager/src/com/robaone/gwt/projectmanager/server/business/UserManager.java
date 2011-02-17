@@ -63,17 +63,21 @@ public class UserManager extends ProjectConstants implements UserManagerInterfac
 				retval.setStatus(NOT_LOGGED_IN);
 				retval.setError("Username '"+username+"' not found");
 			}
-			if(user_password.getString().equals(password)){
-				UserData data = new UserData();
-				data.setUsername(username);
-				SessionData sdata = this.parent.createSessionData();
-				sdata.setUserData(data);
-				retval.addData(data);
-				return retval;
-			}else{
-				retval.setStatus(NOT_LOGGED_IN);
-				retval.setError("Incorrect password");
-				return retval;
+			try {
+				if(user_password.getString().equals(password)){
+					UserData data = new UserData();
+					data.setUsername(username);
+					SessionData sdata = this.parent.createSessionData();
+					sdata.setUserData(data);
+					retval.addData(data);
+					return retval;
+				}else{
+					retval.setStatus(NOT_LOGGED_IN);
+					retval.setError("Incorrect password");
+					return retval;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
 
