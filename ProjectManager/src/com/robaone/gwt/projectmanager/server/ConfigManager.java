@@ -18,17 +18,60 @@ public class ConfigManager {
 	private Config_jdo m_cfg;
 	private byte[] m_bin_value;
 	private Timestamp m_date_value;
-	public ConfigManager(String path,String default_value,TYPE type,String title,String description){
+	private SessionData m_userdata;
+	public ConfigManager(String path,String default_value,TYPE type,String title,String description,SessionData session){
 		try {
-			this.createConfigValue(path,default_value,type,title,description);
+			this.m_default_value = default_value;
+			this.createConfigValue(path,type,title,description);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	private void createConfigValue(String path, String default_value,
-			TYPE type, String title, String description) throws Exception {
+	public ConfigManager(String path,java.sql.Timestamp default_value,String title,String description,SessionData session){
+		try {
+			this.m_date_value = default_value;
+			this.createConfigValue(path, TYPE.DATETIME, title, description);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+	public ConfigManager(String path,byte[] default_value,String title,String description,SessionData session){
+		try{
+			this.m_userdata = session;
+			this.m_bin_value = default_value;
+			this.createConfigValue(path, TYPE.BINARY, title, description);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+	public ConfigManager(String path,int default_value,String title,String description,SessionData session){
+		try{
+			this.m_userdata = session;
+			this.m_default_value = default_value+"";
+			this.createConfigValue(path, TYPE.INT, title, description);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+	public ConfigManager(String path,boolean default_value,String title,String description,SessionData session){
+		try{
+			this.m_userdata = session;
+			this.m_default_value = default_value ? "1" : "0";
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+	private ConfigManager(String path,JSONObject default_value,String title,String description,SessionData session){
+		try{
+			this.m_userdata = session;
+			this.m_default_value = default_value.toString();
+			this.createConfigValue(path, TYPE.JSON, title, description);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+	private void createConfigValue(String path, TYPE type, String title, String description) throws Exception {
 		java.sql.Connection con = null;
-		this.m_default_value = default_value;
 		this.m_title = title;
 		this.m_type = type;
 		this.m_description = description;
@@ -58,6 +101,9 @@ public class ConfigManager {
 		for(int i = 0;i<tokens.length;i++){
 			if(i != tokens.length-1){
 				String folder = tokens[i];
+				if(folder.length() == 0){
+					continue;
+				}
 				Config_jdo folder_record = this.findFolder(parent,folder,create);
 				parent = folder_record;
 				if(parent == null){
@@ -152,11 +198,11 @@ public class ConfigManager {
 			Config_jdoManager man = new Config_jdoManager(con);
 			if(object == null){
 				ps = man.prepareStatement(Config_jdo.NAME + " = ? and "+ Config_jdo.PARENT +" is null and "+Config_jdo.TYPE + " = ?");
-				ps.setString(2, TYPE.FOLDER.toString());
+				ps.setInt(2, this.getDBType(TYPE.FOLDER));
 			}else{
 				ps = man.prepareStatement(Config_jdo.NAME + " = ? and "+ Config_jdo.PARENT +" = ? and "+Config_jdo.TYPE + " = ?");
 				ps.setBigDecimal(2, object.getId());
-				ps.setString(3, TYPE.FOLDER.toString());
+				ps.setInt(3, this.getDBType(TYPE.FOLDER));
 			}
 			ps.setString(1, folder);
 			rs = ps.executeQuery();
@@ -165,9 +211,11 @@ public class ConfigManager {
 				return record;
 			}else if(create){
 				Config_jdo record = man.newConfig();
-				record.setParent(object.getId());
-				record.setType(this.getDBType(TYPE.FOLDER));
+				record.setParent(object == null ? null : object.getId());
+				record.setType(this.getDBType(this.getType()));
 				record.setName(folder);
+				record.setCreated_by(this.m_userdata.getUserData().getUsername());
+				record.setCreated_date(new java.sql.Timestamp(new java.util.Date().getTime()));
 				man.save(record);
 				return record;
 			}else{
@@ -220,29 +268,32 @@ public class ConfigManager {
 		}
 	}
 	private TYPE getType() throws Exception {
-		switch (this.m_cfg.getType().intValue()){
-		case 0:
-			return TYPE.FOLDER;
-		case 1:
-			return TYPE.BOOLEAN;
-		case 2:
-			return TYPE.DOUBLE;
-		case 3:
-			return TYPE.INT;
-		case 4:
-			return TYPE.STRING;
-		case 5:
-			return TYPE.DATETIME;
-		case 6:
-			return TYPE.TEXT;
-		case 7:
-			return TYPE.BINARY;
-		case 8:
-			return TYPE.JSON;
-		default:
-			throw new Exception("Invalid type");
+		if(this.m_cfg == null){
+			return this.m_type;
+		}else{
+			switch (this.m_cfg.getType().intValue()){
+			case 0:
+				return TYPE.FOLDER;
+			case 1:
+				return TYPE.BOOLEAN;
+			case 2:
+				return TYPE.DOUBLE;
+			case 3:
+				return TYPE.INT;
+			case 4:
+				return TYPE.STRING;
+			case 5:
+				return TYPE.DATETIME;
+			case 6:
+				return TYPE.TEXT;
+			case 7:
+				return TYPE.BINARY;
+			case 8:
+				return TYPE.JSON;
+			default:
+				throw new Exception("Invalid type");
+			}
 		}
-		
 	}
 	public Integer getInt() throws Exception {
 		if(this.getType().equals(TYPE.INT)){
@@ -298,7 +349,7 @@ public class ConfigManager {
 			cfg.m_cfg = cfg.findValue(path, false);
 			return cfg;
 		}catch(Exception e){
-			
+
 		}
 		return null;
 	}

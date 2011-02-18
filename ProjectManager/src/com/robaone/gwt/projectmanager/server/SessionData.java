@@ -6,6 +6,7 @@ import com.robaone.gwt.projectmanager.client.UserData;
 public class SessionData {
 	private UserData user_data;
 	private String zipcode = null;
+	private String current_host;
 	public SessionData(){
 	}
 	public UserData getUserData() {
@@ -25,5 +26,11 @@ public class SessionData {
 	}
 	public void setCurrentZip(String value) {
 		zipcode = value;
+	}
+	public void setCurrentHost(String string) {
+		this.current_host = string;
+	}
+	public String getCurrentHost(){
+		return this.current_host;
 	}
 }
