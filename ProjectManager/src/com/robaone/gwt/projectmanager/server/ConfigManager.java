@@ -3,12 +3,14 @@ package com.robaone.gwt.projectmanager.server;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
+import org.json.JSONObject;
+
 import com.robaone.gwt.projectmanager.server.business.ProjectDatabase;
 import com.robaone.gwt.projectmanager.server.jdo.Config_jdo;
 import com.robaone.gwt.projectmanager.server.jdo.Config_jdoManager;
 
 public class ConfigManager {
-	public static enum TYPE {STRING,INT,DOUBLE,BOOLEAN,FOLDER, DATETIME, TEXT, BINARY}
+	public static enum TYPE {STRING,INT,DOUBLE,BOOLEAN,FOLDER, DATETIME, TEXT, BINARY, JSON}
 	private String m_default_value;
 	private String m_title;
 	private TYPE m_type;
@@ -113,6 +115,8 @@ public class ConfigManager {
 			record.setString_value(this.m_default_value);
 		}else if(this.m_type.equals(TYPE.TEXT)){
 			record.setText_value(this.m_default_value);
+		}else if(this.m_type.equals(TYPE.JSON)){
+			record.setText_value(this.m_default_value);
 		}else{
 			throw new Exception("Invalid type");
 		}
@@ -134,6 +138,8 @@ public class ConfigManager {
 			return 6;
 		}else if(mType.equals(TYPE.BINARY)){
 			return 7;
+		}else if(mType.equals(TYPE.JSON)){
+			return 8;
 		}
 		return null;
 	}
@@ -231,6 +237,8 @@ public class ConfigManager {
 			return TYPE.TEXT;
 		case 7:
 			return TYPE.BINARY;
+		case 8:
+			return TYPE.JSON;
 		default:
 			throw new Exception("Invalid type");
 		}
@@ -261,6 +269,14 @@ public class ConfigManager {
 			throw new Exception("Invalid type");
 		}
 	}
+	public JSONObject getJSON() throws Exception {
+		if(this.getType().equals(TYPE.JSON)){
+			JSONObject retval = new JSONObject(this.m_cfg.getText_value());
+			return retval;
+		}else{
+			throw new Exception("Invalid type");
+		}
+	}
 	public BigDecimal getFolderID(){
 		return this.m_cfg.getParent();
 	}
@@ -285,5 +301,22 @@ public class ConfigManager {
 			
 		}
 		return null;
+	}
+	public void setValue(java.sql.Timestamp val) throws Exception {
+		if(this.getType().equals(TYPE.DATETIME)){
+			this.m_cfg.setDate_value(val);
+			java.sql.Connection con = null;
+			try{
+				con = DataServiceImpl.getDatabase().getConnection();
+				Config_jdoManager man = new Config_jdoManager(con);
+				man.save(this.m_cfg);
+			}catch(Exception e){
+				throw e;
+			}finally{
+				try{con.close();}catch(Exception e){}
+			}
+		}else{
+			throw new Exception("Invalid type");
+		}
 	}
 }
