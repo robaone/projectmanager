@@ -49,6 +49,13 @@ public class DataServiceImpl extends RemoteServiceServlet implements
 		return man.getLoginStatus();
 	}
 	public static ProjectDatabase getDatabase(){
+		if(testdb == null){
+			try {
+				testdb = new ProjectDatabase();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		return testdb;
 	}
 	public SessionData getSessionData() {
