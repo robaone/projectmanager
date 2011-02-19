@@ -11,21 +11,30 @@ import com.robaone.gwt.projectmanager.server.ConfigManager.TYPE;
 
 public class ProjectDatabase {
 	private java.sql.Connection m_con;
+	private String[] m_driver = {"org.hsqldb.jdbc.JDBCDriver","com.mysql.jdbc.Driver"};
+	private String[] m_url = {"jdbc:hsqldb:mem:mymemdb","jdbc:mysql://localhost:3306/"};
+	private String[] m_username = {"SA","root"};
+	private String[] m_password = {"","browncookie1"};
 	public ProjectDatabase() throws SQLException{
+		int dr = 0;
+		try{
+			dr = Integer.parseInt(System.getProperty("driver_choice"));
+		}catch(Exception e){
+		}
 		try {
-		      Class.forName("org.hsqldb.jdbc.JDBCDriver" );
-		  } catch (Exception e) {
-		      System.err.println("ERROR: failed to load HSQLDB JDBC driver.");
-		      e.printStackTrace();
-		      return;
-		  }
-		  java.sql.Connection c = DriverManager.getConnection("jdbc:hsqldb:mem:mymemdb", "SA", "");
-		  m_con = c;
-		  try{
-			  this.createDatabaseTables();
-		  }catch(Exception e){
-			  throw new SQLException(e.getMessage());
-		  }
+			Class.forName(m_driver[dr] );
+		} catch (Exception e) {
+			System.err.println("ERROR: failed to load JDBC driver.");
+			e.printStackTrace();
+			return;
+		}
+		java.sql.Connection c = DriverManager.getConnection(m_url[dr], m_username[dr], m_password[dr]);
+		m_con = c;
+		try{
+			this.createDatabaseTables();
+		}catch(Exception e){
+			throw new SQLException(e.getMessage());
+		}
 	}
 	private String createConfigTableSQL() {
 		String str = "create table config (\n"+
@@ -71,7 +80,7 @@ public class ProjectDatabase {
 		return str;
 	}
 	private void createDatabaseTables() throws Exception {
-		
+
 		java.util.Vector<Object> parameters = new java.util.Vector<Object>();
 		try{
 			this.executeUpdate(this.createConfigTableSQL(),parameters);
@@ -124,6 +133,12 @@ public class ProjectDatabase {
 		return updated;
 	}
 	public java.sql.Connection getConnection() throws SQLException{
-		return DriverManager.getConnection("jdbc:hsqldb:mem:mymemdb", "SA", "");
+		int dr = 0;
+		try{
+			dr = Integer.parseInt(System.getProperty("driver_choice"));
+		}catch(Exception e){
+		
+		}
+		return DriverManager.getConnection(this.m_driver[dr], this.m_username[dr], this.m_password[dr]);
 	}
 }
