@@ -363,16 +363,33 @@ public class ConfigManager {
 	public void setValue(java.sql.Timestamp val) throws Exception {
 		if(this.getType().equals(TYPE.DATETIME)){
 			this.m_cfg.setDate_value(val);
-			java.sql.Connection con = null;
-			try{
-				con = DataServiceImpl.getDatabase().getConnection();
-				Config_jdoManager man = new Config_jdoManager(con);
-				man.save(this.m_cfg);
-			}catch(Exception e){
-				throw e;
-			}finally{
-				try{con.close();}catch(Exception e){}
-			}
+			this.save();
+		}else{
+			throw new Exception("Invalid type");
+		}
+	}
+	private void save() throws Exception {
+		java.sql.Connection con = null;
+		try{
+			con = DataServiceImpl.getDatabase().getConnection();
+			Config_jdoManager man = new Config_jdoManager(con);
+			man.save(this.m_cfg);
+		}catch(Exception e){
+			throw e;
+		}finally{
+			try{con.close();}catch(Exception e){}
+		}
+	}
+	public String getName() {
+		return this.m_cfg == null ? null : this.m_cfg.getName();
+	}
+	public void setValue(String string) throws Exception {
+		if(this.getType().equals(TYPE.STRING)){
+			this.m_cfg.setString_value(string);
+			this.save();
+		}else if(this.getType().equals(TYPE.TEXT)){
+			this.m_cfg.setText_value(string);
+			this.save();
 		}else{
 			throw new Exception("Invalid type");
 		}
