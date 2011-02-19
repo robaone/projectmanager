@@ -21,6 +21,7 @@ public class ConfigManager {
 	private SessionData m_userdata;
 	public ConfigManager(String path,String default_value,TYPE type,String title,String description,SessionData session){
 		try {
+			this.m_userdata = session;
 			this.m_default_value = default_value;
 			this.createConfigValue(path,type,title,description);
 		} catch (Exception e) {
@@ -29,6 +30,7 @@ public class ConfigManager {
 	}
 	public ConfigManager(String path,java.sql.Timestamp default_value,String title,String description,SessionData session){
 		try {
+			this.m_userdata = session;
 			this.m_date_value = default_value;
 			this.createConfigValue(path, TYPE.DATETIME, title, description);
 		}catch(Exception e){
@@ -121,7 +123,7 @@ public class ConfigManager {
 					ps = man.prepareStatement(Config_jdo.PARENT + " = ? and "+Config_jdo.NAME + " = ? and "+Config_jdo.TYPE +" != ?");
 					ps.setBigDecimal(1, parent == null ? null : parent.getId());
 					ps.setString(2, tokens[i]);
-					ps.setString(3, TYPE.FOLDER.toString());
+					ps.setInt(3,this.getDBType(TYPE.FOLDER));
 					rs = ps.executeQuery();
 					if(rs.next()){
 						record = Config_jdoManager.bindConfig(rs);
@@ -134,6 +136,9 @@ public class ConfigManager {
 						this.setDBValue(record);
 						record.setTitle(m_title);
 						record.setDescription(m_description);
+						record.setCreated_by(this.m_userdata.getUserData().getUsername());
+						record.setCreated_date(new java.sql.Timestamp(new java.util.Date().getTime()));
+						record.setModifier_host(this.m_userdata.getCurrentHost());
 						man.save(record);
 						return record;
 					}else{
@@ -212,10 +217,12 @@ public class ConfigManager {
 			}else if(create){
 				Config_jdo record = man.newConfig();
 				record.setParent(object == null ? null : object.getId());
-				record.setType(this.getDBType(this.getType()));
+				record.setType(this.getDBType(TYPE.FOLDER));
 				record.setName(folder);
+				record.setTitle(record.getName() + " folder");
 				record.setCreated_by(this.m_userdata.getUserData().getUsername());
 				record.setCreated_date(new java.sql.Timestamp(new java.util.Date().getTime()));
+				record.setModifier_host(this.m_userdata.getCurrentHost());
 				man.save(record);
 				return record;
 			}else{

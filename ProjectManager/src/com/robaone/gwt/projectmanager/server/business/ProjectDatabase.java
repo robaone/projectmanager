@@ -78,13 +78,14 @@ public class ProjectDatabase {
 			this.executeUpdate(this.createUniqueConfigConstraint(), parameters);
 			this.executeUpdate(this.createHistoryTableSQL(), parameters);
 			parameters.add(new java.sql.Timestamp(new java.util.Date().getTime()));
-			this.executeUpdate(this.initializedata(),parameters);
+			//this.executeUpdate(this.initializedata(),parameters);
 			SessionData session = new SessionData();
 			session.setCurrentHost("localhost");
 			session.setUserData(new UserData());
 			session.getUserData().setUsername("root");
 			ConfigManager root_user = new ConfigManager("/administration/users/root/password","password",TYPE.STRING,"The superuser password","This is the password that you need to gain complete access to the application.",session);
-			
+			System.out.println("root password set to "+root_user.getString());
+			ConfigManager root_role = new ConfigManager("/administration/users/root/role","0",TYPE.INT,"The super user role","Valid roles are number 0 for superuser through x",session);
 		}catch(Exception e){
 			if(!e.getMessage().startsWith("object name already exists")){
 				e.printStackTrace();
