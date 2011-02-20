@@ -1,5 +1,5 @@
 /*
-* Created on Feb 17, 2011
+* Created on Feb 20, 2011
 *
 */
 package com.robaone.gwt.projectmanager.server.jdo;
@@ -23,6 +23,7 @@ public class History_jdo extends RO_JDO{
   public final static String DATE_VALUE = "DATE_VALUE";
   public final static String TEXT_VALUE = "TEXT_VALUE";
   public final static String BINARY_VALUE = "BINARY_VALUE";
+  public final static String CONTENT_TYPE = "CONTENT_TYPE";
   public final static String MODIFIED_BY = "MODIFIED_BY";
   public final static String MODIFIED_DATE = "MODIFIED_DATE";
   public final static String MODIFIER_HOST = "MODIFIER_HOST";
@@ -176,6 +177,17 @@ public class History_jdo extends RO_JDO{
     Object[] val = this.getField(BINARY_VALUE);
     if(val != null && val[0] != null){
       return (byte[])val[0];
+    }else{
+      return null;
+    }
+  }
+  public void setContent_type(String content_type){
+    this.setField(CONTENT_TYPE,content_type);
+  }
+  public String getContent_type(){
+    Object[] val = this.getField(CONTENT_TYPE);
+    if(val != null && val[0] != null){
+      return (String)val[0];
     }else{
       return null;
     }

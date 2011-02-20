@@ -44,6 +44,7 @@ public class ProjectDatabase {
 		"  DATE_VALUE "+this.getDateType()+",\n"+
 		"  TEXT_VALUE "+this.getTextType()+",\n"+
 		"  BINARY_VALUE blob,\n"+
+		"  CONTENT_TYPE varchar(32),\n"+
 		"  CREATED_BY varchar(128) not null,\n"+
 		"  CREATED_DATE "+this.getDateType()+" not null,\n"+
 		"  MODIFIED_BY varchar(128),\n"+
@@ -67,6 +68,7 @@ public class ProjectDatabase {
 		"  DATE_VALUE "+this.getDateType()+",\n"+
 		"  TEXT_VALUE "+this.getTextType()+",\n"+
 		"  BINARY_VALUE blob,\n"+
+		"  CONTENT_TYPE varchar(32),\n"+
 		"  MODIFIED_BY varchar(128),\n"+
 		"  MODIFIED_DATE "+this.getDateType()+",\n"+
 		"  MODIFIER_HOST varchar(32) not null\n"+

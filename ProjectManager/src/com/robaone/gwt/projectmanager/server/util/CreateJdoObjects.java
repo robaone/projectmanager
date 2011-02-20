@@ -12,7 +12,8 @@ public class CreateJdoObjects {
 	 */
 	public static void main(String[] args) {
 		try {
-			System.setProperty("driver_choice","1");
+			System.setProperty("driver_choice","0");
+			@SuppressWarnings("unused")
 			ProjectDatabase database = new ProjectDatabase();
 			com.robaone.jdo.RO_JDO_Generator.main(args);
 		} catch (Exception e) {

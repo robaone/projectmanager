@@ -1,5 +1,5 @@
 /*
-* Created on Feb 17, 2011
+* Created on Feb 20, 2011
 *
 */
 package com.robaone.gwt.projectmanager.server.jdo;
@@ -21,7 +21,7 @@ public class Config_jdoManager {
   private final static String DELETE = "delete from #TABLE# where #TABLE#.ID = ?";
   private final static String IDENTITY = "ID";
   private final static String NEXT_SQL = "Select max(id) +1 from #TABLE#";
-  public final static String FIELDS = "#TABLE#.ID,#TABLE#.NAME,#TABLE#.PARENT,#TABLE#.TYPE,#TABLE#.TITLE,#TABLE#.DESCRIPTION,#TABLE#.STRING_VALUE,#TABLE#.NUMBER_VALUE,#TABLE#.BOOL_VALUE,#TABLE#.DATE_VALUE,#TABLE#.TEXT_VALUE,#TABLE#.BINARY_VALUE,#TABLE#.CREATED_BY,#TABLE#.CREATED_DATE,#TABLE#.MODIFIED_BY,#TABLE#.MODIFIED_DATE,#TABLE#.MODIFIER_HOST";
+  public final static String FIELDS = "#TABLE#.ID,#TABLE#.NAME,#TABLE#.PARENT,#TABLE#.TYPE,#TABLE#.TITLE,#TABLE#.DESCRIPTION,#TABLE#.STRING_VALUE,#TABLE#.NUMBER_VALUE,#TABLE#.BOOL_VALUE,#TABLE#.DATE_VALUE,#TABLE#.TEXT_VALUE,#TABLE#.BINARY_VALUE,#TABLE#.CONTENT_TYPE,#TABLE#.CREATED_BY,#TABLE#.CREATED_DATE,#TABLE#.MODIFIED_BY,#TABLE#.MODIFIED_DATE,#TABLE#.MODIFIER_HOST";
   private String TABLE = "CONFIG";
   private boolean debug = false;
   public Config_jdoManager(Connection con){
