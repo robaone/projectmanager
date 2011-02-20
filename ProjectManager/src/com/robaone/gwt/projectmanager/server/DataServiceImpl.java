@@ -37,7 +37,7 @@ public class DataServiceImpl extends RemoteServiceServlet implements
 		if(testdb == null){
 			try {
 				testdb = new ProjectDatabase();
-			} catch (SQLException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
@@ -52,7 +52,7 @@ public class DataServiceImpl extends RemoteServiceServlet implements
 		if(testdb == null){
 			try {
 				testdb = new ProjectDatabase();
-			} catch (SQLException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}

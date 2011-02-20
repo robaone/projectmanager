@@ -170,7 +170,7 @@ History_jdo retval = null;
               if(count_rs.getBigDecimal(1) == null){
                 insert_post += "0";
               }else{
-                insert_post += "("+this.getSQL(NEXT_SQL)+")";
+                insert_post += count_rs.getBigDecimal(1);
               }
             }else{
               insert_post += "0";
@@ -206,7 +206,7 @@ History_jdo retval = null;
           field_index ++;
         }
         int updated = insert_ps.executeUpdate();
-        String max_sql = "select max("+record.getIdentityName()+") from history";
+        String max_sql = "select max("+record.getIdentityName()+") from "+this.TABLE;
         PreparedStatement max_ps = con.prepareStatement(max_sql);
         ResultSet max_rs = max_ps.executeQuery();
         if(max_rs.next()){

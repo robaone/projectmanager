@@ -12,23 +12,17 @@ import com.robaone.gwt.projectmanager.server.ConfigManager.TYPE;
 public class ProjectDatabase {
 	private java.sql.Connection m_con;
 	private String[] m_driver = {"org.hsqldb.jdbc.JDBCDriver","com.mysql.jdbc.Driver"};
-	private String[] m_url = {"jdbc:hsqldb:mem:mymemdb","jdbc:mysql://localhost:3306/"};
+	private String[] m_url = {"jdbc:hsqldb:mem:mymemdb","jdbc:mysql://localhost:3306/test"};
 	private String[] m_username = {"SA","root"};
 	private String[] m_password = {"","browncookie1"};
-	public ProjectDatabase() throws SQLException{
+	public ProjectDatabase() throws Exception{
 		int dr = 0;
 		try{
 			dr = Integer.parseInt(System.getProperty("driver_choice"));
 		}catch(Exception e){
 		}
-		try {
-			Class.forName(m_driver[dr] );
-		} catch (Exception e) {
-			System.err.println("ERROR: failed to load JDBC driver.");
-			e.printStackTrace();
-			return;
-		}
-		java.sql.Connection c = DriverManager.getConnection(m_url[dr], m_username[dr], m_password[dr]);
+		
+		java.sql.Connection c = this.getConnection();
 		m_con = c;
 		try{
 			this.createDatabaseTables();
@@ -37,47 +31,71 @@ public class ProjectDatabase {
 		}
 	}
 	private String createConfigTableSQL() {
-		String str = "create table config (\n"+
-		"  id numeric(18,0) primary key not null,\n"+
-		"  name varchar(128) not null,\n"+
-		"  parent numeric(18,0),\n"+
-		"  type integer not null,\n"+
-		"  title varchar(128) not null,\n"+
-		"  description clob,\n"+
-		"  string_value varchar(128),\n"+
-		"  number_value numeric(18,4),\n"+
-		"  bool_value tinyint,\n"+
-		"  date_value timestamp,\n"+
-		"  text_value clob,\n"+
-		"  binary_value blob,\n"+
-		"  created_by varchar(128) not null,\n"+
-		"  created_date timestamp not null,\n"+
-		"  modified_by varchar(128),\n"+
-		"  modified_date timestamp,\n"+
-		"  modifier_host varchar(32) not null\n"+
+		String str = "create table CONFIG (\n"+
+		"  ID numeric(18,0) primary key not null,\n"+
+		"  NAME varchar(128) not null,\n"+
+		"  PARENT numeric(18,0),\n"+
+		"  TYPE integer not null,\n"+
+		"  TITLE varchar(128) not null,\n"+
+		"  DESCRIPTION "+this.getTextType()+",\n"+
+		"  STRING_VALUE varchar(128),\n"+
+		"  NUMBER_VALUE numeric(18,4),\n"+
+		"  BOOL_VALUE tinyint,\n"+
+		"  DATE_VALUE "+this.getDateType()+",\n"+
+		"  TEXT_VALUE "+this.getTextType()+",\n"+
+		"  BINARY_VALUE blob,\n"+
+		"  CREATED_BY varchar(128) not null,\n"+
+		"  CREATED_DATE "+this.getDateType()+" not null,\n"+
+		"  MODIFIED_BY varchar(128),\n"+
+		"  MODIFIED_DATE "+this.getDateType()+",\n"+
+		"  MODIFIER_HOST varchar(32) not null\n"+
 		");";
 		return str;
 	}
 	private String createHistoryTableSQL(){
-		String str = "create table history (\n"+
-		"  id numeric(18,0) primary key not null,\n"+
-		"  objectid numeric(18,0) not null,\n"+
-		"  name varchar(128) not null,\n"+
-		"  parent numeric(18,0),\n"+
-		"  type integer not null,\n"+
-		"  title varchar(128) not null,\n"+
-		"  description clob,\n"+
-		"  string_value varchar(128),\n"+
-		"  number_value numeric(18,4),\n"+
-		"  bool_value tinyint,\n"+
-		"  date_value timestamp,\n"+
-		"  text_value clob,\n"+
-		"  binary_value blob,\n"+
-		"  modified_by varchar(128),\n"+
-		"  modified_date timestamp,\n"+
-		"  modifier_host varchar(32) not null\n"+
+		String str = "create table HISTORY (\n"+
+		"  ID numeric(18,0) primary key not null,\n"+
+		"  OBJECTID numeric(18,0) not null,\n"+
+		"  NAME varchar(128) not null,\n"+
+		"  PARENT numeric(18,0),\n"+
+		"  TYPE integer not null,\n"+
+		"  TITLE varchar(128) not null,\n"+
+		"  DESCRIPTION "+this.getTextType()+",\n"+
+		"  STRING_VALUE varchar(128),\n"+
+		"  NUMBER_VALUE numeric(18,4),\n"+
+		"  BOOL_VALUE tinyint,\n"+
+		"  DATE_VALUE "+this.getDateType()+",\n"+
+		"  TEXT_VALUE "+this.getTextType()+",\n"+
+		"  BINARY_VALUE blob,\n"+
+		"  MODIFIED_BY varchar(128),\n"+
+		"  MODIFIED_DATE "+this.getDateType()+",\n"+
+		"  MODIFIER_HOST varchar(32) not null\n"+
 		");";
 		return str;
+	}
+	private String getDateType() {
+		int dr = 0;
+		try{
+			dr = Integer.parseInt(System.getProperty("driver_choice"));
+		}catch(Exception e){}
+		if(dr == 0){
+			return "timestamp";
+		}else if(dr == 1){
+			return "timestamp";
+		}
+		return null;
+	}
+	private String getTextType() {
+		int dr = 0;
+		try{
+			dr = Integer.parseInt(System.getProperty("driver_choice"));
+		}catch(Exception e){}
+		if(dr == 0){
+			return "clob";
+		}else if(dr == 1){
+			return "text";
+		}
+		return null;
 	}
 	private void createDatabaseTables() throws Exception {
 
@@ -96,15 +114,15 @@ public class ProjectDatabase {
 			System.out.println("root password set to "+root_user.getString());
 			ConfigManager root_role = new ConfigManager("/administration/users/root/role","0",TYPE.INT,"The super user role","Valid roles are number 0 for superuser through x",session);
 		}catch(Exception e){
-			if(!e.getMessage().startsWith("object name already exists")){
+			if(!e.getMessage().startsWith("object name already exists") && !e.getMessage().endsWith("already exists")){
 				e.printStackTrace();
 				throw e;
 			}
 		}
 	}	
 	private String createUniqueConfigConstraint(){
-		String str = "alter table config add constraint uc_name UNIQUE (name,paren"+
-		"t);";
+		String str = "alter table CONFIG add constraint UC_NAME UNIQUE (NAME,PARENT"+
+		");";
 		return str;
 	}
 	private String initializedata() {
@@ -132,13 +150,20 @@ public class ProjectDatabase {
 		}
 		return updated;
 	}
-	public java.sql.Connection getConnection() throws SQLException{
+	public java.sql.Connection getConnection() throws Exception{
 		int dr = 0;
 		try{
 			dr = Integer.parseInt(System.getProperty("driver_choice"));
 		}catch(Exception e){
 		
 		}
-		return DriverManager.getConnection(this.m_driver[dr], this.m_username[dr], this.m_password[dr]);
+		try {
+			Class.forName(m_driver[dr] );
+		} catch (Exception e) {
+			System.err.println("ERROR: failed to load JDBC driver.");
+			e.printStackTrace();
+			throw e;
+		}
+		return DriverManager.getConnection(this.m_url[dr], this.m_username[dr], this.m_password[dr]);
 	}
 }

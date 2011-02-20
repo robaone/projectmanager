@@ -2,12 +2,15 @@ package com.robaone.gwt.projectmanager.server;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.HashMap;
 
 import org.json.JSONObject;
 
 import com.robaone.gwt.projectmanager.server.business.ProjectDatabase;
 import com.robaone.gwt.projectmanager.server.jdo.Config_jdo;
 import com.robaone.gwt.projectmanager.server.jdo.Config_jdoManager;
+import com.robaone.gwt.projectmanager.server.jdo.History_jdo;
+import com.robaone.gwt.projectmanager.server.jdo.History_jdoManager;
 
 public class ConfigManager {
 	public static enum TYPE {STRING,INT,DOUBLE,BOOLEAN,FOLDER, DATETIME, TEXT, BINARY, JSON}
@@ -77,6 +80,9 @@ public class ConfigManager {
 		this.m_title = title;
 		this.m_type = type;
 		this.m_description = description;
+		if(path != null && path.startsWith("/")){
+			path = path.substring(1);
+		}
 		if(title == null || title.trim().length() == 0){
 			throw new Exception("Variable description title needed");
 		}
@@ -120,10 +126,16 @@ public class ConfigManager {
 					ProjectDatabase db = DataServiceImpl.getDatabase();
 					con = db.getConnection();
 					Config_jdoManager man = new Config_jdoManager(con);
-					ps = man.prepareStatement(Config_jdo.PARENT + " = ? and "+Config_jdo.NAME + " = ? and "+Config_jdo.TYPE +" != ?");
-					ps.setBigDecimal(1, parent == null ? null : parent.getId());
-					ps.setString(2, tokens[i]);
-					ps.setInt(3,this.getDBType(TYPE.FOLDER));
+					if(parent == null){
+						ps = man.prepareStatement(Config_jdo.PARENT + " is null and "+Config_jdo.NAME + " = ? and "+Config_jdo.TYPE +" != ?");
+						ps.setString(1, tokens[i]);
+						ps.setInt(2, this.getDBType(TYPE.FOLDER));
+					}else{
+						ps = man.prepareStatement(Config_jdo.PARENT + " = ? and "+Config_jdo.NAME + " = ? and "+Config_jdo.TYPE +" != ?");
+						ps.setBigDecimal(1, parent.getId());
+						ps.setString(2, tokens[i]);
+						ps.setInt(3,this.getDBType(TYPE.FOLDER));
+					}
 					rs = ps.executeQuery();
 					if(rs.next()){
 						record = Config_jdoManager.bindConfig(rs);
@@ -139,6 +151,7 @@ public class ConfigManager {
 						record.setCreated_by(this.m_userdata.getUserData().getUsername());
 						record.setCreated_date(new java.sql.Timestamp(new java.util.Date().getTime()));
 						record.setModifier_host(this.m_userdata.getCurrentHost());
+						record.setModified_date(new java.sql.Timestamp(new java.util.Date().getTime()));
 						man.save(record);
 						return record;
 					}else{
@@ -223,6 +236,8 @@ public class ConfigManager {
 				record.setCreated_by(this.m_userdata.getUserData().getUsername());
 				record.setCreated_date(new java.sql.Timestamp(new java.util.Date().getTime()));
 				record.setModifier_host(this.m_userdata.getCurrentHost());
+				record.setModified_date(new java.sql.Timestamp(new java.util.Date().getTime()));
+				record.setModified_by(this.m_userdata.getUserData().getUsername());
 				man.save(record);
 				return record;
 			}else{
@@ -360,19 +375,131 @@ public class ConfigManager {
 		}
 		return null;
 	}
-	public void setValue(java.sql.Timestamp val) throws Exception {
-		if(this.getType().equals(TYPE.DATETIME)){
-			this.m_cfg.setDate_value(val);
-			this.save();
+	public void setValue(byte[] val,SessionData session) throws Exception {
+		if(this.getType().equals(TYPE.BINARY)){
+			this.m_cfg.setBinary_value(val);
+			this.save(session);
 		}else{
 			throw new Exception("Invalid type");
 		}
 	}
-	private void save() throws Exception {
+	public void setValue(java.sql.Timestamp val,SessionData session) throws Exception {
+		if(this.getType().equals(TYPE.DATETIME)){
+			this.m_cfg.setDate_value(val);
+			this.save(session);
+		}else{
+			throw new Exception("Invalid type");
+		}
+	}
+	public void setValue(int val,SessionData session) throws Exception {
+		if(this.getType().equals(TYPE.INT)){
+			this.m_cfg.setNumber_value(new BigDecimal(val));
+			this.save(session);
+		}else{
+			throw new Exception("Invalid type");
+		}
+	}
+	public void setValue(float val,SessionData session) throws Exception {
+		if(this.getType().equals(TYPE.DOUBLE)){
+			this.m_cfg.setNumber_value(new BigDecimal(val));
+			this.save(session);
+		}else{
+			throw new Exception("Invalid type");
+		}
+	}
+	public void setValue(double val,SessionData session) throws Exception {
+		if(this.getType().equals(TYPE.DOUBLE)){
+			this.m_cfg.setNumber_value(new BigDecimal(val));
+			this.save(session);
+		}else{
+			throw new Exception("Invalid type");
+		}
+	}
+	public void setValue(BigDecimal val,SessionData session) throws Exception {
+		if(this.getType().equals(TYPE.DOUBLE)){
+			this.m_cfg.setNumber_value(val);
+			this.save(session);
+		}else{
+			throw new Exception("Invalid type");
+		}
+	}
+	public void setValue(boolean val,SessionData session) throws Exception {
+		if(this.getType().equals(TYPE.DOUBLE)){
+			this.m_cfg.setBool_value(val ? 1 : 0);
+			this.save(session);
+		}else{
+			throw new Exception("Invalid type");
+		}
+	}
+	public void setValueAsNull(SessionData session) throws Exception {
+		if(this.getType().equals(TYPE.BINARY)){
+			this.m_cfg.setBinary_value(null);
+		}else if(this.getType().equals(TYPE.BOOLEAN)){
+			this.m_cfg.setBool_value(null);
+		}else if(this.getType().equals(TYPE.DATETIME)){
+			this.m_cfg.setDate_value(null);
+		}else if(this.getType().equals(TYPE.DOUBLE)){
+			this.m_cfg.setNumber_value(null);
+		}else if(this.getType().equals(TYPE.INT)){
+			this.m_cfg.setNumber_value(null);
+		}else if(this.getType().equals(TYPE.JSON) || this.getType().equals(TYPE.STRING) || this.getType().equals(TYPE.TEXT)){
+			this.m_cfg.setString_value(null);
+		}
+		this.save(session);
+	}
+	public void setValue(String string,SessionData session) throws Exception {
+		if(this.getType().equals(TYPE.STRING)){
+			this.m_cfg.setString_value(string);
+			this.save(session);
+		}else if(this.getType().equals(TYPE.TEXT)){
+			this.m_cfg.setText_value(string);
+			this.save(session);
+		}else{
+			throw new Exception("Invalid type");
+		}
+	}
+	public void setValue(JSONObject val,SessionData session) throws Exception {
+		if(this.getType().equals(TYPE.JSON)){
+			this.m_cfg.setString_value(val == null ? null : val.toString());
+			this.save(session);
+		}else{
+			throw new Exception("Invalid type");
+		}
+	}
+	private void save(final SessionData session) throws Exception {
 		java.sql.Connection con = null;
 		try{
 			con = DataServiceImpl.getDatabase().getConnection();
-			Config_jdoManager man = new Config_jdoManager(con);
+			class HistorySaver extends Config_jdoManager {
+				private HashMap<String,Object> m_fields = new HashMap<String,Object>();
+				public HistorySaver(java.sql.Connection con){
+					super(con);
+				}
+				protected void handleAfterInsert(Config_jdo record) {
+					System.out.println("ConfigManager: record inserted");
+				}
+				protected void handleAfterUpdate(Config_jdo record) {
+					if(m_fields.size() > 0){
+						ConfigManager.this.saveHistory(record,m_fields);
+					}
+				}
+				protected void handleBeforeUpdate(Config_jdo record) {
+					for(int i = 0; i < record.getDirtyFieldCount();i++){
+						try{
+							String fieldname = record.getDirtyField(i);
+							Object value = record.getField(fieldname)[0];
+							m_fields.put(fieldname, value);
+						}catch(Exception e){
+							e.printStackTrace();
+						}
+					}
+					if(record.getDirtyFieldCount() > 0){
+						record.setModified_by(session.getUserData().getUsername());
+						record.setModified_date(new java.sql.Timestamp(new java.util.Date().getTime()));
+					}
+				}
+			}
+			Config_jdoManager man = new HistorySaver(con);
 			man.save(this.m_cfg);
 		}catch(Exception e){
 			throw e;
@@ -380,18 +507,46 @@ public class ConfigManager {
 			try{con.close();}catch(Exception e){}
 		}
 	}
+	public void saveHistory(Config_jdo record, HashMap<String, Object> mFields) {
+		java.sql.Connection con = null;
+		try{
+			con = DataServiceImpl.getDatabase().getConnection();
+			History_jdoManager man = new History_jdoManager(con);
+			History_jdo history = man.newHistory();
+			history.setName(record.getName());
+			history.setTitle(record.getTitle());
+			history.setDescription(record.getDescription());
+			history.setParent(record.getParent());
+			history.setObjectid(record.getId());
+			history.setType(record.getType());
+			history.setModified_by(record.getModified_by());
+			history.setModified_date(record.getModified_date());
+			history.setModifier_host(record.getModifier_host());
+			for(int i = 0; i < mFields.keySet().size();i++){
+				String key = mFields.keySet().toArray(new String[0])[i];
+				Object val = mFields.get(key);
+				if(key.equals(history.BINARY_VALUE)){
+					history.setBinary_value((byte[])val);
+				}else if(key.equals(history.BOOL_VALUE)){
+					history.setBool_value((Integer)val);
+				}else if(key.equals(history.DATE_VALUE)){
+					history.setDate_value((java.sql.Timestamp)val);
+				}else if(key.equals(history.NUMBER_VALUE)){
+					history.setNumber_value((BigDecimal)val);
+				}else if(key.equals(history.STRING_VALUE)){
+					history.setString_value((String)val);
+				}else if(key.equals(history.TEXT_VALUE)){
+					history.setText_value((String)val);
+				}
+			}
+			man.save(history);
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			try{con.close();}catch(Exception e){}
+		}
+	}
 	public String getName() {
 		return this.m_cfg == null ? null : this.m_cfg.getName();
-	}
-	public void setValue(String string) throws Exception {
-		if(this.getType().equals(TYPE.STRING)){
-			this.m_cfg.setString_value(string);
-			this.save();
-		}else if(this.getType().equals(TYPE.TEXT)){
-			this.m_cfg.setText_value(string);
-			this.save();
-		}else{
-			throw new Exception("Invalid type");
-		}
 	}
 }

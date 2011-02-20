@@ -23,8 +23,14 @@ public class Config_jdoManager {
   private final static String NEXT_SQL = "Select max(id) +1 from #TABLE#";
   public final static String FIELDS = "#TABLE#.ID,#TABLE#.NAME,#TABLE#.PARENT,#TABLE#.TYPE,#TABLE#.TITLE,#TABLE#.DESCRIPTION,#TABLE#.STRING_VALUE,#TABLE#.NUMBER_VALUE,#TABLE#.BOOL_VALUE,#TABLE#.DATE_VALUE,#TABLE#.TEXT_VALUE,#TABLE#.BINARY_VALUE,#TABLE#.CREATED_BY,#TABLE#.CREATED_DATE,#TABLE#.MODIFIED_BY,#TABLE#.MODIFIED_DATE,#TABLE#.MODIFIER_HOST";
   private String TABLE = "CONFIG";
+  private boolean debug = false;
   public Config_jdoManager(Connection con){
     this.m_con = con;
+    try{
+    	if(System.getProperty("debug").equals("Y")){
+    		debug = true;
+    	}
+    }catch(Exception e){}
   }
   protected Connection getConnection(){
     return this.m_con;
@@ -109,7 +115,7 @@ Config_jdo retval = null;
       }
       if(count > 0){
       // Update
-        System.out.println("Updating...");
+        if(debug) System.out.println("Updating...");
         this.handleBeforeUpdate(record);
         String update_sql = this.getSQL(UPDATE);
         int dirtyfieldcount = 0;
@@ -143,7 +149,7 @@ Config_jdo retval = null;
         if(updated == 0){
           throw new Exception("No rows updated.");
         }
-        System.out.println(updated +" rows updated.");
+        if(debug) System.out.println(updated +" rows updated.");
         this.handleAfterUpdate(record);
         /**
          * Mark all fields as clean
@@ -152,7 +158,7 @@ Config_jdo retval = null;
         update_ps.close();
       }else{
         // Insert
-        System.out.println("Inserting...");
+        if(debug) System.out.println("Inserting...");
         String insert_sql = this.getSQL(INSERT);
         String insert_pre,insert_post;
         insert_pre = "("; insert_post = "(";
@@ -170,7 +176,7 @@ Config_jdo retval = null;
               if(count_rs.getBigDecimal(1) == null){
                 insert_post += "0";
               }else{
-                insert_post += "("+this.getSQL(NEXT_SQL)+")";
+                insert_post += count_rs.getBigDecimal(1);
               }
             }else{
               insert_post += "0";
@@ -206,7 +212,7 @@ Config_jdo retval = null;
           field_index ++;
         }
         int updated = insert_ps.executeUpdate();
-        String max_sql = "select max("+record.getIdentityName()+") from config";
+        String max_sql = "select max("+record.getIdentityName()+") from "+TABLE;
         PreparedStatement max_ps = con.prepareStatement(max_sql);
         ResultSet max_rs = max_ps.executeQuery();
         if(max_rs.next()){
@@ -221,7 +227,7 @@ Config_jdo retval = null;
           this.handleAfterInsert(record);
           this.setAllClean(record);
         }
-        System.out.println(updated+" rows added.");
+        if(debug) System.out.println(updated+" rows added.");
         insert_ps.close();
       }
   }finally{
@@ -247,10 +253,11 @@ Config_jdo retval = null;
     PreparedStatement ps = con.prepareStatement(sql_delete);
     ps.setObject(1, record.getField(IDENTITY)[0]);
     int updated = ps.executeUpdate();
-    System.out.println(updated +" records deleted.");
+    if(debug) System.out.println(updated +" records deleted.");
   }
   public PreparedStatement prepareStatement(String query) throws SQLException{
     String sql = this.getSQL(QUERY.split("[~]")[0]+FIELDS+QUERY.split("[~]")[1] + query);
+    if(debug) System.out.println(sql);
     PreparedStatement ps = this.getConnection().prepareStatement(sql);
     return ps;
   }
