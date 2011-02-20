@@ -496,6 +496,9 @@ public class ConfigManager {
 				}
 				protected void handleBeforeUpdate(Config_jdo record) {
 					Config_jdo old_record = this.getConfig(record.getId());
+					record.setModified_by(session.getUserData().getUsername());
+					record.setModified_date(new java.sql.Timestamp(new java.util.Date().getTime()));
+					record.setModifier_host(session.getCurrentHost());
 					this.m_old_record = old_record;
 				}
 			}
@@ -519,6 +522,12 @@ public class ConfigManager {
 			history.setParent(record.getParent());
 			history.setObjectid(record.getId());
 			history.setType(record.getType());
+			history.setBinary_value(record.getBinary_value());
+			history.setBool_value(record.getBool_value());
+			history.setDate_value(record.getDate_value());
+			history.setNumber_value(record.getNumber_value());
+			history.setString_value(record.getString_value());
+			history.setText_value(record.getText_value());
 			history.setModified_by(record.getModified_by());
 			history.setModified_date(record.getModified_date());
 			history.setModifier_host(record.getModifier_host());
