@@ -22,6 +22,7 @@ public class ConfigManager {
 	private byte[] m_bin_value;
 	private Timestamp m_date_value;
 	private SessionData m_userdata;
+	private String m_content_type;
 	public ConfigManager(String path,String default_value,TYPE type,String title,String description,SessionData session){
 		try {
 			this.m_userdata = session;
@@ -40,10 +41,11 @@ public class ConfigManager {
 			e.printStackTrace();
 		}
 	}
-	public ConfigManager(String path,byte[] default_value,String title,String description,SessionData session){
+	public ConfigManager(String path,byte[] default_value,String content_type,String title,String description,SessionData session){
 		try{
 			this.m_userdata = session;
 			this.m_bin_value = default_value;
+			this.m_content_type = content_type;
 			this.createConfigValue(path, TYPE.BINARY, title, description);
 		}catch(Exception e){
 			e.printStackTrace();
@@ -167,6 +169,7 @@ public class ConfigManager {
 	private void setDBValue(Config_jdo record) throws Exception {
 		if(this.m_type.equals(TYPE.BINARY)){
 			record.setBinary_value(this.m_bin_value);
+			record.setContent_type(this.m_content_type);
 		}else if(this.m_type.equals(TYPE.BOOLEAN)){
 			record.setBool_value(new Integer(this.m_default_value));
 		}else if(this.m_type.equals(TYPE.DATETIME)){
@@ -279,6 +282,16 @@ public class ConfigManager {
 	}
 	private ConfigManager(){
 
+	}
+	public byte[] getBinary() throws Exception{
+		if(this.getType().equals(TYPE.BINARY)){
+			return this.m_cfg.getBinary_value();
+		}else{
+			throw new Exception("Invalid type");
+		}
+	}
+	public String getContentType() {
+		return this.m_cfg.getContent_type();
 	}
 	public String getString() throws Exception{
 		if(this.getType().equals(TYPE.STRING)){
@@ -471,32 +484,19 @@ public class ConfigManager {
 		try{
 			con = DataServiceImpl.getDatabase().getConnection();
 			class HistorySaver extends Config_jdoManager {
-				private HashMap<String,Object> m_fields = new HashMap<String,Object>();
+				private Config_jdo m_old_record;
 				public HistorySaver(java.sql.Connection con){
 					super(con);
 				}
 				protected void handleAfterInsert(Config_jdo record) {
-					System.out.println("ConfigManager: record inserted");
+					if(debug) System.out.println("ConfigManager: record inserted");
 				}
 				protected void handleAfterUpdate(Config_jdo record) {
-					if(m_fields.size() > 0){
-						ConfigManager.this.saveHistory(record,m_fields);
-					}
+					ConfigManager.this.saveHistory(this.m_old_record);
 				}
 				protected void handleBeforeUpdate(Config_jdo record) {
-					for(int i = 0; i < record.getDirtyFieldCount();i++){
-						try{
-							String fieldname = record.getDirtyField(i);
-							Object value = record.getField(fieldname)[0];
-							m_fields.put(fieldname, value);
-						}catch(Exception e){
-							e.printStackTrace();
-						}
-					}
-					if(record.getDirtyFieldCount() > 0){
-						record.setModified_by(session.getUserData().getUsername());
-						record.setModified_date(new java.sql.Timestamp(new java.util.Date().getTime()));
-					}
+					Config_jdo old_record = this.getConfig(record.getId());
+					this.m_old_record = old_record;
 				}
 			}
 			Config_jdoManager man = new HistorySaver(con);
@@ -507,7 +507,7 @@ public class ConfigManager {
 			try{con.close();}catch(Exception e){}
 		}
 	}
-	public void saveHistory(Config_jdo record, HashMap<String, Object> mFields) {
+	public void saveHistory(Config_jdo record) {
 		java.sql.Connection con = null;
 		try{
 			con = DataServiceImpl.getDatabase().getConnection();
@@ -522,23 +522,7 @@ public class ConfigManager {
 			history.setModified_by(record.getModified_by());
 			history.setModified_date(record.getModified_date());
 			history.setModifier_host(record.getModifier_host());
-			for(int i = 0; i < mFields.keySet().size();i++){
-				String key = mFields.keySet().toArray(new String[0])[i];
-				Object val = mFields.get(key);
-				if(key.equals(history.BINARY_VALUE)){
-					history.setBinary_value((byte[])val);
-				}else if(key.equals(history.BOOL_VALUE)){
-					history.setBool_value((Integer)val);
-				}else if(key.equals(history.DATE_VALUE)){
-					history.setDate_value((java.sql.Timestamp)val);
-				}else if(key.equals(history.NUMBER_VALUE)){
-					history.setNumber_value((BigDecimal)val);
-				}else if(key.equals(history.STRING_VALUE)){
-					history.setString_value((String)val);
-				}else if(key.equals(history.TEXT_VALUE)){
-					history.setText_value((String)val);
-				}
-			}
+			history.setContent_type(record.getContent_type());
 			man.save(history);
 		}catch(Exception e){
 			e.printStackTrace();
