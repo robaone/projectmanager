@@ -1,9 +1,20 @@
 package com.robaone.gwt.projectmanager.server;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
 import java.math.BigDecimal;
+import java.sql.Clob;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.HashMap;
 
+import org.hsqldb.jdbc.JDBCBlobClient;
+import org.hsqldb.jdbc.JDBCClobClient;
+import org.hsqldb.jdbc.JDBCConnection;
+import org.hsqldb.types.BlobDataID;
+import org.hsqldb.types.ClobDataID;
 import org.json.JSONObject;
 
 import com.robaone.gwt.projectmanager.server.business.ProjectDatabase;
@@ -23,6 +34,7 @@ public class ConfigManager {
 	private Timestamp m_date_value;
 	private SessionData m_userdata;
 	private String m_content_type;
+	private boolean m_save_history = true;
 	public ConfigManager(ConfigStruct cfg,SessionData session){
 		try{
 			this.m_userdata = session;
@@ -555,30 +567,37 @@ public class ConfigManager {
 	public void saveHistory(Config_jdo record) {
 		java.sql.Connection con = null;
 		try{
-			con = DataServiceImpl.getDatabase().getConnection();
-			History_jdoManager man = new History_jdoManager(con);
-			History_jdo history = man.newHistory();
-			history.setName(record.getName());
-			history.setTitle(record.getTitle());
-			history.setDescription(record.getDescription());
-			history.setParent(record.getParent());
-			history.setObjectid(record.getId());
-			history.setType(record.getType());
-			history.setBinary_value(record.getBinary_value());
-			history.setBool_value(record.getBool_value());
-			history.setDate_value(record.getDate_value());
-			history.setNumber_value(record.getNumber_value());
-			history.setString_value(record.getString_value());
-			history.setText_value(record.getText_value());
-			history.setModified_by(record.getModified_by());
-			history.setModified_date(record.getModified_date());
-			history.setModifier_host(record.getModifier_host());
-			history.setContent_type(record.getContent_type());
-			man.save(history);
-		}catch(Exception e){
-			e.printStackTrace();
-		}finally{
-			try{con.close();}catch(Exception e){}
+			if(System.getProperty("history").equals("N")){
+				this.m_save_history = false;
+			}
+		}catch(Exception e){}
+		if(this.m_save_history){
+			try{
+				con = DataServiceImpl.getDatabase().getConnection();
+				History_jdoManager man = new History_jdoManager(con);
+				History_jdo history = man.newHistory();
+				history.setName(record.getName());
+				history.setTitle(record.getTitle());
+				history.setDescription(record.getDescription());
+				history.setParent(record.getParent());
+				history.setObjectid(record.getId());
+				history.setType(record.getType());
+				history.setBinary_value(record.getBinary_value());
+				history.setBool_value(record.getBool_value());
+				history.setDate_value(record.getDate_value());
+				history.setNumber_value(record.getNumber_value());
+				history.setString_value(record.getString_value());
+				history.setText_value(record.getText_value());
+				history.setModified_by(record.getModified_by());
+				history.setModified_date(record.getModified_date());
+				history.setModifier_host(record.getModifier_host());
+				history.setContent_type(record.getContent_type());
+				man.save(history);
+			}catch(Exception e){
+				e.printStackTrace();
+			}finally{
+				try{con.close();}catch(Exception e){}
+			}
 		}
 	}
 	public String getName() {
@@ -663,5 +682,64 @@ public class ConfigManager {
 	public void setContentType(String string,SessionData session) throws Exception {
 		this.m_cfg.setContent_type(string);
 		this.save(session);
+	}
+	public static String getClobString(Clob clob) {
+		try {
+			Reader r = ((java.sql.Clob)clob).getCharacterStream();
+			StringBuffer sbuff = new StringBuffer();
+			char[] cbuf = new char[500];
+			for(int i = r.read(cbuf); i > -1; i = r.read(cbuf)){
+				sbuff.append(cbuf, 0, i);
+			}
+			return sbuff.toString();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	public static String getClobString(ClobDataID clobDataID) {
+		java.sql.Connection con = null;
+		try{
+			con = DataServiceImpl.getDatabase().getConnection();
+			JDBCConnection jcon = (JDBCConnection)con;
+			JDBCClobClient client = new JDBCClobClient(jcon.getSession(),clobDataID);
+			Reader r = client.getCharacterStream();
+			char[] cbuf = new char[500];
+			StringBuffer sbuf = new StringBuffer();
+			for(int i = r.read(cbuf);i > -1;i = r.read(cbuf)){
+				sbuf.append(cbuf,0,i);
+			}
+			return sbuf.toString();
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			try{con.close();}catch(Exception e){}
+		}
+		return null;
+	}
+	public static byte[] getBlobBytes(BlobDataID blobDataID) {
+		java.sql.Connection con = null;
+		try{
+			con = DataServiceImpl.getDatabase().getConnection();
+			JDBCConnection jcon = (JDBCConnection)con;
+			JDBCBlobClient bclient = new JDBCBlobClient(jcon.getSession(),blobDataID);
+			ByteArrayOutputStream bout = new ByteArrayOutputStream();
+			byte[] buff = new byte[500];
+			InputStream in = bclient.getBinaryStream();
+			for(int i = in.read(buff);i > -1;i = in.read(buff)){
+				bout.write(buff, 0, i);
+			}
+			return bout.toByteArray();
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			try{con.close();}catch(Exception e){}
+		}
+		return null;
+	}
+	public void supressHistory() {
+		this.m_save_history  = false;
 	}
 }
