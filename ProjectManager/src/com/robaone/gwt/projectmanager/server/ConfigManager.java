@@ -23,6 +23,25 @@ public class ConfigManager {
 	private Timestamp m_date_value;
 	private SessionData m_userdata;
 	private String m_content_type;
+	public ConfigManager(ConfigStruct cfg,SessionData session){
+		try{
+			this.m_userdata = session;
+			if(cfg.getType().equals(TYPE.DATETIME)){
+				this.m_date_value = cfg.getDefault_time_val();
+				this.createConfigValue(cfg.getPath(), TYPE.DATETIME, cfg.getTitle(), cfg.getDescription());
+			}else if(cfg.getType().equals(TYPE.STRING) || cfg.getType().equals(TYPE.TEXT) ||
+					cfg.getType().equals(TYPE.JSON)){
+				this.m_default_value = cfg.getDefault_str_val();
+				this.createConfigValue(cfg.getPath(), cfg.getType(), cfg.getTitle(), cfg.getDescription());
+			}else if(cfg.getType().equals(TYPE.BOOLEAN)){
+				this.m_default_value = cfg.getDefault_str_val();
+				this.createConfigValue(cfg.getPath(), cfg.getType(), cfg.getTitle(), cfg.getDescription());
+			}
+
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
 	public ConfigManager(String path,String default_value,TYPE type,String title,String description,SessionData session){
 		try {
 			this.m_userdata = session;
@@ -64,11 +83,21 @@ public class ConfigManager {
 		try{
 			this.m_userdata = session;
 			this.m_default_value = default_value ? "1" : "0";
+			this.createConfigValue(path, TYPE.BOOLEAN, title, description);
 		}catch(Exception e){
 			e.printStackTrace();
 		}
 	}
-	private ConfigManager(String path,JSONObject default_value,String title,String description,SessionData session){
+	public ConfigManager(String path,double default_value,String title,String description,SessionData session){
+		try{
+			this.m_userdata = session;
+			this.m_default_value = default_value + "";
+			this.createConfigValue(path, TYPE.DOUBLE, title, description);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+	public ConfigManager(String path,JSONObject default_value,String title,String description,SessionData session){
 		try{
 			this.m_userdata = session;
 			this.m_default_value = default_value.toString();
@@ -302,7 +331,7 @@ public class ConfigManager {
 			throw new Exception("Invalid type");
 		}
 	}
-	private TYPE getType() throws Exception {
+	public TYPE getType() throws Exception {
 		if(this.m_cfg == null){
 			return this.m_type;
 		}else{
@@ -339,10 +368,16 @@ public class ConfigManager {
 	}
 	public Double getDouble() throws Exception {
 		if(this.getType().equals(TYPE.DOUBLE)){
-			return this.m_cfg.getNumber_value().doubleValue();
+			return round4(this.m_cfg.getNumber_value().doubleValue());
 		}else{
 			throw new Exception("Invalid type");
 		}
+	}
+	public static double round4(double num) {
+		double result = num * 10000;
+		result = Math.round(result);
+		result = result / 10000;
+		return result;
 	}
 	public Boolean getBoolean() throws Exception {
 		if(this.getType().equals(TYPE.BOOLEAN)){
@@ -351,6 +386,13 @@ public class ConfigManager {
 			}else{
 				return this.m_cfg.getBool_value() == 1 ? true : false;
 			}
+		}else{
+			throw new Exception("Invalid type");
+		}
+	}
+	public java.sql.Timestamp getDateTime() throws Exception {
+		if(this.getType().equals(TYPE.DATETIME)){
+			return this.m_cfg.getDate_value();
 		}else{
 			throw new Exception("Invalid type");
 		}
@@ -437,7 +479,7 @@ public class ConfigManager {
 		}
 	}
 	public void setValue(boolean val,SessionData session) throws Exception {
-		if(this.getType().equals(TYPE.DOUBLE)){
+		if(this.getType().equals(TYPE.BOOLEAN)){
 			this.m_cfg.setBool_value(val ? 1 : 0);
 			this.save(session);
 		}else{
@@ -541,5 +583,85 @@ public class ConfigManager {
 	}
 	public String getName() {
 		return this.m_cfg == null ? null : this.m_cfg.getName();
+	}
+	public class ConfigStruct{
+		private String name;
+		private TYPE type;
+		private String title;
+		private String description;
+		private String m_default_str_val;
+		private boolean m_default_bool_val;
+		private java.sql.Timestamp m_default_time_val;
+		private byte[] m_default_bytes;
+		private String m_content_type;
+		private String m_path;
+		public ConfigStruct(){
+
+		}
+		public String getPath() {
+			return this.m_path;
+		}
+		public void setPath(String path){
+			this.m_path = path;
+		}
+		public void setName(String name) {
+			this.name = name;
+		}
+		public String getName() {
+			return name;
+		}
+		public void setType(TYPE type) {
+			this.type = type;
+		}
+		public TYPE getType() {
+			return type;
+		}
+		public void setTitle(String title) {
+			this.title = title;
+		}
+		public String getTitle() {
+			return title;
+		}
+		public void setDescription(String description) {
+			this.description = description;
+		}
+		public String getDescription() {
+			return description;
+		}
+		public void setDefault_str_val(String m_default_str_val) {
+			this.m_default_str_val = m_default_str_val;
+		}
+		public String getDefault_str_val() {
+			return m_default_str_val;
+		}
+		public void setDefault_bool_val(boolean m_default_bool_val) {
+			this.m_default_bool_val = m_default_bool_val;
+		}
+		public boolean isDefault_bool_val() {
+			return m_default_bool_val;
+		}
+		public void setDefault_time_val(java.sql.Timestamp m_default_time_val) {
+			this.m_default_time_val = m_default_time_val;
+		}
+		public java.sql.Timestamp getDefault_time_val() {
+			return m_default_time_val;
+		}
+		public void setDefault_bytes(byte[] m_default_bytes) {
+			this.m_default_bytes = m_default_bytes;
+		}
+		public byte[] getDefault_bytes() {
+			return m_default_bytes;
+		}
+		public void setContent_type(String m_content_type) {
+			this.m_content_type = m_content_type;
+		}
+		public String getContent_type() {
+			return m_content_type;
+		}
+
+	}
+	public void setContentType(String string,SessionData session) throws Exception {
+		this.m_cfg.setContent_type(string);
+		this.save(session);
 	}
 }
