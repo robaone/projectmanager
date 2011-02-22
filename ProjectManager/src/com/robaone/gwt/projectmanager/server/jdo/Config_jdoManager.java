@@ -131,7 +131,8 @@ public class Config_jdoManager {
 				PreparedStatement update_ps = con.prepareStatement(update_sql);
 
 				for(int i = 0; i < record.getDirtyFieldCount();i++){
-					Object value = record.getField(record.getDirtyField(i))[0];
+					String fieldname = record.getDirtyField(i);
+					Object value = record.getField(fieldname)[0];
 					if(value instanceof java.sql.Timestamp){
 						update_ps.setObject(i+1,value);
 					}else if(value instanceof java.sql.Date){
@@ -139,6 +140,8 @@ public class Config_jdoManager {
 					}else if(value instanceof java.util.Date){
 						value = new java.sql.Timestamp(((java.util.Date)value).getTime());
 						update_ps.setObject(i+1,value);
+					}else if(value == null){
+						update_ps.setNull(i+1, this.getSQLType(fieldname));
 					}else{
 						update_ps.setObject(i+1,value);
 					}
@@ -202,13 +205,14 @@ public class Config_jdoManager {
 						insert_ps.setObject(field_index,val[0]);
 					}else if(val[0] instanceof java.sql.Date){
 						insert_ps.setObject(field_index,new java.sql.Timestamp(((java.sql.Date)val[0]).getTime()));
-					}else
-						if(val[0] instanceof java.util.Date){
-							val[0] = new java.sql.Date(((java.util.Date)val[0]).getTime());
-							insert_ps.setObject(field_index,val[0]);
-						}else{
-							insert_ps.setObject(field_index,val[0]);
-						}
+					}else if(val[0] instanceof java.util.Date){
+						val[0] = new java.sql.Date(((java.util.Date)val[0]).getTime());
+						insert_ps.setObject(field_index,val[0]);
+					}else if(val[0] == null){
+						insert_ps.setNull(field_index, this.getSQLType(fieldname));
+					}else{
+						insert_ps.setObject(field_index,val[0]);
+					}
 					field_index ++;
 				}
 				int updated = insert_ps.executeUpdate();
@@ -270,5 +274,27 @@ public class Config_jdoManager {
 		String retval = "";
 		retval = sql.replaceAll("#TABLE#",TABLE);
 		return retval;
+	}
+	private int getSQLType(String fieldname) {
+		java.util.HashMap map = new java.util.HashMap();
+		map.put(Config_jdo.ID, java.sql.Types.NUMERIC);
+		map.put(Config_jdo.NAME, java.sql.Types.VARCHAR);
+		map.put(Config_jdo.PARENT, java.sql.Types.NUMERIC);
+		map.put(Config_jdo.TYPE, java.sql.Types.INTEGER);
+		map.put(Config_jdo.TITLE, java.sql.Types.VARCHAR);
+		map.put(Config_jdo.DESCRIPTION, java.sql.Types.CLOB);
+		map.put(Config_jdo.STRING_VALUE, java.sql.Types.VARCHAR);
+		map.put(Config_jdo.NUMBER_VALUE, java.sql.Types.NUMERIC);
+		map.put(Config_jdo.BOOL_VALUE, java.sql.Types.TINYINT);
+		map.put(Config_jdo.DATE_VALUE,java.sql.Types.TIMESTAMP);
+		map.put(Config_jdo.TEXT_VALUE, java.sql.Types.CLOB);
+		map.put(Config_jdo.BINARY_VALUE, java.sql.Types.BLOB);
+		map.put(Config_jdo.CONTENT_TYPE, java.sql.Types.VARCHAR);
+		map.put(Config_jdo.MODIFIED_BY, java.sql.Types.VARCHAR);
+		map.put(Config_jdo.MODIFIED_DATE,java.sql.Types.TIMESTAMP);
+		map.put(Config_jdo.MODIFIER_HOST, java.sql.Types.VARCHAR);
+		map.put(Config_jdo.CREATED_BY, java.sql.Types.VARCHAR);
+		map.put(Config_jdo.CREATED_DATE, java.sql.Types.TIMESTAMP);
+		return ((Integer)map.get(fieldname)).intValue();
 	}
 }

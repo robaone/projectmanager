@@ -476,7 +476,7 @@ public class ConfigManager {
 	}
 	public void setValue(double val,SessionData session) throws Exception {
 		if(this.getType().equals(TYPE.DOUBLE)){
-			this.m_cfg.setNumber_value(new BigDecimal(val));
+			this.m_cfg.setNumber_value(new BigDecimal(val+""));
 			this.save(session);
 		}else{
 			throw new Exception("Invalid type");
