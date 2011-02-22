@@ -12,6 +12,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.robaone.gwt.projectmanager.client.data.Category;
 import com.robaone.gwt.projectmanager.client.data.ContractorData;
+import com.robaone.gwt.projectmanager.client.data.UserData;
 import com.robaone.gwt.projectmanager.client.ui.ContractorListingInfoUI;
 import com.robaone.gwt.projectmanager.client.ui.ContractorListingUI;
 import com.robaone.gwt.projectmanager.client.ui.ContractorProfileUI;

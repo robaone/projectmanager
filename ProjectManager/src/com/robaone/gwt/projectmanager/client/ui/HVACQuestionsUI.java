@@ -23,10 +23,10 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.robaone.gwt.projectmanager.client.ProjectConstants;
 import com.robaone.gwt.projectmanager.client.ProjectManager;
-import com.robaone.gwt.projectmanager.client.UserData;
 import com.robaone.gwt.projectmanager.client.data.AnswerType;
 import com.robaone.gwt.projectmanager.client.data.Contractor;
 import com.robaone.gwt.projectmanager.client.data.Question;
+import com.robaone.gwt.projectmanager.client.data.UserData;
 
 public class HVACQuestionsUI extends Composite{
 

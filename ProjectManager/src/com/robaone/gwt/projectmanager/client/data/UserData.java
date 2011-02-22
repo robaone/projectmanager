@@ -1,8 +1,7 @@
-package com.robaone.gwt.projectmanager.client;
+package com.robaone.gwt.projectmanager.client.data;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 import com.robaone.gwt.projectmanager.client.ProjectConstants.USER_TYPE;
-import com.robaone.gwt.projectmanager.client.data.Contractor;
 
 public class UserData implements IsSerializable {
 	private String username;

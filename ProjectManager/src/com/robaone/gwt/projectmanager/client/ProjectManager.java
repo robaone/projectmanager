@@ -3,6 +3,7 @@ package com.robaone.gwt.projectmanager.client;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import com.robaone.gwt.projectmanager.client.data.UserData;
 import com.robaone.gwt.projectmanager.client.ui.ArticleFeedUI;
 import com.robaone.gwt.projectmanager.client.ui.ContractorListingUI;
 import com.robaone.gwt.projectmanager.client.ui.FeaturedUI;

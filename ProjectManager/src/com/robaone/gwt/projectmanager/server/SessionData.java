@@ -1,7 +1,7 @@
 package com.robaone.gwt.projectmanager.server;
 
 
-import com.robaone.gwt.projectmanager.client.UserData;
+import com.robaone.gwt.projectmanager.client.data.UserData;
 
 public class SessionData {
 	private UserData user_data;

@@ -7,6 +7,7 @@ import com.robaone.gwt.projectmanager.client.data.Contractor;
 import com.robaone.gwt.projectmanager.client.data.ContractorData;
 import com.robaone.gwt.projectmanager.client.data.ContractorListing;
 import com.robaone.gwt.projectmanager.client.data.PasswordResetResponse;
+import com.robaone.gwt.projectmanager.client.data.UserData;
 
 /**
  * The async counterpart of <code>GreetingService</code>.

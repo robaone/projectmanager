@@ -1,9 +1,9 @@
 package com.robaone.gwt.projectmanager.server.interfaces;
 
 import com.robaone.gwt.projectmanager.client.DataServiceResponse;
-import com.robaone.gwt.projectmanager.client.UserData;
 import com.robaone.gwt.projectmanager.client.ProjectConstants.USER_TYPE;
 import com.robaone.gwt.projectmanager.client.data.PasswordResetResponse;
+import com.robaone.gwt.projectmanager.client.data.UserData;
 
 public interface UserManagerInterface {
 

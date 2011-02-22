@@ -12,17 +12,17 @@ import javax.servlet.http.HttpServletResponse;
 import com.robaone.gwt.projectmanager.client.DataService;
 import com.robaone.gwt.projectmanager.client.DataServiceResponse;
 import com.robaone.gwt.projectmanager.client.ProjectConstants;
-import com.robaone.gwt.projectmanager.client.UserData;
 import com.robaone.gwt.projectmanager.client.data.Category;
 import com.robaone.gwt.projectmanager.client.data.Contractor;
 import com.robaone.gwt.projectmanager.client.data.ContractorData;
 import com.robaone.gwt.projectmanager.client.data.ContractorListing;
 import com.robaone.gwt.projectmanager.client.data.PasswordResetResponse;
+import com.robaone.gwt.projectmanager.client.data.UserData;
 import com.robaone.gwt.projectmanager.server.ProjectDebug.SOURCE;
-import com.robaone.gwt.projectmanager.server.business.ProjectDatabase;
 import com.robaone.gwt.projectmanager.server.interfaces.ContractorManagerInterface;
 import com.robaone.gwt.projectmanager.server.interfaces.ProjectLogManagerInterface;
 import com.robaone.gwt.projectmanager.server.interfaces.UserManagerInterface;
+import com.robaone.gwt.projectmanager.server.util.ProjectDatabase;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 /**

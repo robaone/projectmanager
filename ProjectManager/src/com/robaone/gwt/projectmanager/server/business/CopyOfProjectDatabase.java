@@ -4,10 +4,10 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Vector;
 
-import com.robaone.gwt.projectmanager.client.UserData;
-import com.robaone.gwt.projectmanager.server.ConfigManager;
+import com.robaone.gwt.projectmanager.client.data.UserData;
 import com.robaone.gwt.projectmanager.server.SessionData;
-import com.robaone.gwt.projectmanager.server.ConfigManager.TYPE;
+import com.robaone.gwt.projectmanager.server.util.ConfigManager;
+import com.robaone.gwt.projectmanager.server.util.ConfigManager.TYPE;
 
 public class CopyOfProjectDatabase {
 	private java.sql.Connection m_con;

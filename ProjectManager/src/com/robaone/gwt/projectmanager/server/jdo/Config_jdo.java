@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.Date;
 
-import com.robaone.gwt.projectmanager.server.ConfigManager;
+import com.robaone.gwt.projectmanager.server.util.ConfigManager;
 import com.robaone.jdo.RO_JDO;
 
 

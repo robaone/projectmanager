@@ -1,33 +1,28 @@
-package com.robaone.gwt.projectmanager.server.business;
+package com.robaone.gwt.projectmanager.server.util;
 
+import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Vector;
 
-import com.robaone.gwt.projectmanager.client.UserData;
-import com.robaone.gwt.projectmanager.server.ConfigManager;
+import com.robaone.gwt.projectmanager.client.data.UserData;
 import com.robaone.gwt.projectmanager.server.SessionData;
-import com.robaone.gwt.projectmanager.server.ConfigManager.TYPE;
+import com.robaone.gwt.projectmanager.server.util.ConfigManager.TYPE;
 
 public class ProjectDatabase {
-	private java.sql.Connection m_con;
 	private String[] m_driver = {"org.hsqldb.jdbc.JDBCDriver","com.mysql.jdbc.Driver","com.microsoft.sqlserver.jdbc.SQLServerDriver"};
 	private String[] m_url = {"jdbc:hsqldb:mem:mymemdb","jdbc:mysql://localhost:3306/test","jdbc:sqlserver://192.168.1.29;databaseName=eStmtDev;integratedSecurity=true"};
 	private String[] m_username = {"SA","root",""};
 	private String[] m_password = {"","",""};
+	private Connection m_con;
 	public ProjectDatabase() throws Exception{
-		int dr = 0;
 		try{
-			dr = Integer.parseInt(System.getProperty("driver_choice"));
-		}catch(Exception e){
-		}
-		
-		java.sql.Connection c = this.getConnection();
-		m_con = c;
-		try{
+			this.m_con =  this.getConnection();
 			this.createDatabaseTables();
 		}catch(Exception e){
 			throw new SQLException(e.getMessage());
+		}finally{
+			try{this.m_con.close();}catch(Exception e){}
 		}
 	}
 	private String createConfigTableSQL() {
@@ -78,7 +73,7 @@ public class ProjectDatabase {
 	private String getBlobType() {
 		int dr = 0;
 		try{
-			dr = Integer.parseInt(System.getProperty("driver_choice"));
+			dr = this.getDriverChoice();
 		}catch(Exception e){}
 		if(dr == 0 || dr == 1){
 			return "blob";
@@ -87,10 +82,21 @@ public class ProjectDatabase {
 		}
 		return null;
 	}
+	private int getDriverChoice() {
+		String driver = System.getProperty("db_driver");
+		if(driver.startsWith("com.hsqldb.")){
+			return 0;
+		}else if(driver.startsWith("com.mysql.")){
+			return 1;
+		}else if(driver.startsWith("com.microsoft.sqlserver.")){
+			return 2;
+		}
+		return 0;
+	}
 	private String getDateType() {
 		int dr = 0;
 		try{
-			dr = Integer.parseInt(System.getProperty("driver_choice"));
+			dr = this.getDriverChoice();
 		}catch(Exception e){}
 		if(dr == 0){
 			return "timestamp";
@@ -104,7 +110,7 @@ public class ProjectDatabase {
 	private String getTextType() {
 		int dr = 0;
 		try{
-			dr = Integer.parseInt(System.getProperty("driver_choice"));
+			dr = this.getDriverChoice();
 		}catch(Exception e){}
 		if(dr == 0){
 			return "clob";
@@ -131,6 +137,7 @@ public class ProjectDatabase {
 			ConfigManager root_user = new ConfigManager("/administration/users/root/password","password",TYPE.STRING,"The superuser password","This is the password that you need to gain complete access to the application.",session);
 			System.out.println("root password set to "+root_user.getString());
 			ConfigManager root_role = new ConfigManager("/administration/users/root/role","0",TYPE.INT,"The super user role","Valid roles are number 0 for superuser through x",session);
+			System.out.println("root role set to "+root_role.getInt());
 		}catch(Exception e){
 			if(!e.getMessage().startsWith("object name already exists") && !e.getMessage().endsWith("already exists")
 					&& !e.getMessage().startsWith("There is already an object named")){
@@ -142,15 +149,6 @@ public class ProjectDatabase {
 	private String createUniqueConfigConstraint(){
 		String str = "alter table CONFIG add constraint UC_NAME UNIQUE (NAME,PARENT"+
 		");";
-		return str;
-	}
-	private String initializedata() {
-		String str = "insert into config (ID,NAME,TYPE,TITLE,DESCRIPTION,CREATED_B"+
-		"Y,CREATED_DATE,MODIFIER_HOST)\n"+
-		"values \n"+
-		"(0,'ROOT',0,'The Root Folder','This is the main folder of wh"+
-		"ich all objects are children.',\n"+
-		"'ROOT',?,'localhost');";
 		return str;
 	}
 	private int executeUpdate(String str, Vector<Object> parameters) throws Exception{
@@ -170,19 +168,18 @@ public class ProjectDatabase {
 		return updated;
 	}
 	public java.sql.Connection getConnection() throws Exception{
-		int dr = 0;
-		try{
-			dr = Integer.parseInt(System.getProperty("driver_choice"));
-		}catch(Exception e){
-		
-		}
+		String driver,url,username,password;
+		driver = System.getProperty("db_driver");
+		url = System.getProperty("db_url");
+		username = System.getProperty("db_username");
+		password = System.getProperty("db_password");
 		try {
-			Class.forName(m_driver[dr] );
+			Class.forName(driver );
 		} catch (Exception e) {
 			System.err.println("ERROR: failed to load JDBC driver.");
 			e.printStackTrace();
 			throw e;
 		}
-		return DriverManager.getConnection(this.m_url[dr], this.m_username[dr], this.m_password[dr]);
+		return DriverManager.getConnection(url, username, password);
 	}
 }

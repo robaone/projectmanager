@@ -2,11 +2,9 @@ package com.robaone.gwt.projectmanager.server.util;
 
 import org.json.JSONObject;
 
-import com.robaone.gwt.projectmanager.client.UserData;
-import com.robaone.gwt.projectmanager.server.ConfigManager;
+import com.robaone.gwt.projectmanager.client.data.UserData;
 import com.robaone.gwt.projectmanager.server.SessionData;
-import com.robaone.gwt.projectmanager.server.ConfigManager.TYPE;
-import com.robaone.gwt.projectmanager.server.business.ProjectDatabase;
+import com.robaone.gwt.projectmanager.server.util.ConfigManager.TYPE;
 
 public class TestJdoObjects {
 
@@ -15,7 +13,6 @@ public class TestJdoObjects {
 	 */
 	public static void main(String[] args) {
 		try{
-			System.setProperty("driver_choice","2");
 			@SuppressWarnings("unused")
 			ProjectDatabase database = new ProjectDatabase();
 			SessionData session = new SessionData();
@@ -58,6 +55,10 @@ public class TestJdoObjects {
 				jo.put("bool", true);
 				jo.put("number", 23);
 				ConfigManager json = new ConfigManager("/objects/json",jo,"json","test",session);
+				jo = json.getJSON();
+				jo.put("name", "changed");
+				json.setValue(jo, session);
+				printObjectName(json,"json");
 				ConfigManager counter = new ConfigManager("/objects/counter",i,"counter","How many times the loop has been run",session);
 				counter.supressHistory();
 				counter.setValue(i, session);
@@ -73,8 +74,10 @@ public class TestJdoObjects {
 	}
 	private static void printObjectValue(ConfigManager object1,String name) {
 		try {
-			if(object1.getType().equals(TYPE.STRING) || object1.getType().equals(TYPE.TEXT) || object1.getType().equals(TYPE.JSON)){
+			if(object1.getType().equals(TYPE.STRING) || object1.getType().equals(TYPE.TEXT)){
 				System.out.println(name+".value = "+object1.getString());
+			}else if(object1.getType().equals(TYPE.JSON)){
+				System.out.println(name+".value = "+object1.getJSON().toString());
 			}else if(object1.getType().equals(TYPE.BOOLEAN)){
 				System.out.println(name+".value = "+object1.getBoolean());
 			}else if(object1.getType().equals(TYPE.BINARY)){

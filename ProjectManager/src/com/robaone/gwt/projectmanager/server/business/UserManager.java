@@ -2,15 +2,15 @@ package com.robaone.gwt.projectmanager.server.business;
 
 import com.robaone.gwt.projectmanager.client.DataServiceResponse;
 import com.robaone.gwt.projectmanager.client.ProjectConstants;
-import com.robaone.gwt.projectmanager.client.UserData;
 import com.robaone.gwt.projectmanager.client.data.PasswordResetResponse;
+import com.robaone.gwt.projectmanager.client.data.UserData;
 import com.robaone.gwt.projectmanager.client.ui.RegistrationUI;
-import com.robaone.gwt.projectmanager.server.ConfigManager;
 import com.robaone.gwt.projectmanager.server.DataServiceImpl;
 import com.robaone.gwt.projectmanager.server.FieldVerifier;
 import com.robaone.gwt.projectmanager.server.ProjectDebug;
 import com.robaone.gwt.projectmanager.server.SessionData;
 import com.robaone.gwt.projectmanager.server.interfaces.UserManagerInterface;
+import com.robaone.gwt.projectmanager.server.util.ConfigManager;
 
 public class UserManager extends ProjectConstants implements UserManagerInterface {
 	private DataServiceImpl parent;

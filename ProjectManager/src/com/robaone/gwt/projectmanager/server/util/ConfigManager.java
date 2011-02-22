@@ -1,4 +1,4 @@
-package com.robaone.gwt.projectmanager.server;
+package com.robaone.gwt.projectmanager.server.util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -8,7 +8,6 @@ import java.math.BigDecimal;
 import java.sql.Clob;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.HashMap;
 
 import org.hsqldb.jdbc.JDBCBlobClient;
 import org.hsqldb.jdbc.JDBCClobClient;
@@ -17,7 +16,7 @@ import org.hsqldb.types.BlobDataID;
 import org.hsqldb.types.ClobDataID;
 import org.json.JSONObject;
 
-import com.robaone.gwt.projectmanager.server.business.ProjectDatabase;
+import com.robaone.gwt.projectmanager.server.SessionData;
 import com.robaone.gwt.projectmanager.server.jdo.Config_jdo;
 import com.robaone.gwt.projectmanager.server.jdo.Config_jdoManager;
 import com.robaone.gwt.projectmanager.server.jdo.History_jdo;
@@ -133,7 +132,7 @@ public class ConfigManager {
 			throw new Exception("Variable description needed");
 		}
 		try{
-			ProjectDatabase db = DataServiceImpl.getDatabase();
+			ProjectDatabase db = new ProjectDatabase();
 			con = db.getConnection();
 			Config_jdo record = this.findValue(path,true);
 			this.m_cfg = record;
@@ -166,7 +165,7 @@ public class ConfigManager {
 				java.sql.PreparedStatement ps = null;
 				java.sql.ResultSet rs = null;
 				try{
-					ProjectDatabase db = DataServiceImpl.getDatabase();
+					ProjectDatabase db = new ProjectDatabase();
 					con = db.getConnection();
 					Config_jdoManager man = new Config_jdoManager(con);
 					if(parent == null){
@@ -256,7 +255,8 @@ public class ConfigManager {
 		java.sql.PreparedStatement ps = null;
 		java.sql.ResultSet rs = null;
 		try{
-			con = DataServiceImpl.getDatabase().getConnection();
+			ProjectDatabase db = new ProjectDatabase();
+			con = db.getConnection();
 			Config_jdoManager man = new Config_jdoManager(con);
 			if(object == null){
 				ps = man.prepareStatement(Config_jdo.NAME + " = ? and "+ Config_jdo.PARENT +" is null and "+Config_jdo.TYPE + " = ?");
@@ -307,7 +307,8 @@ public class ConfigManager {
 	public ConfigManager(BigDecimal id) throws Exception {
 		java.sql.Connection con = null;
 		try{
-			con = DataServiceImpl.getDatabase().getConnection();
+			ProjectDatabase db = new ProjectDatabase();
+			con = db.getConnection();
 			Config_jdoManager man = new Config_jdoManager(con);
 			Config_jdo record = man.getConfig(id);
 			if(record == null){
@@ -527,7 +528,7 @@ public class ConfigManager {
 	}
 	public void setValue(JSONObject val,SessionData session) throws Exception {
 		if(this.getType().equals(TYPE.JSON)){
-			this.m_cfg.setString_value(val == null ? null : val.toString());
+			this.m_cfg.setText_value(val == null ? null : val.toString());
 			this.save(session);
 		}else{
 			throw new Exception("Invalid type");
@@ -536,7 +537,8 @@ public class ConfigManager {
 	private void save(final SessionData session) throws Exception {
 		java.sql.Connection con = null;
 		try{
-			con = DataServiceImpl.getDatabase().getConnection();
+			ProjectDatabase db = new ProjectDatabase();
+			con = db.getConnection();
 			class HistorySaver extends Config_jdoManager {
 				private Config_jdo m_old_record;
 				public HistorySaver(java.sql.Connection con){
@@ -573,7 +575,8 @@ public class ConfigManager {
 		}catch(Exception e){}
 		if(this.m_save_history){
 			try{
-				con = DataServiceImpl.getDatabase().getConnection();
+				ProjectDatabase db = new ProjectDatabase();
+				con = db.getConnection();
 				History_jdoManager man = new History_jdoManager(con);
 				History_jdo history = man.newHistory();
 				history.setName(record.getName());
@@ -702,7 +705,8 @@ public class ConfigManager {
 	public static String getClobString(ClobDataID clobDataID) {
 		java.sql.Connection con = null;
 		try{
-			con = DataServiceImpl.getDatabase().getConnection();
+			ProjectDatabase db = new ProjectDatabase();
+			con = db.getConnection();
 			JDBCConnection jcon = (JDBCConnection)con;
 			JDBCClobClient client = new JDBCClobClient(jcon.getSession(),clobDataID);
 			Reader r = client.getCharacterStream();
@@ -722,7 +726,8 @@ public class ConfigManager {
 	public static byte[] getBlobBytes(BlobDataID blobDataID) {
 		java.sql.Connection con = null;
 		try{
-			con = DataServiceImpl.getDatabase().getConnection();
+			ProjectDatabase db = new ProjectDatabase();
+			con = db.getConnection();
 			JDBCConnection jcon = (JDBCConnection)con;
 			JDBCBlobClient bclient = new JDBCBlobClient(jcon.getSession(),blobDataID);
 			ByteArrayOutputStream bout = new ByteArrayOutputStream();

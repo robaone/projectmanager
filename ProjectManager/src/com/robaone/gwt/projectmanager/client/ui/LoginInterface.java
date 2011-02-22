@@ -29,7 +29,6 @@ import com.robaone.gwt.projectmanager.client.data.*;
 import com.robaone.gwt.projectmanager.client.DataServiceResponse;
 import com.robaone.gwt.projectmanager.client.ProjectConstants;
 import com.robaone.gwt.projectmanager.client.ProjectManager;
-import com.robaone.gwt.projectmanager.client.UserData;
 
 public class LoginInterface extends Composite {
 	private TextBox username;

@@ -25,7 +25,7 @@ import com.google.gwt.user.client.ui.FormPanel.SubmitHandler;
 import com.robaone.gwt.projectmanager.client.DataServiceResponse;
 import com.robaone.gwt.projectmanager.client.ProjectConstants;
 import com.robaone.gwt.projectmanager.client.ProjectManager;
-import com.robaone.gwt.projectmanager.client.UserData;
+import com.robaone.gwt.projectmanager.client.data.UserData;
 
 public class ProfileEditUI extends Composite implements HasText {
 
