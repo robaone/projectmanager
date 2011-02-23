@@ -5,12 +5,8 @@
 package com.robaone.gwt.projectmanager.server.jdo;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
 import java.math.BigDecimal;
-import java.sql.SQLException;
-import java.util.Date;
 
 import com.robaone.gwt.projectmanager.server.util.ConfigManager;
 import com.robaone.jdo.RO_JDO;

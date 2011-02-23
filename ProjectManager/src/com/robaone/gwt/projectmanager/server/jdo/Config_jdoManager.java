@@ -275,6 +275,7 @@ public class Config_jdoManager {
 		retval = sql.replaceAll("#TABLE#",TABLE);
 		return retval;
 	}
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private int getSQLType(String fieldname) {
 		java.util.HashMap map = new java.util.HashMap();
 		map.put(Config_jdo.ID, java.sql.Types.NUMERIC);
