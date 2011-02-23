@@ -11,8 +11,10 @@ import com.robaone.gwt.projectmanager.server.ProjectDebug;
 import com.robaone.gwt.projectmanager.server.SessionData;
 import com.robaone.gwt.projectmanager.server.interfaces.UserManagerInterface;
 import com.robaone.gwt.projectmanager.server.util.ConfigManager;
+import com.robaone.gwt.projectmanager.server.util.ConfigManager.TYPE;
 
 public class UserManager extends ProjectConstants implements UserManagerInterface {
+
 	private DataServiceImpl parent;
 	public UserManager(DataServiceImpl dataServiceImpl) {
 		this.setParent(dataServiceImpl);
@@ -57,16 +59,24 @@ public class UserManager extends ProjectConstants implements UserManagerInterfac
 			password = password.trim();
 		}
 		if(retval.getStatus() == OK){
-			String path = "administration/users/"+username+"/password";
+			String path = USER_PATH+"/"+username+"/password";
 			ConfigManager user_password = ConfigManager.findConfig(path);
 			if(user_password == null){
 				retval.setStatus(NOT_LOGGED_IN);
 				retval.setError("Username '"+username+"' not found");
 			}
 			try {
-				if(user_password.getString().equals(password)){
+				String encrypted_password = UserManager.byteArrayToHexString(UserManager.computeHash(password));
+				if(user_password.getString().equals(encrypted_password)){
 					UserData data = new UserData();
 					data.setUsername(username);
+					String root_path = USER_PATH+"/"+username;
+					try{data.setZip(ConfigManager.findConfig(root_path,"zip").getString());}catch(Exception e){}
+					try{data.setFirstname(ConfigManager.findConfig(root_path, "firstname").getString());}catch(Exception e){}
+					try{data.setLastname(ConfigManager.findConfig(root_path,"lastname").getString());}catch(Exception e){}
+					try{data.setPhonenumber(ConfigManager.findConfig(root_path,"phonenumber").getString());}catch(Exception e){}
+					try{data.setPictureUrl(ConfigManager.findConfig(root_path,"pictureurl").getString());}catch(Exception e){}
+
 					SessionData sdata = this.parent.createSessionData();
 					sdata.setUserData(data);
 					retval.addData(data);
@@ -108,12 +118,40 @@ public class UserManager extends ProjectConstants implements UserManagerInterfac
 		}catch(Exception e){
 			response.addFieldError(RegistrationUI.FIELDS.PASSWORD.toString(),e.getMessage());
 		}
-		UserData data = new UserData();
-		data.setUsername(email);
-		data.setAccountType(type);
-		response.addData(data);
-		SessionData sdata = this.parent.createSessionData();
-		sdata.setUserData(data);
+		try{
+			/**
+			 * Create the user data in the database
+			 */
+			String path = USER_PATH+"/"+email;
+			ConfigManager cfg = ConfigManager.findConfig(path);
+			if(cfg == null){
+				/**
+				 * The user does not exist.  Go ahead and create
+				 */
+				UserData data = new UserData();
+				data.setUsername(email);
+				data.setAccountType(type);
+				data.setZip(zip);
+				response.addData(data);
+				SessionData sdata = this.parent.createSessionData();
+				sdata.setUserData(data);
+				String encrypted_password = UserManager.byteArrayToHexString(UserManager.computeHash(password));
+				SessionData session = this.parent.getSessionData();
+				ConfigManager password_cfg = new ConfigManager(path+"/"+UserData.PASSWORD,encrypted_password,TYPE.STRING,"User password","This is the password for the user account.",session);
+				ConfigManager zip_cfg = new ConfigManager(path+"/"+UserData.ZIP,zip,TYPE.STRING,"Zip Code","The users' home zipcode",session);
+				ConfigManager role_cfg = new ConfigManager(path+"/"+UserData.ROLE,type.hashCode(),"User Role","The user role set the security and feature settings for this user.",session);
+
+			}else{
+				/**
+				 * The user exists already.  Return an error
+				 */
+				response.addFieldError(RegistrationUI.FIELDS.EMAIL.toString(), "E-mail address is already registered");
+				response.setStatus(ProjectConstants.FIELD_VERIFICATION_ERROR);
+			}
+		}catch(Exception e){
+			response.setError(e.getMessage());
+			response.setStatus(ProjectConstants.GENERAL_ERROR);
+		}
 		return response;
 	}
 	private void validatePassword(String password) throws Exception {
@@ -143,6 +181,19 @@ public class UserManager extends ProjectConstants implements UserManagerInterfac
 	@Override
 	public UserData updateProfile(UserData user) throws Exception {
 		if(user != null){
+			String path = USER_PATH+"/"+user.getUsername()+"/";
+			ConfigManager password_cfg = ConfigManager.findConfig(path+UserData.PASSWORD);
+			if(password_cfg != null){
+				ConfigManager firstname_cfg = new ConfigManager(path+UserData.FIRSTNAME,user.getFirstname(),TYPE.STRING,"FirstName","The user's first name.",this.getParent().getSessionData());
+				ConfigManager lastname_cfg = new ConfigManager(path+UserData.LASTNAME,user.getLastname(),TYPE.STRING,"LastName","The user's last name.",this.getParent().getSessionData());
+				ConfigManager zip_cfg = new ConfigManager(path+UserData.ZIP,user.getZip(),TYPE.STRING,"Zip Code","The users's home zip code.",this.getParent().getSessionData());
+				ConfigManager phone_cfg = new ConfigManager(path+UserData.PHONENUMBER,user.getPhonenumber(),TYPE.STRING,"Phone Number","The user's primary phone number",this.getParent().getSessionData());
+				SessionData session = this.getParent().getSessionData();
+				firstname_cfg.setValue(user.getFirstname(), session);
+				lastname_cfg.setValue(user.getLastname(), session);
+				zip_cfg.setValue(user.getZip(), session);
+				phone_cfg.setValue(user.getPhonenumber(), session);
+			}
 			this.getParent().getSessionData().setUserData(user);
 			return user;
 		}else{
@@ -152,5 +203,26 @@ public class UserManager extends ProjectConstants implements UserManagerInterfac
 	@Override
 	public DataServiceResponse<UserData> getLoginStatus() throws Exception {
 		return this.getUserData();
+	}
+	public static byte[] computeHash(String x)   
+	throws Exception  
+	{
+		java.security.MessageDigest d =null;
+		d = java.security.MessageDigest.getInstance("SHA-1");
+		d.reset();
+		d.update(x.getBytes());
+		return  d.digest();
+	}
+
+	public static String byteArrayToHexString(byte[] b){
+		StringBuffer sb = new StringBuffer(b.length * 2);
+		for (int i = 0; i < b.length; i++){
+			int v = b[i] & 0xff;
+			if (v < 16) {
+				sb.append('0');
+			}
+			sb.append(Integer.toHexString(v));
+		}
+		return sb.toString().toUpperCase();
 	}
 }

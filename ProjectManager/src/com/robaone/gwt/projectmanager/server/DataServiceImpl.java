@@ -59,7 +59,11 @@ public class DataServiceImpl extends RemoteServiceServlet implements
 		return testdb;
 	}
 	public SessionData getSessionData() {
-		return (SessionData)this.getThreadLocalRequest().getSession().getAttribute(ProjectConstants.SESSIONDATA);
+		SessionData retval = (SessionData)this.getThreadLocalRequest().getSession().getAttribute(ProjectConstants.SESSIONDATA);
+		if(retval != null)
+			retval.setCurrentHost(this.getThreadLocalRequest().getRemoteHost());
+			
+		return retval;
 	}
 
 	@Override

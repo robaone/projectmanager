@@ -190,8 +190,11 @@ public class ConfigManager {
 						this.setDBValue(record);
 						record.setTitle(m_title);
 						record.setDescription(m_description);
-						record.setCreated_by(this.m_userdata.getUserData().getUsername());
+						String username = "anonymous";
+						try{username = this.m_userdata.getUserData().getUsername();}catch(Exception e){}
+						record.setCreated_by(username);
 						record.setCreated_date(new java.sql.Timestamp(new java.util.Date().getTime()));
+						record.setModified_by(username);
 						record.setModifier_host(this.m_userdata.getCurrentHost());
 						record.setModified_date(new java.sql.Timestamp(new java.util.Date().getTime()));
 						man.save(record);
@@ -277,11 +280,13 @@ public class ConfigManager {
 				record.setType(this.getDBType(TYPE.FOLDER));
 				record.setName(folder);
 				record.setTitle(record.getName() + " folder");
-				record.setCreated_by(this.m_userdata.getUserData().getUsername());
+				String username = "anonymous";
+				try{username = this.m_userdata.getUserData().getUsername();}catch(Exception e){}
+				record.setCreated_by(username);
 				record.setCreated_date(new java.sql.Timestamp(new java.util.Date().getTime()));
 				record.setModifier_host(this.m_userdata.getCurrentHost());
 				record.setModified_date(new java.sql.Timestamp(new java.util.Date().getTime()));
-				record.setModified_by(this.m_userdata.getUserData().getUsername());
+				record.setModified_by(username);
 				man.save(record);
 				return record;
 			}else{
@@ -552,7 +557,9 @@ public class ConfigManager {
 				}
 				protected void handleBeforeUpdate(Config_jdo record) {
 					Config_jdo old_record = this.getConfig(record.getId());
-					record.setModified_by(session.getUserData().getUsername());
+					String username = "anonymous";
+					try{username = session.getUserData().getUsername();}catch(Exception e){}
+					record.setModified_by(username);
 					record.setModified_date(new java.sql.Timestamp(new java.util.Date().getTime()));
 					record.setModifier_host(session.getCurrentHost());
 					this.m_old_record = old_record;

@@ -12,6 +12,14 @@ public class UserData implements IsSerializable {
 	private String firstname;
 	private String lastname;
 	private String phonenumber;
+	public static final String USERNAME = "username";
+	public static final String PICTUREURL = "pictureurl";
+	public static final String ZIP = "zip";
+	public static final String ROLE = "role";
+	public static final String FIRSTNAME = "firstname";
+	public static final String LASTNAME = "lastname";
+	public static final String PHONENUMBER = "phonenumber";
+	public static final String PASSWORD = "password";
 	public UserData(){}
 	public void setUsername(String username) {
 		this.username = username;

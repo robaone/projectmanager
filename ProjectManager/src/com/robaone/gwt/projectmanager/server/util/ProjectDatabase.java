@@ -5,8 +5,10 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Vector;
 
+import com.robaone.gwt.projectmanager.client.ProjectConstants;
 import com.robaone.gwt.projectmanager.client.data.UserData;
 import com.robaone.gwt.projectmanager.server.SessionData;
+import com.robaone.gwt.projectmanager.server.business.UserManager;
 import com.robaone.gwt.projectmanager.server.util.ConfigManager.TYPE;
 
 public class ProjectDatabase {
@@ -134,9 +136,10 @@ public class ProjectDatabase {
 			session.setCurrentHost("localhost");
 			session.setUserData(new UserData());
 			session.getUserData().setUsername("root");
-			ConfigManager root_user = new ConfigManager("/administration/users/root/password","password",TYPE.STRING,"The superuser password","This is the password that you need to gain complete access to the application.",session);
+			String encrypted_password = UserManager.byteArrayToHexString(UserManager.computeHash("password"));
+			ConfigManager root_user = new ConfigManager("/administration/users/root/password",encrypted_password,TYPE.STRING,"The superuser password","This is the password that you need to gain complete access to the application.",session);
 			System.out.println("root password set to "+root_user.getString());
-			ConfigManager root_role = new ConfigManager("/administration/users/root/role","0",TYPE.INT,"The super user role","Valid roles are number 0 for superuser through x",session);
+			ConfigManager root_role = new ConfigManager("/administration/users/root/role",ProjectConstants.USER_TYPE.SUPERUSER.hashCode(),"The super user role","Valid roles are number 0 for superuser through x",session);
 			System.out.println("root role set to "+root_role.getInt());
 		}catch(Exception e){
 			if(!e.getMessage().startsWith("object name already exists") && !e.getMessage().endsWith("already exists")
