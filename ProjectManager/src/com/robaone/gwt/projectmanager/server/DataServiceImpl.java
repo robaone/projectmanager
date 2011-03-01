@@ -9,6 +9,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.robaone.dbase.hierarchial.ProjectDatabase;
 import com.robaone.gwt.projectmanager.client.DataService;
 import com.robaone.gwt.projectmanager.client.DataServiceResponse;
 import com.robaone.gwt.projectmanager.client.ProjectConstants;
@@ -22,7 +23,6 @@ import com.robaone.gwt.projectmanager.server.ProjectDebug.SOURCE;
 import com.robaone.gwt.projectmanager.server.interfaces.ContractorManagerInterface;
 import com.robaone.gwt.projectmanager.server.interfaces.ProjectLogManagerInterface;
 import com.robaone.gwt.projectmanager.server.interfaces.UserManagerInterface;
-import com.robaone.gwt.projectmanager.server.util.ProjectDatabase;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 /**
@@ -31,12 +31,12 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 @SuppressWarnings("serial")
 public class DataServiceImpl extends RemoteServiceServlet implements
 		DataService {
-	private static ProjectDatabase testdb;
+	private static com.robaone.dbase.hierarchial.ProjectDatabase testdb;
 	protected void service(HttpServletRequest request, HttpServletResponse response) throws IOException , ServletException{
 		super.service(request, response);
 		if(testdb == null){
 			try {
-				testdb = new ProjectDatabase();
+				testdb = new com.robaone.dbase.hierarchial.ProjectDatabase();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

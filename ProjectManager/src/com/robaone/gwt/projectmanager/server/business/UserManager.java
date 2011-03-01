@@ -1,5 +1,8 @@
 package com.robaone.gwt.projectmanager.server.business;
 
+import com.robaone.dbase.hierarchial.ConfigManager;
+import com.robaone.dbase.hierarchial.HDBSessionData;
+import com.robaone.dbase.hierarchial.types.ConfigType;
 import com.robaone.gwt.projectmanager.client.DataServiceResponse;
 import com.robaone.gwt.projectmanager.client.ProjectConstants;
 import com.robaone.gwt.projectmanager.client.data.PasswordResetResponse;
@@ -10,8 +13,6 @@ import com.robaone.gwt.projectmanager.server.FieldVerifier;
 import com.robaone.gwt.projectmanager.server.ProjectDebug;
 import com.robaone.gwt.projectmanager.server.SessionData;
 import com.robaone.gwt.projectmanager.server.interfaces.UserManagerInterface;
-import com.robaone.gwt.projectmanager.server.util.ConfigManager;
-import com.robaone.gwt.projectmanager.server.util.ConfigManager.TYPE;
 
 public class UserManager extends ProjectConstants implements UserManagerInterface {
 
@@ -136,9 +137,10 @@ public class UserManager extends ProjectConstants implements UserManagerInterfac
 				SessionData sdata = this.parent.createSessionData();
 				sdata.setUserData(data);
 				String encrypted_password = UserManager.byteArrayToHexString(UserManager.computeHash(password));
-				SessionData session = this.parent.getSessionData();
-				ConfigManager password_cfg = new ConfigManager(path+"/"+UserData.PASSWORD,encrypted_password,TYPE.STRING,"User password","This is the password for the user account.",session);
-				ConfigManager zip_cfg = new ConfigManager(path+"/"+UserData.ZIP,zip,TYPE.STRING,"Zip Code","The users' home zipcode",session);
+				sdata = this.parent.getSessionData();
+				HDBSessionData session = new HDBSessionData(sdata.getUserData().getUsername(),sdata.getCurrentHost());
+				ConfigManager password_cfg = new ConfigManager(path+"/"+UserData.PASSWORD,encrypted_password,ConfigType.STRING,"User password","This is the password for the user account.",session);
+				ConfigManager zip_cfg = new ConfigManager(path+"/"+UserData.ZIP,zip,ConfigType.STRING,"Zip Code","The users' home zipcode",session);
 				ConfigManager role_cfg = new ConfigManager(path+"/"+UserData.ROLE,type.hashCode(),"User Role","The user role set the security and feature settings for this user.",session);
 
 			}else{
@@ -184,11 +186,11 @@ public class UserManager extends ProjectConstants implements UserManagerInterfac
 			String path = USER_PATH+"/"+user.getUsername()+"/";
 			ConfigManager password_cfg = ConfigManager.findConfig(path+UserData.PASSWORD);
 			if(password_cfg != null){
-				ConfigManager firstname_cfg = new ConfigManager(path+UserData.FIRSTNAME,user.getFirstname(),TYPE.STRING,"FirstName","The user's first name.",this.getParent().getSessionData());
-				ConfigManager lastname_cfg = new ConfigManager(path+UserData.LASTNAME,user.getLastname(),TYPE.STRING,"LastName","The user's last name.",this.getParent().getSessionData());
-				ConfigManager zip_cfg = new ConfigManager(path+UserData.ZIP,user.getZip(),TYPE.STRING,"Zip Code","The users's home zip code.",this.getParent().getSessionData());
-				ConfigManager phone_cfg = new ConfigManager(path+UserData.PHONENUMBER,user.getPhonenumber(),TYPE.STRING,"Phone Number","The user's primary phone number",this.getParent().getSessionData());
-				SessionData session = this.getParent().getSessionData();
+				HDBSessionData session = new HDBSessionData(this.getParent().getSessionData().getUserData().getUsername(),this.getParent().getSessionData().getCurrentHost());
+				ConfigManager firstname_cfg = new ConfigManager(path+UserData.FIRSTNAME,user.getFirstname(),ConfigType.STRING,"FirstName","The user's first name.",session);
+				ConfigManager lastname_cfg = new ConfigManager(path+UserData.LASTNAME,user.getLastname(),ConfigType.STRING,"LastName","The user's last name.",session);
+				ConfigManager zip_cfg = new ConfigManager(path+UserData.ZIP,user.getZip(),ConfigType.STRING,"Zip Code","The users's home zip code.",session);
+				ConfigManager phone_cfg = new ConfigManager(path+UserData.PHONENUMBER,user.getPhonenumber(),ConfigType.STRING,"Phone Number","The user's primary phone number",session);
 				firstname_cfg.setValue(user.getFirstname(), session);
 				lastname_cfg.setValue(user.getLastname(), session);
 				zip_cfg.setValue(user.getZip(), session);
