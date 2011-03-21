@@ -65,30 +65,31 @@ public class UserManager extends ProjectConstants implements UserManagerInterfac
 			if(user_password == null){
 				retval.setStatus(NOT_LOGGED_IN);
 				retval.setError("Username '"+username+"' not found");
-			}
-			try {
-				String encrypted_password = UserManager.byteArrayToHexString(UserManager.computeHash(password));
-				if(user_password.getString().equals(encrypted_password)){
-					UserData data = new UserData();
-					data.setUsername(username);
-					String root_path = USER_PATH+"/"+username;
-					try{data.setZip(ConfigManager.findConfig(root_path,"zip").getString());}catch(Exception e){}
-					try{data.setFirstname(ConfigManager.findConfig(root_path, "firstname").getString());}catch(Exception e){}
-					try{data.setLastname(ConfigManager.findConfig(root_path,"lastname").getString());}catch(Exception e){}
-					try{data.setPhonenumber(ConfigManager.findConfig(root_path,"phonenumber").getString());}catch(Exception e){}
-					try{data.setPictureUrl(ConfigManager.findConfig(root_path,"pictureurl").getString());}catch(Exception e){}
+			}else{
+				try {
+					String encrypted_password = UserManager.byteArrayToHexString(UserManager.computeHash(password));
+					if(user_password.getString().equals(encrypted_password)){
+						UserData data = new UserData();
+						data.setUsername(username);
+						String root_path = USER_PATH+"/"+username;
+						try{data.setZip(ConfigManager.findConfig(root_path,"zip").getString());}catch(Exception e){}
+						try{data.setFirstname(ConfigManager.findConfig(root_path, "firstname").getString());}catch(Exception e){}
+						try{data.setLastname(ConfigManager.findConfig(root_path,"lastname").getString());}catch(Exception e){}
+						try{data.setPhonenumber(ConfigManager.findConfig(root_path,"phonenumber").getString());}catch(Exception e){}
+						try{data.setPictureUrl(ConfigManager.findConfig(root_path,"pictureurl").getString());}catch(Exception e){}
 
-					SessionData sdata = this.parent.createSessionData();
-					sdata.setUserData(data);
-					retval.addData(data);
-					return retval;
-				}else{
-					retval.setStatus(NOT_LOGGED_IN);
-					retval.setError("Incorrect password");
-					return retval;
+						SessionData sdata = this.parent.createSessionData();
+						sdata.setUserData(data);
+						retval.addData(data);
+						return retval;
+					}else{
+						retval.setStatus(NOT_LOGGED_IN);
+						retval.setError("Incorrect password");
+						return retval;
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
-			} catch (Exception e) {
-				e.printStackTrace();
 			}
 		}
 
