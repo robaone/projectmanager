@@ -7,6 +7,7 @@ import com.robaone.gwt.projectmanager.client.data.Contractor;
 import com.robaone.gwt.projectmanager.client.data.ContractorData;
 import com.robaone.gwt.projectmanager.client.data.ContractorListing;
 import com.robaone.gwt.projectmanager.client.data.PasswordResetResponse;
+import com.robaone.gwt.projectmanager.client.data.Project;
 import com.robaone.gwt.projectmanager.client.data.UserData;
 
 /**
@@ -45,5 +46,7 @@ public interface DataService extends RemoteService {
 	void writeLog(String message);
 
 	ContractorListing getContractorListing(int id) throws Exception;
+
+	DataServiceResponse<Project> createProject(Project project) throws Exception;
 
 }

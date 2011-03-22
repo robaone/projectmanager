@@ -38,7 +38,7 @@ public class NewProjectUI extends Composite {
 			public void onClick(ClickEvent event) {
 				int index = main.getDecoratedTabPanel().getTabIndex(NewProjectUI.this);
 				main.getDecoratedTabPanel().removeTab(index);
-				ProjectUI project = new ProjectUI(main);
+				ProjectUi2 project = new ProjectUi2(main);
 				index = main.getDecoratedTabPanel().addTab(project, project_name.getValue(),true,null);
 				main.getDecoratedTabPanel().selectTab(index);
 			}

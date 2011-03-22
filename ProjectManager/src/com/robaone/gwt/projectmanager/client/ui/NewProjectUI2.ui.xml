@@ -66,17 +66,30 @@
 			padding:3px;
 			margin-bottom:5px;
 		}	
+		.error{
+			font-style:italic;
+			color:red;
+		}
+		.generalerror{
+			padding:10px;
+			color:white;
+			font-weight:bold;
+			width:100%;
+			border-radius:7px;
+		}
 	</ui:style>
 	<g:HTMLPanel>
 		<div style="background-color:white">
 			<h1 class="{style.h1}">New Project</h1>
+			<g:Label ui:field="error" styleName="{style.generalerror}" visible="false"></g:Label>
 			<table cellpadding="0" cellspacing="0" class="{style.project}">
 				<col style="width:175px" />
 				<tbody>
 					<tr>
 						<td class="{style.label}">Project Name:</td>
 						<td>
-							<g:TextBox ui:field="project_name" styleName="{style.input}"></g:TextBox>
+							<g:TextBox ui:field="project_name" styleName="{style.input}"></g:TextBox><br/>
+							<g:InlineLabel ui:field="project_name_error" styleName="{style.error}"></g:InlineLabel>
 						</td>
 					</tr>
 					<tr>

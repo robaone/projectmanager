@@ -2,6 +2,7 @@ package com.robaone.gwt.projectmanager.client.ui;
 
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.robaone.gwt.projectmanager.client.data.Project;
 import com.robaone.gwt.projectmanager.client.ui.editable.EditableDateBox;
 import com.robaone.gwt.projectmanager.client.ui.editable.EditableInput;
 import com.robaone.gwt.projectmanager.client.ui.editable.EditableSuggestBox;
@@ -25,6 +26,11 @@ public class ProjectUI extends Composite {
 		
 		EditableSuggestBox status = new EditableSuggestBox("Status:", "", (EditableSaveHandler) null);
 		verticalPanel.add(status);
+	}
+
+	public void load(Project proj) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

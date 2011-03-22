@@ -1,22 +1,31 @@
 package com.robaone.gwt.projectmanager.client.ui;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.datepicker.client.DateBox;
 import com.google.gwt.user.datepicker.client.DateBox.Format;
+import com.robaone.gwt.projectmanager.client.DataServiceResponse;
+import com.robaone.gwt.projectmanager.client.ProjectConstants;
+import com.robaone.gwt.projectmanager.client.ProjectManager;
+import com.robaone.gwt.projectmanager.client.data.Project;
 import com.robaone.gwt.projectmanager.client.ui.inputitem.InputItemHandler;
 import com.robaone.gwt.projectmanager.client.ui.inputitem.InputItemUi;
 import com.robaone.gwt.projectmanager.client.ui.orderedlist.ListItem;
@@ -36,10 +45,14 @@ public class NewProjectUI2 extends Composite {
 	}
 	
 	@UiField NewProjectStyle style;
-	public NewProjectUI2() {
+	MainContent main;
+	public NewProjectUI2(MainContent m) {
 		initWidget(uiBinder.createAndBindUi(this));
+		main = m;
 		DateTimeFormat df = DateTimeFormat.getFormat("MM/dd/yyyy");
 		due_date.setFormat(new DateBox.DefaultFormat(df));
+		error.setVisible(false);
+		project_name_error.setVisible(false);
 		date_holder.setWidget(due_date);
 		tag_holder.setWidget(tags);
 		assignment_holder.setWidget(assignments);
@@ -137,4 +150,88 @@ public class NewProjectUI2 extends Composite {
 	@UiField Button create_button;
 	@UiField SimplePanel tag_holder;
 	@UiField SimplePanel assignment_holder;
+	@UiField Label error;
+	@UiField InlineLabel project_name_error;
+	
+	@UiHandler("create_button")
+	public void handleCreateProject(ClickEvent event){
+		Project project = new Project();
+		project.setProjectName(this.project_name.getText());
+		project.setDescription(this.description.getText());
+		project.setDue_date(this.due_date.getValue());
+		if(SharedFieldVerifier.isNumber(this.est_hours.getText())){
+			Double d = new Double(this.est_hours.getText());
+			project.setEst_hours(d.doubleValue());
+		}
+		project.setTags(this.getTags());
+		project.setAssignments(this.getAssignments());
+		project.setImportant(this.important.getValue().booleanValue());
+		ProjectManager.dataService.createProject(project,new AsyncCallback<DataServiceResponse<Project>>(){
+
+			@Override
+			public void onFailure(Throwable caught) {
+				showError(caught.getMessage());
+			}
+
+			@Override
+			public void onSuccess(DataServiceResponse<Project> result) {
+				try{
+					if(result.getStatus() == 0){
+						Project proj = result.getData(0);
+						int index = main.getDecoratedTabPanel().getTabIndex(NewProjectUI2.this);
+						main.getDecoratedTabPanel().removeTab(index);
+						ProjectUi2 project = new ProjectUi2(main);
+						index = main.getDecoratedTabPanel().addTab(project, project_name.getValue(),true,null);
+						main.getDecoratedTabPanel().selectTab(index);
+						project.load(proj);
+					}else if(result.getStatus() == ProjectConstants.FIELD_VERIFICATION_ERROR){
+						showErrorsforFields(result);
+					}else{
+						showError(result.getError());
+					}
+				}catch(Exception e){
+					showError(e.getMessage());
+				}
+			}
+			
+		});
+	}
+	protected void showErrorsforFields(DataServiceResponse<Project> result) {
+		String error_msg = null;
+		error_msg = result.getFieldError(Project.PROJECTNAME);
+		if(error_msg == null) project_name_error.setVisible(false);
+		else {project_name_error.setText(error_msg); project_name_error.setVisible(true);}
+	}
+	protected void showError(String message) {
+		error.setText(message);
+		error.setVisible(true);
+	}
+	private String[] getAssignments() {
+		java.util.Vector<String> retval = new java.util.Vector<String>();
+		for(int i = 0; i < assignments.getWidgetCount();i++){
+			Widget w = assignments.getWidget(i);
+			if(w instanceof ListItem){
+				Widget w2 = ((ListItem)w).getWidget(0);
+				if(w2 instanceof InputItemUi){
+					InputItemUi input = (InputItemUi)w2;
+					retval.add(input.getText());
+				}
+			}
+		}
+		return retval.toArray(new String[0]);
+	}
+	private String[] getTags() {
+		java.util.Vector<String> retval = new java.util.Vector<String>();
+		for(int i = 0; i < tags.getWidgetCount();i++){
+			Widget w = tags.getWidget(i);
+			if(w instanceof ListItem){
+				Widget w2 = ((ListItem)w).getWidget(0);
+				if(w2 instanceof InputItemUi){
+					InputItemUi input = (InputItemUi)w2;
+					retval.add(input.getText());
+				}
+			}
+		}
+		return retval.toArray(new String[0]);
+	}
 }

@@ -39,4 +39,13 @@ public class SharedFieldVerifier {
 		}
 		return name.length() > 3;
 	}
+
+	public static boolean isNumber(String text) {
+		try{
+			Double d = new Double(text);
+			return true;
+		}catch(Exception e){
+			return false;
+		}
+	}
 }

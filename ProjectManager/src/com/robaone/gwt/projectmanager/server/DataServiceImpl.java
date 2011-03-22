@@ -18,6 +18,7 @@ import com.robaone.gwt.projectmanager.client.data.Contractor;
 import com.robaone.gwt.projectmanager.client.data.ContractorData;
 import com.robaone.gwt.projectmanager.client.data.ContractorListing;
 import com.robaone.gwt.projectmanager.client.data.PasswordResetResponse;
+import com.robaone.gwt.projectmanager.client.data.Project;
 import com.robaone.gwt.projectmanager.client.data.UserData;
 import com.robaone.gwt.projectmanager.server.ProjectDebug.SOURCE;
 import com.robaone.gwt.projectmanager.server.interfaces.ContractorManagerInterface;
@@ -196,6 +197,15 @@ public class DataServiceImpl extends RemoteServiceServlet implements
 		try{
 			ContractorManagerInterface man = ManagerFactory.getContractorManager(this);
 			return man.getContractorListing(id);
+		}catch(Exception e){
+			throw new Exception(e.getMessage());
+		}
+	}
+	@Override
+	public DataServiceResponse<Project> createProject(Project project) throws Exception {
+		try{
+			ProjectLogManagerInterface man = ManagerFactory.getProjectManager(this);
+			return man.createProject(project);
 		}catch(Exception e){
 			throw new Exception(e.getMessage());
 		}
