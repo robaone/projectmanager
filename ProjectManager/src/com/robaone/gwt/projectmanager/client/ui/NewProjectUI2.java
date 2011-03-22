@@ -13,7 +13,7 @@ public class NewProjectUI2 extends Composite {
 	interface NewProjectUI2UiBinder extends UiBinder<Widget, NewProjectUI2> {
 	}
 
-	public NewProjectUI2() {
+	public NewProjectUI2(MainContent main) {
 		initWidget(uiBinder.createAndBindUi(this));
 	}
 
