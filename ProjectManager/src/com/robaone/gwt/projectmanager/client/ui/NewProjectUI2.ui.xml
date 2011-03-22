@@ -1,7 +1,8 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
-	xmlns:g="urn:import:com.google.gwt.user.client.ui">
-	<ui:style>
+	xmlns:g="urn:import:com.google.gwt.user.client.ui"
+	xmlns:Date="url:import:com.google.gwt.user.datepicker.client">
+	<ui:style type="com.robaone.gwt.projectmanager.client.ui.NewProjectUI2.NewProjectStyle">
 		h1.h1 {
 			font-family: Arial;
 			font-weight: normal;
@@ -9,6 +10,7 @@
 			background-color: rgb(230, 230, 230);
 			border-radius: 4px;
 			text-shadow: -1px -1px 0 white;
+			padding:2px;
 		}
 		
 		table.project {
@@ -51,6 +53,19 @@
 			border: 1px solid rgb(200, 200, 200);
 			height: 90px;
 		}
+		.tagit{
+			border: 1px solid #CCC;
+			padding: 4px 0 1px 3px;
+			float: left;
+			width: 320px;
+			list-style: none;
+		}
+		.tagit_choice{
+			float:left;
+			margin-right:10px;
+			padding:3px;
+			margin-bottom:5px;
+		}	
 	</ui:style>
 	<g:HTMLPanel>
 		<div style="background-color:white">
@@ -61,49 +76,49 @@
 					<tr>
 						<td class="{style.label}">Project Name:</td>
 						<td>
-							<input class="{style.input}" type="text" />
+							<g:TextBox ui:field="project_name" styleName="{style.input}"></g:TextBox>
 						</td>
 					</tr>
 					<tr>
 						<td class="{style.top} {style.label}">Description:</td>
 						<td>
-							<textarea class="{style.input}"></textarea>
+							<g:TextArea ui:field="description" styleName="{style.input}"></g:TextArea>
 						</td>
 					</tr>
 					<tr>
 						<td class="{style.label}">Due Date:</td>
 						<td>
-							<input class="{style.date}" type="text" />
+							<g:SimplePanel ui:field="date_holder"></g:SimplePanel>
 						</td>
 					</tr>
 					<tr>
 						<td class="{style.label}">Estimated Hours:</td>
 						<td>
-							<input class="{style.date}" type="text" />
+							<g:TextBox ui:field="est_hours" styleName="{style.date}"></g:TextBox>
 						</td>
 					</tr>
 					<tr>
 						<td class="{style.label}">Tags:</td>
 						<td>
-							<input class="{style.input}" type="text" />
+							<g:SimplePanel ui:field="tag_holder"></g:SimplePanel>
 						</td>
 					</tr>
 					<tr>
 						<td class="{style.label}">Assigned To:</td>
 						<td>
-							<input class="{style.input}" type="text" />
+							<g:SimplePanel ui:field="assignment_holder"></g:SimplePanel>
 						</td>
 					</tr>
 					<tr>
 						<td class="{style.label}">Important:</td>
 						<td>
-							<input type="checkbox" />
+							<g:CheckBox ui:field="important"></g:CheckBox>
 						</td>
 					</tr>
 					<tr>
 						<td></td>
 						<td>
-							<button>Create Project</button>
+							<g:Button ui:field="create_button">Create Project</g:Button>
 						</td>
 					</tr>
 				</tbody>

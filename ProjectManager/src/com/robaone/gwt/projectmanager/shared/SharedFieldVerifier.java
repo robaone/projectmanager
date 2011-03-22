@@ -20,7 +20,7 @@ package com.robaone.gwt.projectmanager.shared;
  * JavaScript (such as Widgets) cannot be run on the server.
  * </p>
  */
-public class FieldVerifier {
+public class SharedFieldVerifier {
 
 	/**
 	 * Verifies that the specified name is valid for our service.

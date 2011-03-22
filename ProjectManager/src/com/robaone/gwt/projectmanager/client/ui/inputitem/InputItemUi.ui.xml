@@ -1,0 +1,35 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style>
+		.label {
+			background-color: rgb(200, 200, 200);
+			border-radius: 4px;
+			padding: 4px;
+		}
+		
+		.name {
+			font-family: Helvetica;
+			font-size: 11pt;
+		}
+		
+		.close {
+			font-family: Helvetica;
+			margin: 4px;
+			padding-left: 2px;
+			padding-right: 2px;
+			background-color: rgb(230, 230, 230);
+			border-radius: 2px;
+			color: rgb(200, 200, 200);
+			text-shadow: 0px -1px 0 rgb(50, 50, 50);
+			font-weight: bold;
+			cursor: pointer;
+		}
+	</ui:style>
+	<g:HTMLPanel>
+		<span class="{style.label}">
+			<g:InlineLabel ui:field="name" styleName="{style.name}"></g:InlineLabel>
+			<g:InlineLabel ui:field="close" styleName="{style.close}">x</g:InlineLabel>
+		</span>
+	</g:HTMLPanel>
+</ui:UiBinder> 
