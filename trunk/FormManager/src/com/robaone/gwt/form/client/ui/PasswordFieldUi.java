@@ -8,37 +8,38 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasText;
-import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.PasswordTextBox;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-public class TextAreaFieldUi extends Composite implements HasText, FormField {
+public class PasswordFieldUi extends Composite implements HasText,FormField {
 	interface Style extends CssResource {
 		String error();
 	}
-	private static TextAreaFieldUiUiBinder uiBinder = GWT
-			.create(TextAreaFieldUiUiBinder.class);
+	private static TextFieldUiUiBinder uiBinder = GWT
+			.create(TextFieldUiUiBinder.class);
 
-	interface TextAreaFieldUiUiBinder extends UiBinder<Widget, TextAreaFieldUi> {
+	interface TextFieldUiUiBinder extends UiBinder<Widget, PasswordFieldUi> {
 	}
+	private String name;
 
-	public TextAreaFieldUi(String name) {
+	public PasswordFieldUi(String name) {
 		initWidget(uiBinder.createAndBindUi(this));
 		this.setName(name);
 	}
-	@UiField TextArea field;
+	@UiField PasswordTextBox field;
 	@UiField Style style;
-	String name;
 	public String[] getValues() {
 		Vector<String> retval = new Vector<String>();
 		retval.add(this.getText());
 		return retval.toArray(new String[0]);
 	}
 
-	public String getName(){
+	public String getName() {
 		return name;
 	}
 	public void setName(String str){
-		name = str;
+		this.name = str;
 	}
 
 	@Override
@@ -48,7 +49,7 @@ public class TextAreaFieldUi extends Composite implements HasText, FormField {
 
 	@Override
 	public void setText(String text) {
-		field.setText(text);
+		this.field.setText(text);
 	}
 
 	@Override
@@ -59,4 +60,5 @@ public class TextAreaFieldUi extends Composite implements HasText, FormField {
 			field.removeStyleName(style.error());
 		}
 	}
+
 }

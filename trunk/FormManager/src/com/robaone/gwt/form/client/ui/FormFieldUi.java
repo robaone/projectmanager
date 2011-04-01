@@ -75,6 +75,13 @@ public class FormFieldUi extends Composite{
 	public void setError(String error_msg){
 		error.setText(error_msg);
 		error.setVisible(true);
+		FormField field_input = (FormField)field.getWidget();
+		field_input.setError(true);
+	}
+	public void clearError(){
+		error.setVisible(false);
+		FormField field_input = (FormField)field.getWidget();
+		field_input.setError(false);
 	}
 	public void setDescription(String txt){
 		description.setText(txt);
