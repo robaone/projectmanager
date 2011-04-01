@@ -3,6 +3,7 @@ package com.robaone.gwt.form.client.ui;
 import java.util.Vector;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -67,6 +68,12 @@ public class RadioFieldUi extends Composite  implements FormField {
 
 	@Override
 	public void setError(boolean b) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void addKeyUpHandler(KeyUpHandler handler) {
 		// TODO Auto-generated method stub
 		
 	}

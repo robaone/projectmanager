@@ -3,6 +3,7 @@ package com.robaone.gwt.form.client.ui;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -94,5 +95,9 @@ public class FormFieldUi extends Composite{
 	}
 	public String[] getValues() {
 		return ((FormField)this.field.getWidget()).getValues();
+	}
+	public void addKeyUpHandler(KeyUpHandler handler) {
+		FormField f = (FormField)this.field.getWidget();
+		f.addKeyUpHandler(handler);
 	}
 }
