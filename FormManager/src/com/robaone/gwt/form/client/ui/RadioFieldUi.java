@@ -65,4 +65,10 @@ public class RadioFieldUi extends Composite  implements FormField {
 		}
 	}
 
+	@Override
+	public void setError(boolean b) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

@@ -90,5 +90,11 @@ public class ListFieldUi extends Composite implements FormField  {
 		}
 	}
 
+	@Override
+	public void setError(boolean b) {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 }

@@ -27,7 +27,7 @@ public class FormUi extends Composite {
 	public static final String HELP = "help";
 	public static final String ITEMS = "items";
 	public static final String VALUE = "value";
-	public static enum TYPES {Check,List,Radio,TextArea,Text};
+	public static enum TYPES {Check,List,Radio,TextArea,Text, Password};
 	private static FormUiUiBinder uiBinder = GWT.create(FormUiUiBinder.class);
 
 	interface FormUiUiBinder extends UiBinder<Widget, FormUi> {
@@ -46,6 +46,7 @@ public class FormUi extends Composite {
 	@UiField Button submit;
 	@UiField Button cancel;
 	@UiField Button next;
+	HashMap<String,FormFieldUi> m_fieldmap;
 
 	public void setTitle(String str){
 		this.title.setText(str);
@@ -64,8 +65,9 @@ public class FormUi extends Composite {
 	public void setDescription(String str){
 		this.description.setText(str);
 	}
-	public void addField(Widget field){
+	public void addField(FormFieldUi field){
 		fields.add(field);
+		this.m_fieldmap.put(field.getName(), field);
 	}
 	public void addBackHandler(ClickHandler h){
 		back.addClickHandler(h);
@@ -130,8 +132,19 @@ public class FormUi extends Composite {
 				TextAreaFieldUi item = new TextAreaFieldUi(info.get(NAME));
 				item.setText(value);
 				field.setField(item);
-			} 
+			}if(info.get(TYPE).equals(TYPES.Password.toString())){
+				PasswordFieldUi item = new PasswordFieldUi(info.get(NAME));
+				item.setText(value);
+				field.setField(item);
+			}
 			this.fields.add(field);
+			this.m_fieldmap.put(field.getName(), field);
+		}
+	}
+	public void setFieldError(String name,String error){
+		FormFieldUi field = this.m_fieldmap.get(name);
+		if(field != null){
+			field.setError(error);
 		}
 	}
 }

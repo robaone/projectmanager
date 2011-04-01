@@ -68,4 +68,10 @@ public class CheckFieldUi extends Composite implements FormField {
 			this.add(item, match);
 		}
 	}
+
+	@Override
+	public void setError(boolean b) {
+		// TODO Auto-generated method stub
+		
+	}
 }

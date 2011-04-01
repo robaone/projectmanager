@@ -1,7 +1,7 @@
 <!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui">
-	<ui:style src="form.css"></ui:style>
+	<ui:style src="form.css" field="style" type="com.robaone.gwt.form.client.ui.TextFieldUi.Style"></ui:style>
 	<g:HTMLPanel>
 		<g:TextArea ui:field="field" styleName="{style.text}"></g:TextArea>
 	</g:HTMLPanel>
