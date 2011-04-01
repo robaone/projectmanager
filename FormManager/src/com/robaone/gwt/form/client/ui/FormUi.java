@@ -5,6 +5,7 @@ import java.util.Vector;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
@@ -52,8 +53,8 @@ public class FormUi extends Composite {
 		this.title.setText(str);
 	}
 	public void setErrors(Widget[] messages){
+		errors.clear();
 		if(messages == null || messages.length == 0){
-			errors.clear();
 			errors.setVisible(false);
 		}else{
 			for(int i = 0; i < messages.length;i++){
@@ -146,5 +147,9 @@ public class FormUi extends Composite {
 		if(field != null){
 			field.setError(error);
 		}
+	}
+	public void addFieldKeyUpHandler(String name,KeyUpHandler handler){
+		FormFieldUi field = this.m_fieldmap.get(name);
+		field.addKeyUpHandler(handler);
 	}
 }

@@ -3,6 +3,7 @@ package com.robaone.gwt.form.client.ui;
 import java.util.Vector;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -58,5 +59,10 @@ public class TextAreaFieldUi extends Composite implements HasText, FormField {
 		}else{
 			field.removeStyleName(style.error());
 		}
+	}
+
+	@Override
+	public void addKeyUpHandler(KeyUpHandler handler) {
+		field.addKeyUpHandler(handler);
 	}
 }
