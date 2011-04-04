@@ -60,7 +60,8 @@ public class UserManager extends ProjectConstants implements UserManagerInterfac
 			password = password.trim();
 		}
 		if(retval.getStatus() == OK){
-			String path = USER_PATH+"/"+username+"/password";
+			String[] params = {username,"password"};
+			String path = ConfigManager.path(this, params);
 			ConfigManager user_password = ConfigManager.findConfig(path);
 			if(user_password == null){
 				retval.setStatus(NOT_LOGGED_IN);
@@ -71,7 +72,8 @@ public class UserManager extends ProjectConstants implements UserManagerInterfac
 					if(user_password.getString().equals(encrypted_password)){
 						UserData data = new UserData();
 						data.setUsername(username);
-						String root_path = USER_PATH+"/"+username;
+						String[] uparams = {username};
+						String root_path = ConfigManager.path(this, uparams);
 						try{data.setZip(ConfigManager.findConfig(root_path,"zip").getString());}catch(Exception e){}
 						try{data.setFirstname(ConfigManager.findConfig(root_path, "firstname").getString());}catch(Exception e){}
 						try{data.setLastname(ConfigManager.findConfig(root_path,"lastname").getString());}catch(Exception e){}
@@ -124,7 +126,8 @@ public class UserManager extends ProjectConstants implements UserManagerInterfac
 			/**
 			 * Create the user data in the database
 			 */
-			String path = USER_PATH+"/"+email;
+			String[] params = {email};
+			String path = ConfigManager.path(this, params);
 			ConfigManager cfg = ConfigManager.findConfig(path);
 			if(cfg == null){
 				/**
@@ -132,8 +135,6 @@ public class UserManager extends ProjectConstants implements UserManagerInterfac
 				 */
 				UserData data = new UserData();
 				data.setUsername(email);
-				data.setAccountType(type);
-				data.setZip(zip);
 				response.addData(data);
 				SessionData sdata = this.parent.createSessionData();
 				sdata.setUserData(data);
@@ -143,7 +144,8 @@ public class UserManager extends ProjectConstants implements UserManagerInterfac
 				ConfigManager password_cfg = new ConfigManager(path+"/"+UserData.PASSWORD,encrypted_password,ConfigType.STRING,"User password","This is the password for the user account.",session);
 				ConfigManager zip_cfg = new ConfigManager(path+"/"+UserData.ZIP,zip,ConfigType.STRING,"Zip Code","The users' home zipcode",session);
 				ConfigManager role_cfg = new ConfigManager(path+"/"+UserData.ROLE,type.hashCode(),"User Role","The user role set the security and feature settings for this user.",session);
-
+				data.setAccountType(type);
+				data.setZip(zip_cfg.getString());
 			}else{
 				/**
 				 * The user exists already.  Return an error
@@ -184,9 +186,12 @@ public class UserManager extends ProjectConstants implements UserManagerInterfac
 	@Override
 	public UserData updateProfile(UserData user) throws Exception {
 		if(user != null){
-			String path = USER_PATH+"/"+user.getUsername()+"/";
-			ConfigManager password_cfg = ConfigManager.findConfig(path+UserData.PASSWORD);
+			String[] params = {user.getUsername(),UserData.PASSWORD};
+			String path = ConfigManager.path(this, params);
+			ConfigManager password_cfg = ConfigManager.findConfig(path);
 			if(password_cfg != null){
+				String[] p2 = {user.getUsername()};
+				path = ConfigManager.path(this, params) + "/";
 				HDBSessionData session = new HDBSessionData(this.getParent().getSessionData().getUserData().getUsername(),this.getParent().getSessionData().getCurrentHost());
 				ConfigManager firstname_cfg = new ConfigManager(path+UserData.FIRSTNAME,user.getFirstname(),ConfigType.STRING,"FirstName","The user's first name.",session);
 				ConfigManager lastname_cfg = new ConfigManager(path+UserData.LASTNAME,user.getLastname(),ConfigType.STRING,"LastName","The user's last name.",session);
