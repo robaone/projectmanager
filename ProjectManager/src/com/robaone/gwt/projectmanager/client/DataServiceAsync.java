@@ -8,6 +8,7 @@ import com.robaone.gwt.projectmanager.client.data.ContractorData;
 import com.robaone.gwt.projectmanager.client.data.ContractorListing;
 import com.robaone.gwt.projectmanager.client.data.PasswordResetResponse;
 import com.robaone.gwt.projectmanager.client.data.Project;
+import com.robaone.gwt.projectmanager.client.data.ProjectGoal;
 import com.robaone.gwt.projectmanager.client.data.UserData;
 
 /**
@@ -58,5 +59,14 @@ public interface DataServiceAsync {
 
 	void createProject(Project project,
 			AsyncCallback<DataServiceResponse<Project>> asyncCallback);
+
+	void saveProjectGoal(ProjectGoal m_data,
+			AsyncCallback<DataServiceResponse<ProjectGoal>> asyncCallback);
+
+	void deleteProjectGoal(ProjectGoal m_data,
+			AsyncCallback<DataServiceResponse<ProjectGoal>> asyncCallback);
+
+	void getGoalsForProject(Project proj,
+			AsyncCallback<DataServiceResponse<ProjectGoal>> asyncCallback);
 
 }

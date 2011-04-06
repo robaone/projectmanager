@@ -1,0 +1,28 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style>
+		
+	</ui:style>
+	<g:HTMLPanel>
+		<table width="100%">
+			<tbody>
+				<tr>
+					<td>
+						<g:TextBox ui:field="name"></g:TextBox>
+					</td>
+					<td>
+						<g:SimplePanel ui:field="dateboxpanel"></g:SimplePanel>
+					</td>
+					<td>
+						<g:TextBox ui:field="status"></g:TextBox>
+					</td>
+					<td>
+						<g:Button ui:field="save">Save</g:Button>
+						<g:Button ui:field="delete">Delete</g:Button>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</g:HTMLPanel>
+</ui:UiBinder> 

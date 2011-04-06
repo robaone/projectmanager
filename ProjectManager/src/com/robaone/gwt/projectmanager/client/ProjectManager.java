@@ -4,18 +4,18 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 import com.robaone.gwt.projectmanager.client.data.UserData;
-import com.robaone.gwt.projectmanager.client.ui.ArticleFeedUI;
 import com.robaone.gwt.projectmanager.client.ui.ContractorListingUI;
 import com.robaone.gwt.projectmanager.client.ui.FeaturedUI;
 import com.robaone.gwt.projectmanager.client.ui.GeneralError;
-import com.robaone.gwt.projectmanager.client.ui.LoggedOutUI;
-import com.robaone.gwt.projectmanager.client.ui.LoginInterface;
 import com.robaone.gwt.projectmanager.client.ui.MainContent;
-import com.robaone.gwt.projectmanager.client.ui.ProfilePicture;
 import com.robaone.gwt.projectmanager.client.ui.ProjectManagerLayout;
-import com.robaone.gwt.projectmanager.client.ui.RegistrationUI;
-import com.robaone.gwt.projectmanager.client.ui.SearchForm;
-import com.robaone.gwt.projectmanager.client.ui.TasksList;
+import com.robaone.gwt.projectmanager.client.ui.articles.ArticleFeedUI;
+import com.robaone.gwt.projectmanager.client.ui.login.LoggedOutUI;
+import com.robaone.gwt.projectmanager.client.ui.login.LoginInterface;
+import com.robaone.gwt.projectmanager.client.ui.profile.ProfilePicture;
+import com.robaone.gwt.projectmanager.client.ui.registration.RegistrationUI;
+import com.robaone.gwt.projectmanager.client.ui.search.SearchForm;
+import com.robaone.gwt.projectmanager.client.ui.tasks.TasksList;
 import com.robaone.gwt.projectmanager.server.FieldVerifier;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -195,7 +195,7 @@ public class ProjectManager extends ProjectConstants implements EntryPoint {
 
 	public static void showLogin() {
 		LoginInterface login = new LoginInterface(null);
-		setSection(PROFILE_SECTION,login);
+		setSection(MAIN_CONTENT,login);
 	}
 	public static void writeLog(String message){
 		ProjectManager.dataService.writeLog(message, new AsyncCallback<Void>(){

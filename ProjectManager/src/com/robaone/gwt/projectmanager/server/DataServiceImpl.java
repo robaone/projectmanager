@@ -19,6 +19,7 @@ import com.robaone.gwt.projectmanager.client.data.ContractorData;
 import com.robaone.gwt.projectmanager.client.data.ContractorListing;
 import com.robaone.gwt.projectmanager.client.data.PasswordResetResponse;
 import com.robaone.gwt.projectmanager.client.data.Project;
+import com.robaone.gwt.projectmanager.client.data.ProjectGoal;
 import com.robaone.gwt.projectmanager.client.data.UserData;
 import com.robaone.gwt.projectmanager.server.ProjectDebug.SOURCE;
 import com.robaone.gwt.projectmanager.server.interfaces.ContractorManagerInterface;
@@ -206,6 +207,36 @@ public class DataServiceImpl extends RemoteServiceServlet implements
 		try{
 			ProjectLogManagerInterface man = ManagerFactory.getProjectManager(this);
 			return man.createProject(project);
+		}catch(Exception e){
+			throw new Exception(e.getMessage());
+		}
+	}
+	@Override
+	public DataServiceResponse<ProjectGoal> saveProjectGoal(ProjectGoal m_data)
+			throws Exception {
+		try{
+			ProjectLogManagerInterface man = ManagerFactory.getProjectManager(this);
+			return man.saveProjectGoal(m_data);
+		}catch(Exception e){
+			throw new Exception(e.getMessage());
+		}
+	}
+	@Override
+	public DataServiceResponse<ProjectGoal> deleteProjectGoal(ProjectGoal m_data)
+			throws Exception {
+		try{
+			ProjectLogManagerInterface man = ManagerFactory.getProjectManager(this);
+			return man.deleteProjectGoal(m_data);
+		}catch(Exception e){
+			throw new Exception(e.getMessage());
+		}
+	}
+	@Override
+	public DataServiceResponse<ProjectGoal> getGoalsForProject(Project proj)
+			throws Exception {
+		try{
+			ProjectLogManagerInterface man = ManagerFactory.getProjectManager(this);
+			return man.getGoalsForProject(proj);
 		}catch(Exception e){
 			throw new Exception(e.getMessage());
 		}

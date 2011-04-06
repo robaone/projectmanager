@@ -17,8 +17,8 @@ import com.robaone.gwt.projectmanager.client.ui.ContractorListingInfoUI;
 import com.robaone.gwt.projectmanager.client.ui.ContractorListingUI;
 import com.robaone.gwt.projectmanager.client.ui.ContractorProfileUI;
 import com.robaone.gwt.projectmanager.client.ui.MainContent;
-import com.robaone.gwt.projectmanager.client.ui.ProfileEditUI;
-import com.robaone.gwt.projectmanager.client.ui.TasksList;
+import com.robaone.gwt.projectmanager.client.ui.profile.ProfileEditUI;
+import com.robaone.gwt.projectmanager.client.ui.tasks.TasksList;
 
 public class BasicHistoryChangeHandler implements ValueChangeHandler<String> {
 

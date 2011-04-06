@@ -7,7 +7,7 @@ public class UserData implements IsSerializable {
 	private String username;
 	private String picture_url;
 	private String zip;
-	private USER_TYPE accounttype;
+	private String accounttype;
 	private Contractor contractorid;
 	private String firstname;
 	private String lastname;
@@ -39,10 +39,10 @@ public class UserData implements IsSerializable {
 	public String getZip() {
 		return zip;
 	}
-	public USER_TYPE getAccountType() {
+	public String getAccountType() {
 		return this.accounttype;
 	}
-	public void setAccountType(USER_TYPE type){
+	public void setAccountType(String type){
 		this.accounttype = type;
 	}
 	public Contractor getContractor() {

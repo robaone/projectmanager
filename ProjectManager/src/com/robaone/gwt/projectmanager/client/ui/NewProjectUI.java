@@ -11,6 +11,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.robaone.gwt.projectmanager.client.ui.project.ProjectUi2;
 
 public class NewProjectUI extends Composite {
 

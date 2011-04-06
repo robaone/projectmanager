@@ -7,7 +7,7 @@ import com.robaone.gwt.projectmanager.client.DataServiceResponse;
 import com.robaone.gwt.projectmanager.client.ProjectConstants;
 import com.robaone.gwt.projectmanager.client.data.PasswordResetResponse;
 import com.robaone.gwt.projectmanager.client.data.UserData;
-import com.robaone.gwt.projectmanager.client.ui.RegistrationUI;
+import com.robaone.gwt.projectmanager.client.ui.registration.RegistrationUI;
 import com.robaone.gwt.projectmanager.server.DataServiceImpl;
 import com.robaone.gwt.projectmanager.server.FieldVerifier;
 import com.robaone.gwt.projectmanager.server.ProjectDebug;
@@ -144,7 +144,7 @@ public class UserManager extends ProjectConstants implements UserManagerInterfac
 				ConfigManager password_cfg = new ConfigManager(path+"/"+UserData.PASSWORD,encrypted_password,ConfigType.STRING,"User password","This is the password for the user account.",session);
 				ConfigManager zip_cfg = new ConfigManager(path+"/"+UserData.ZIP,zip,ConfigType.STRING,"Zip Code","The users' home zipcode",session);
 				ConfigManager role_cfg = new ConfigManager(path+"/"+UserData.ROLE,type.hashCode(),"User Role","The user role set the security and feature settings for this user.",session);
-				data.setAccountType(type);
+				data.setAccountType(type.toString());
 				data.setZip(zip_cfg.getString());
 			}else{
 				/**

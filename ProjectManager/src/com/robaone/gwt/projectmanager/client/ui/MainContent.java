@@ -9,8 +9,13 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.InlineHTML;
 import com.google.gwt.user.client.ui.Widget;
 import com.robaone.gwt.projectmanager.client.data.FeedItem;
-import com.robaone.gwt.projectmanager.client.ui.TasksList.TASK;
+import com.robaone.gwt.projectmanager.client.ui.alerts.AlertListUI;
+import com.robaone.gwt.projectmanager.client.ui.feed.Feed;
+import com.robaone.gwt.projectmanager.client.ui.notices.NoticeListUI;
+import com.robaone.gwt.projectmanager.client.ui.project.ProjectListUI;
+import com.robaone.gwt.projectmanager.client.ui.search.SearchResultsUI;
 import com.robaone.gwt.projectmanager.client.ui.tabs.SectionTabs;
+import com.robaone.gwt.projectmanager.client.ui.tasks.TasksList.TASK;
 
 public class MainContent extends Composite {
 	private FlowPanel live_feed;

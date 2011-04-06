@@ -25,8 +25,9 @@ import com.google.gwt.user.client.ui.TabBar;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.TabBar.Tab;
-import com.robaone.gwt.projectmanager.client.ui.ProjectTab;
-import com.robaone.gwt.projectmanager.client.ui.TasksList.TASK;
+import com.robaone.gwt.projectmanager.client.ui.project.NewProjectUI2;
+import com.robaone.gwt.projectmanager.client.ui.project.ProjectTab;
+import com.robaone.gwt.projectmanager.client.ui.tasks.TasksList.TASK;
 
 public class SectionTabs extends Composite {
 	private VerticalPanel vp = new VerticalPanel();
@@ -189,5 +190,12 @@ public class SectionTabs extends Composite {
 				return c;
 		}
 		return null;
+	}
+	public void setWidget(int index, Widget item) {
+		ProjectTab t = (ProjectTab)this.tab_flow.getWidget(index);
+		Widget old = tabs.get(t.getContent().getWidget());
+		tabs.put(t.getContent().getWidget(), item);
+		contents.remove(old);
+		contents.put(item, t.getContent().getWidget());
 	}
 }

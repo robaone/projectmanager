@@ -1,0 +1,141 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui"
+	xmlns:Date="url:import:com.google.gwt.user.datepicker.client">
+	<ui:style type="com.robaone.gwt.projectmanager.client.ui.project.NewProjectUI2.NewProjectStyle">
+		h1.h1 {
+			font-family: Arial;
+			font-weight: normal;
+			font-size: 1.1em;
+			background-color: rgb(230, 230, 230);
+			border-radius: 4px;
+			text-shadow: -1px -1px 0 white;
+			padding:2px;
+		}
+		
+		table.project {
+			border: 1 solid rgb(200, 200, 200);
+			width: 100%;
+			padding: 6px;
+		}
+		
+		table.project td {
+			
+		}
+		
+		td.label {
+			font-family: Arial;
+			font-size: 1.1em;
+			color: #666666;
+		}
+		
+		td.top {
+			vertical-align: top;
+		}
+		
+		input.input {
+			font-family: Arial;
+			font-size: 14pt;
+			width: 90%;
+			border: 1px solid rgb(200, 200, 200);
+		}
+		
+		input.date {
+			font-family: Arial;
+			font-size: 14pt;
+			width: 120px;
+			border: 1px solid rgb(200, 200, 200);
+		}
+		
+		textarea.input {
+			font-family: Arial;
+			width: 90%;
+			border: 1px solid rgb(200, 200, 200);
+			height: 90px;
+		}
+		.tagit{
+			border: 1px solid #CCC;
+			padding: 4px 0 1px 3px;
+			float: left;
+			width: 320px;
+			list-style: none;
+		}
+		.tagit_choice{
+			float:left;
+			margin-right:10px;
+			padding:3px;
+			margin-bottom:5px;
+		}	
+		.error{
+			font-style:italic;
+			color:red;
+		}
+		.generalerror{
+			padding:10px;
+			color:white;
+			font-weight:bold;
+			width:100%;
+			border-radius:7px;
+		}
+	</ui:style>
+	<g:HTMLPanel>
+		<div style="background-color:white">
+			<h1 class="{style.h1}"><g:InlineLabel ui:field="title">New Project</g:InlineLabel></h1>
+			<g:Label ui:field="error" styleName="{style.generalerror}" visible="false"></g:Label>
+			<table cellpadding="0" cellspacing="0" class="{style.project}">
+				<col style="width:175px" />
+				<tbody>
+					<tr>
+						<td class="{style.label}">Project Name:</td>
+						<td>
+							<g:TextBox ui:field="project_name" styleName="{style.input}"></g:TextBox><br/>
+							<g:InlineLabel ui:field="project_name_error" styleName="{style.error}"></g:InlineLabel>
+						</td>
+					</tr>
+					<tr>
+						<td class="{style.top} {style.label}">Description:</td>
+						<td>
+							<g:TextArea ui:field="description" styleName="{style.input}"></g:TextArea>
+						</td>
+					</tr>
+					<tr>
+						<td class="{style.label}">Due Date:</td>
+						<td>
+							<g:SimplePanel ui:field="date_holder"></g:SimplePanel>
+						</td>
+					</tr>
+					<tr>
+						<td class="{style.label}">Estimated Hours:</td>
+						<td>
+							<g:TextBox ui:field="est_hours" styleName="{style.date}"></g:TextBox>
+						</td>
+					</tr>
+					<tr>
+						<td class="{style.label}">Tags:</td>
+						<td>
+							<g:SimplePanel ui:field="tag_holder"></g:SimplePanel>
+						</td>
+					</tr>
+					<tr>
+						<td class="{style.label}">Assigned To:</td>
+						<td>
+							<g:SimplePanel ui:field="assignment_holder"></g:SimplePanel>
+						</td>
+					</tr>
+					<tr>
+						<td class="{style.label}">Important:</td>
+						<td>
+							<g:CheckBox ui:field="important"></g:CheckBox>
+						</td>
+					</tr>
+					<tr>
+						<td></td>
+						<td>
+							<g:Button ui:field="create_button">Create Project</g:Button>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</g:HTMLPanel>
+</ui:UiBinder> 
