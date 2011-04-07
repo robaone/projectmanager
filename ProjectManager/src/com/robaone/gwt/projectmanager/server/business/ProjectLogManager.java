@@ -137,7 +137,7 @@ public class ProjectLogManager implements ProjectLogManagerInterface {
 		DataServiceResponse<ProjectGoal> retval = new DataServiceResponse<ProjectGoal>();
 		String[] params = {"projectgoals",m_data.getId()};
 		ConfigManager cfg = new ConfigManager(ConfigManager.path(this, params));
-		cfg.delete();
+		cfg.delete(this.getHDBSessionData());
 		return retval;
 	}
 
