@@ -2,6 +2,7 @@ package com.robaone.gwt.projectmanager.client.data;
 
 import java.util.Date;
 
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class Project implements IsSerializable {
@@ -68,4 +69,5 @@ public class Project implements IsSerializable {
 	public String getId(){
 		return this.id;
 	}
+	
 }

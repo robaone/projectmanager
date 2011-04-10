@@ -46,8 +46,7 @@ public class SectionTabs extends Composite {
 	public int addTab(Widget content,String string){
 		return this.addTab(content, string,null);
 	}
-	public int addTab(final Widget content, String string,String token) {
-		Label title = new Label(string);
+	public int addTab(final Widget content,Label title,String token){
 		final String tab_history_token = token;
 		title.addClickHandler(new ClickHandler(){
 
@@ -59,9 +58,13 @@ public class SectionTabs extends Composite {
 					History.newItem(tab_history_token, false);
 				}
 			}
-			
 		});
 		return this.addTab(content, title);
+
+	}
+	public int addTab(final Widget content, String string,String token) {
+		Label title = new Label(string);
+		return this.addTab(content,title,token);
 	}
 	private int addTab(Widget content, Widget title) {
 		ProjectTab tab = new ProjectTab();

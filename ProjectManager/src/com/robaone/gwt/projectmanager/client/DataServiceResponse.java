@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Vector;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
+import com.robaone.gwt.projectmanager.client.data.FeedItem;
 
 public class DataServiceResponse<T extends IsSerializable> implements IsSerializable {
 	private String error;
@@ -70,5 +71,9 @@ public class DataServiceResponse<T extends IsSerializable> implements IsSerializ
 	}
 	public String getFieldError(String field){
 		return this.fielderrors.get(field);
+	}
+	@SuppressWarnings("unchecked")
+	public T[] getDataArray(T[] array) {
+		return data.toArray(array);
 	}
 }

@@ -6,6 +6,7 @@ import com.robaone.gwt.projectmanager.client.data.Category;
 import com.robaone.gwt.projectmanager.client.data.Contractor;
 import com.robaone.gwt.projectmanager.client.data.ContractorData;
 import com.robaone.gwt.projectmanager.client.data.ContractorListing;
+import com.robaone.gwt.projectmanager.client.data.FeedItem;
 import com.robaone.gwt.projectmanager.client.data.PasswordResetResponse;
 import com.robaone.gwt.projectmanager.client.data.Project;
 import com.robaone.gwt.projectmanager.client.data.ProjectGoal;
@@ -68,5 +69,10 @@ public interface DataServiceAsync {
 
 	void getGoalsForProject(Project proj,
 			AsyncCallback<DataServiceResponse<ProjectGoal>> asyncCallback);
+
+	void getFeed(AsyncCallback<DataServiceResponse<FeedItem>> asyncCallback);
+
+	void getProject(String id,
+			AsyncCallback<DataServiceResponse<Project>> asyncCallback);
 
 }

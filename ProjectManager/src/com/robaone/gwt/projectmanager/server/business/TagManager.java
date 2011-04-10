@@ -3,6 +3,9 @@ package com.robaone.gwt.projectmanager.server.business;
 import java.math.BigDecimal;
 
 import com.robaone.dbase.hierarchial.ConfigManager;
+import com.robaone.dbase.hierarchial.Config_jdo;
+import com.robaone.dbase.hierarchial.Config_jdoManager;
+import com.robaone.dbase.hierarchial.ConnectionBlock;
 import com.robaone.dbase.hierarchial.HDBSessionData;
 import com.robaone.dbase.hierarchial.types.ConfigType;
 import com.robaone.gwt.projectmanager.server.DataServiceImpl;
@@ -38,6 +41,10 @@ public class TagManager {
 	public HDBSessionData getHDBSessionData(){
 		HDBSessionData session = new HDBSessionData(this.parent.getSessionData().getUserData().getUsername(),this.parent.getSessionData().getCurrentHost());
 		return session;
+	}
+	public String getTagNameforId(String id) throws Exception {
+		ConfigManager cfg = ConfigManager.findConfig(new BigDecimal(id));
+		return cfg.getName();
 	}
 
 }

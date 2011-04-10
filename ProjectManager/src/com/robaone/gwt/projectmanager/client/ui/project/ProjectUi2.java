@@ -6,12 +6,15 @@ import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.robaone.gwt.projectmanager.client.DataServiceResponse;
+import com.robaone.gwt.projectmanager.client.ProjectManager;
 import com.robaone.gwt.projectmanager.client.data.Project;
 import com.robaone.gwt.projectmanager.client.ui.MainContent;
 import com.robaone.gwt.projectmanager.client.ui.project.goals.GoalsListUi;
@@ -72,5 +75,23 @@ public class ProjectUi2 extends Composite {
 
 	public Project getData() {
 		return this.m_project;
+	}
+
+	public void load(String id) {
+		ProjectManager.dataService.getProject(id,new AsyncCallback<DataServiceResponse<Project>>(){
+
+			@Override
+			public void onFailure(Throwable caught) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onSuccess(DataServiceResponse<Project> result) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		});
 	}
 }

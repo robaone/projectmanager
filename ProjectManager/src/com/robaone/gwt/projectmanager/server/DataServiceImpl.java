@@ -17,6 +17,7 @@ import com.robaone.gwt.projectmanager.client.data.Category;
 import com.robaone.gwt.projectmanager.client.data.Contractor;
 import com.robaone.gwt.projectmanager.client.data.ContractorData;
 import com.robaone.gwt.projectmanager.client.data.ContractorListing;
+import com.robaone.gwt.projectmanager.client.data.FeedItem;
 import com.robaone.gwt.projectmanager.client.data.PasswordResetResponse;
 import com.robaone.gwt.projectmanager.client.data.Project;
 import com.robaone.gwt.projectmanager.client.data.ProjectGoal;
@@ -237,6 +238,24 @@ public class DataServiceImpl extends RemoteServiceServlet implements
 		try{
 			ProjectLogManagerInterface man = ManagerFactory.getProjectManager(this);
 			return man.getGoalsForProject(proj);
+		}catch(Exception e){
+			throw new Exception(e.getMessage());
+		}
+	}
+	@Override
+	public DataServiceResponse<FeedItem> getFeed() throws Exception {
+		try{
+			ProjectLogManagerInterface man = ManagerFactory.getProjectManager(this);
+			return man.getFeed();
+		}catch(Exception e){
+			throw new Exception(e.getMessage());
+		}
+	}
+	@Override
+	public DataServiceResponse<Project> getProject(String id) throws Exception {
+		try{
+			ProjectLogManagerInterface man = ManagerFactory.getProjectManager(this);
+			return man.getProject(id);
 		}catch(Exception e){
 			throw new Exception(e.getMessage());
 		}

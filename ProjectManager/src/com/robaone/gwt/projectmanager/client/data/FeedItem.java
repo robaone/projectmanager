@@ -1,5 +1,7 @@
 package com.robaone.gwt.projectmanager.client.data;
 
+import java.util.Date;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class FeedItem implements IsSerializable {
@@ -7,7 +9,7 @@ public class FeedItem implements IsSerializable {
 	private String summary;
 	private String referenceid;
 	private String iconurl;
-	private String datetime;
+	private Date datetime;
 	public FeedItem(){}
 	public void setTitle(String title) {
 		this.title = title;
@@ -33,10 +35,10 @@ public class FeedItem implements IsSerializable {
 	public String getIconurl() {
 		return iconurl;
 	}
-	public void setDatetime(String datetime) {
+	public void setDatetime(Date datetime) {
 		this.datetime = datetime;
 	}
-	public String getDatetime() {
+	public Date getDatetime() {
 		return datetime;
 	}
 

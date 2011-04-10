@@ -48,14 +48,14 @@ public class ProjectManager extends ProjectConstants implements EntryPoint {
 	 * returns an error.
 	 */
 	public static final String SERVER_ERROR = "An error occurred while "
-			+ "attempting to contact the server. Please check your network "
-			+ "connection and try again.";
+		+ "attempting to contact the server. Please check your network "
+		+ "connection and try again.";
 
 	/**
 	 * Create a remote service proxy to talk to the server-side Greeting service.
 	 */
 	public static final DataServiceAsync dataService = GWT
-			.create(DataService.class);
+	.create(DataService.class);
 
 	public static final String PROFILE_SECTION = "profile_section";
 	public static final String SEARCH_BAR = "search_bar";
@@ -92,15 +92,19 @@ public class ProjectManager extends ProjectConstants implements EntryPoint {
 
 			@Override
 			public void onSuccess(DataServiceResponse<UserData> result) {
-				if(result.getStatus() == OK){
-					showAllModules(result.getData(0));
-				}else if(result.getStatus() == NOT_LOGGED_IN){
-					showLogin();	
+				try{
+					if(result.getStatus() == OK){
+						showAllModules(result.getData(0));
+					}else if(result.getStatus() == NOT_LOGGED_IN){
+						showLogin();	
+					}
+					String token = History.getToken();
+					ProjectManager.this.change_handler.handleChange(token);
+				}catch(Exception e){
+					onFailure(e);
 				}
-				String token = History.getToken();
-				ProjectManager.this.change_handler.handleChange(token);
 			}
-			
+
 		});
 		/**
 		 * Add history change handler
@@ -108,11 +112,11 @@ public class ProjectManager extends ProjectConstants implements EntryPoint {
 		FeaturedUI featured = new FeaturedUI();
 		ProjectManager.setSection(FEATURED_CONTRACTORS, featured);
 		featured.setText("featured contractors");
-		
+
 		FeaturedUI work = new FeaturedUI();
 		ProjectManager.setSection(RECENT_WORK, work);
 		work.setText("recent work");
-		
+
 		if(RootPanel.get(NEWS_TICKER) != null){
 			ArticleFeedUI feed = new ArticleFeedUI();
 			ProjectManager.setSection(NEWS_TICKER, feed);
@@ -124,7 +128,7 @@ public class ProjectManager extends ProjectConstants implements EntryPoint {
 			ContractorListingUI listing = new ContractorListingUI();
 			ProjectManager.setSection(LISTING_SECTION, listing);
 		}
-		*/
+		 */
 	}
 
 	protected void showRegister() {
@@ -167,7 +171,7 @@ public class ProjectManager extends ProjectConstants implements EntryPoint {
 								 * to finish their profile information.
 								 */
 								if(data.getAccountType().equals(ProjectConstants.USER_TYPE.HVACPROFESSIONAL)){
-									
+
 									ProjectManager.updateProfileSection(data);
 									History.newItem("profile=edit",true);
 								}else{
@@ -203,20 +207,20 @@ public class ProjectManager extends ProjectConstants implements EntryPoint {
 			@Override
 			public void onFailure(Throwable caught) {
 				// TODO Auto-generated method stub
-				
+
 			}
 
 			@Override
 			public void onSuccess(Void result) {
 				// TODO Auto-generated method stub
-				
+
 			}
-			
+
 		});
 	}
 	public static void showAllModules(UserData data) {
 
-		
+
 		MainContent main;
 		if(ProjectManager.m_maincontent != null){
 			main = ProjectManager.m_maincontent;
@@ -224,13 +228,13 @@ public class ProjectManager extends ProjectConstants implements EntryPoint {
 			main = new MainContent();
 			ProjectManager.m_maincontent = main;
 		}
-		
+
 		ProjectManager.dataService.getLoginStatus(new AsyncCallback<DataServiceResponse<UserData>>(){
 
 			@Override
 			public void onFailure(Throwable caught) {
 				// TODO Auto-generated method stub
-				
+
 			}
 
 			@Override
@@ -246,15 +250,15 @@ public class ProjectManager extends ProjectConstants implements EntryPoint {
 				RootPanel.get("searchform").add(search);
 			}
 		}
-		
+
 		TasksList tasks = new TasksList();
 		setSection(TASKS_SECTION, tasks);
-		
+
 		setSection(MAIN_CONTENT, main);
 		if(main.isAttached()){
 			main.load();
 		}
-		
+
 		tasks.setMainContent(main);
 	}
 
@@ -267,7 +271,7 @@ public class ProjectManager extends ProjectConstants implements EntryPoint {
 			profile.getPicture().setUrl("/images/profiles/"+data.getPictureUrl());
 		}
 		ProjectManager.setSection(PROFILE_SECTION, profile);
-		
+
 		profile.getEditlink().addClickHandler(new ClickHandler(){
 
 			@Override
@@ -280,7 +284,7 @@ public class ProjectManager extends ProjectConstants implements EntryPoint {
 					Location.assign(url+"#profile=edit");
 				}
 			}
-			
+
 		});
 	}
 
@@ -296,7 +300,7 @@ public class ProjectManager extends ProjectConstants implements EntryPoint {
 	public static void setSection(String section, Widget section_widget) {
 		try{
 			ProjectManager.writeLog("Setting section, "+section+" with Widget, "+section_widget.getClass().getName());
-			
+
 			RootPanel p = RootPanel.get(section);
 			if(p != null){
 				p.clear();
@@ -305,7 +309,7 @@ public class ProjectManager extends ProjectConstants implements EntryPoint {
 			}
 		}catch(Exception e){}
 	}
-	
+
 	public static Widget getSection(String section){
 		try{
 			RootPanel p = RootPanel.get(section);
@@ -351,7 +355,7 @@ public class ProjectManager extends ProjectConstants implements EntryPoint {
 			ProjectManager.writeLog(caught.getStackTrace()[i].getClassName()+": "+caught.getStackTrace()[i].getMethodName()+": "+caught.getStackTrace()[i].getLineNumber());
 		}
 	}
-	
+
 	public static void writeLog(Exception caught) {
 		ProjectManager.writeLog(caught.getMessage());
 		for(int i = 0; i < caught.getStackTrace().length;i++){

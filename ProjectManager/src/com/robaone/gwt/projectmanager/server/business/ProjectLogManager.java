@@ -2,15 +2,20 @@ package com.robaone.gwt.projectmanager.server.business;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.Vector;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.robaone.dbase.hierarchial.ConfigManager;
+import com.robaone.dbase.hierarchial.ConnectionBlock;
 import com.robaone.dbase.hierarchial.HDBSessionData;
 import com.robaone.dbase.hierarchial.ProjectDatabase;
 import com.robaone.dbase.hierarchial.types.ConfigType;
 import com.robaone.gwt.projectmanager.client.DataServiceResponse;
 import com.robaone.gwt.projectmanager.client.ProjectConstants;
+import com.robaone.gwt.projectmanager.client.data.FeedItem;
 import com.robaone.gwt.projectmanager.client.data.Project;
 import com.robaone.gwt.projectmanager.client.data.ProjectGoal;
 import com.robaone.gwt.projectmanager.server.DataServiceImpl;
@@ -19,6 +24,7 @@ import com.robaone.gwt.projectmanager.server.interfaces.ProjectLogManagerInterfa
 
 public class ProjectLogManager implements ProjectLogManagerInterface {
 
+	private static final String PROJECTS = "projects";
 	private DataServiceImpl parent;
 
 	public ProjectLogManager(DataServiceImpl dataServiceImpl) {
@@ -32,7 +38,7 @@ public class ProjectLogManager implements ProjectLogManagerInterface {
 
 	@Override
 	public DataServiceResponse<Project> createProject(Project project)
-			throws Exception {
+	throws Exception {
 		DataServiceResponse<Project> retval = new DataServiceResponse<Project>();
 		if(project.getProjectName() == null || project.getProjectName().length() < 3){
 			retval.addFieldError(Project.PROJECTNAME, "The project name needs to be longer than 3 characters");
@@ -44,7 +50,7 @@ public class ProjectLogManager implements ProjectLogManagerInterface {
 		ConfigManager cfg;
 		String path;
 		String[] params = new String[2];
-		params[0] = "projects";
+		params[0] = PROJECTS;
 		do{
 			params[1] = ""+this.newProjectId();
 			path = ConfigManager.path(this,params);
@@ -58,16 +64,20 @@ public class ProjectLogManager implements ProjectLogManagerInterface {
 		cfg = new ConfigManager(path+"/"+Project.ESTIMATEDHOURS,project.getEst_hours(),"Estimated Hours","The number of hours it will take to complete the project",session);
 		cfg = new ConfigManager(path+"/"+Project.IMPORTANT,project.isImportant(),"Important","This value is true if the project is important.  Important projects get priority over normal projects",session);
 		JSONObject jo = new JSONObject();
-		jo.put("assignments", project.getAssignments());
+		jo.put(Project.ASSIGNMENTS, project.getAssignments());
 		cfg = new ConfigManager(path+"/"+Project.ASSIGNMENTS,jo,"Assignments","A list of people who are attached to a project",session);
 		TagManager tagman = new TagManager(this.parent);
+		String[] tagids = new String[project.getTags().length];
 		for(int i = 0; i < project.getTags().length;i++){
 			BigDecimal tagid = tagman.getTagIdForName(project.getTags()[i]);
-			params = new String[0];
-			cfg = new ConfigManager(path+"/"+Project.TAGS+"/"+tagid,true,"Tag Id","The tag id corresponds to the tag name located at "+ConfigManager.path(tagman, params),session);
+			tagids[i] = tagid.toString();
 		}
+		JSONObject tags = new JSONObject();
+		tags.put(Project.TAGS, tagids);
+		cfg = new ConfigManager(path+"/"+Project.TAGS,tags,"Tag IDs","The list if ids for the tags on this project",session);
 		retval.addData(project);
 		retval.setStatus(0);
+		this.getFeed(); //For testing
 		return retval;
 	}
 	public HDBSessionData getHDBSessionData(){
@@ -76,7 +86,7 @@ public class ProjectLogManager implements ProjectLogManagerInterface {
 	}
 	private int newProjectId() throws Exception {
 		String[] params = new String[2];
-		params[0] = "projects";
+		params[0] = PROJECTS;
 		params[1] = "nextid";
 		String path = ConfigManager.path(this, params);
 		HDBSessionData session = new HDBSessionData(this.parent.getSessionData().getUserData().getUsername(),this.parent.getSessionData().getCurrentHost());
@@ -88,13 +98,13 @@ public class ProjectLogManager implements ProjectLogManagerInterface {
 			retval = cfg.getInt();
 			cfg.setValue(cfg.getInt()+1, session);
 		}
-		
+
 		return retval;
 	}
 
 	@Override
 	public DataServiceResponse<ProjectGoal> saveProjectGoal(ProjectGoal m_data)
-			throws Exception {
+	throws Exception {
 		DataServiceResponse<ProjectGoal> retval = new DataServiceResponse<ProjectGoal>();
 		String[] cp = {"projectgoals","counter"};
 		int counter = ConfigManager.newCounter(this, cp, this.getHDBSessionData());
@@ -107,7 +117,7 @@ public class ProjectLogManager implements ProjectLogManagerInterface {
 		name.setValue(m_data.getName(), sessiondata);
 		ConfigManager projectid = new ConfigManager(path+"/"+ProjectGoal.PROJECTID,m_data.getProjectId(),ConfigType.STRING,"Project id","This field is used to reference the projects",sessiondata);
 		projectid.setValue(m_data.getProjectId(), sessiondata);
-		
+
 		ConfigManager status = null;
 		try{
 			status = new ConfigManager(path+"/"+ProjectGoal.STATUS,m_data.getStatus(),ConfigType.STRING,"Status","Special values include \"Not Started\", \"Canceled\" and \"Done\".",sessiondata);
@@ -133,7 +143,7 @@ public class ProjectLogManager implements ProjectLogManagerInterface {
 
 	@Override
 	public DataServiceResponse<ProjectGoal> deleteProjectGoal(ProjectGoal m_data)
-			throws Exception {
+	throws Exception {
 		DataServiceResponse<ProjectGoal> retval = new DataServiceResponse<ProjectGoal>();
 		String[] params = {"projectgoals",m_data.getId()};
 		ConfigManager cfg = new ConfigManager(ConfigManager.path(this, params));
@@ -143,47 +153,113 @@ public class ProjectLogManager implements ProjectLogManagerInterface {
 
 	@Override
 	public DataServiceResponse<ProjectGoal> getGoalsForProject(Project proj)
-			throws Exception {
+	throws Exception {
 		DataServiceResponse<ProjectGoal> retval = new DataServiceResponse<ProjectGoal>();
 		java.sql.Connection con = null;
 		java.sql.PreparedStatement ps = null;
 		java.sql.ResultSet rs = null;
 		ProjectDatabase db = new ProjectDatabase();
 		try{
-		  con = db.getConnection();
-		  String[] params = {"projectgoals"};
-		  ConfigManager cfg = new ConfigManager(ConfigManager.path(this, params));
-		  String str = "select parent from CONFIG where parent in (select ID from CONFIG where parent = ?) and "+
-		     "name = ? and string_value = ?";
-		  try{cfg.getId();}catch(java.lang.NullPointerException ne){
-			 return retval;
-		  }
-		  ps = con.prepareStatement(str);
-		  ps.setBigDecimal(1, cfg.getId());
-		  ps.setString(2, ProjectGoal.PROJECTID);
-		  ps.setString(3, proj.getId());
-		  rs = ps.executeQuery();
-		  while(rs.next()){
-			  
-			  ConfigManager[] cfs = ConfigManager.findFolderContentbyId(rs.getBigDecimal(1));
-			  HashMap<String,ConfigManager> map = ConfigManager.getMap(cfs);
-			  
-			  ProjectGoal goal = new ProjectGoal();
-			  goal.setId(cfg.getId().toString());
-			  try{goal.setDueDate(map.get(ProjectGoal.DUEDATE).getDateTime());}catch(Exception e){}
-			  goal.setName(map.get(ProjectGoal.NAME).getString());
-			  try{goal.setStatus(map.get(ProjectGoal.STATUS).getString());}catch(Exception e){}
-			  goal.setProjectId(map.get(ProjectGoal.PROJECTID).getString());
-		  }
+			con = db.getConnection();
+			String[] params = {"projectgoals"};
+			ConfigManager cfg = new ConfigManager(ConfigManager.path(this, params));
+			String str = "select parent from CONFIG where parent in (select ID from CONFIG where parent = ?) and "+
+			"name = ? and string_value = ?";
+			try{cfg.getId();}catch(java.lang.NullPointerException ne){
+				return retval;
+			}
+			ps = con.prepareStatement(str);
+			ps.setBigDecimal(1, cfg.getId());
+			ps.setString(2, ProjectGoal.PROJECTID);
+			ps.setString(3, proj.getId());
+			rs = ps.executeQuery();
+			while(rs.next()){
+
+				ConfigManager[] cfs = ConfigManager.findFolderContentbyId(rs.getBigDecimal(1));
+				HashMap<String,ConfigManager> map = ConfigManager.getMap(cfs);
+
+				ProjectGoal goal = new ProjectGoal();
+				goal.setId(cfg.getId().toString());
+				try{goal.setDueDate(map.get(ProjectGoal.DUEDATE).getDateTime());}catch(Exception e){}
+				goal.setName(map.get(ProjectGoal.NAME).getString());
+				try{goal.setStatus(map.get(ProjectGoal.STATUS).getString());}catch(Exception e){}
+				goal.setProjectId(map.get(ProjectGoal.PROJECTID).getString());
+			}
 		}catch(Exception e){
-		  e.printStackTrace();
-		  throw e;
+			e.printStackTrace();
+			throw e;
 		}finally{
-		  try{rs.close();}catch(Exception e){}
-		  try{ps.close();}catch(Exception e){}
-		  try{con.close();}catch(Exception e){}
+			try{rs.close();}catch(Exception e){}
+			try{ps.close();}catch(Exception e){}
+			try{con.close();}catch(Exception e){}
 		}
 		return retval;
+	}
+
+	@Override
+	public DataServiceResponse<FeedItem> getFeed() throws Exception {
+		final DataServiceResponse<FeedItem> response = new DataServiceResponse<FeedItem>();
+		String[] params = {PROJECTS};
+		String path = ConfigManager.path(this, params);
+		final ConfigManager[] projects = ConfigManager.findFolderContentbyPath(path);
+		if(projects != null){
+			for(int i = 0; i < projects.length;i++){
+				ConfigManager[] projectvalues = ConfigManager.findFolderContentbyId(projects[i].getId());
+				if(projectvalues != null && projectvalues.length > 0){
+					HashMap<String,ConfigManager> map = ConfigManager.getMap(projectvalues);
+					FeedItem item = new FeedItem();
+					item.setReferenceid(projects[i].getId().toString());
+					try{item.setDatetime(map.get(Project.PROJECTNAME).getCreatedDate());}catch(Exception e){}
+					try{item.setIconurl("projectmanager/project.png");}catch(Exception e){}
+					try{item.setSummary(map.get(Project.DESCRIPTION).getString());}catch(Exception e){}
+					try{item.setTitle	(map.get(Project.PROJECTNAME).getString());}catch(Exception e){}
+					response.addData(item);
+				}
+			}
+		}
+		return response;
+	}
+
+	@Override
+	public DataServiceResponse<Project> getProject(String id) throws Exception {
+		ConfigManager[] cfg = ConfigManager.findFolderContentbyId(new BigDecimal(id));
+		@SuppressWarnings("unchecked")
+		HashMap<String,ConfigManager> map = ConfigManager.getMap(cfg);
+		if(cfg.length == 0){
+			throw new Exception("There is no project for this project id");
+		}
+		Project project = new Project(); 
+		project.setDescription(map.get(Project.DESCRIPTION).getString());
+		project.setDue_date(map.get(Project.DUEDATE).getDateTime());
+		project.setEst_hours(map.get(Project.ESTIMATEDHOURS).getDouble());
+		project.setId(id);
+		project.setImportant(map.get(Project.IMPORTANT).getBoolean());
+		project.setProjectName(map.get(Project.PROJECTNAME).getString());
+		project.setAssignments(getStringArray(map.get(Project.ASSIGNMENTS).getJSON().getJSONArray(Project.ASSIGNMENTS)));
+		try{
+			String[] tagids = getStringArray(map.get(Project.TAGS).getJSON().getJSONArray(Project.TAGS));
+			Vector<String> tagnames = new Vector<String>();
+			for(int i = 0; i < tagids.length;i++){
+				TagManager tman = new TagManager(this.parent);
+				String name = tman.getTagNameforId(tagids[i]);
+				tagnames.add(name);
+			}
+			project.setTags(tagnames.toArray(new String[0]));
+		}catch(Exception e){
+			
+		}
+		DataServiceResponse<Project> retval = new DataServiceResponse<Project>();
+		retval.addData(project);
+		return retval;
+	}
+
+	private String[] getStringArray(JSONArray jsonArray) throws JSONException {
+		String[] str = new String[jsonArray.length()];
+			for(int i = 0 ; i < jsonArray.length();i++){
+				str[i] = jsonArray.getString(i);
+			}
+		
+		return str;
 	}
 
 }

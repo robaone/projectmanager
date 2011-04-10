@@ -1,0 +1,30 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style>
+		.summary{
+			font-size:9pt;
+		}
+		.clickable{
+			cursor:pointer;
+		}
+	</ui:style>
+	<g:HTMLPanel>
+		<div>
+			<td class="task_col1" style="vertical-align:top;font-family:Arial">
+				<div>
+					<g:Image ui:field="image"/>
+				</div>
+			</td>
+			<td>
+				<div style="vertical-align:top;font-family:Arial">
+					<g:Anchor ui:field="title" styleName="{style.clickable}">Mock Title</g:Anchor>
+					<g:Label styleName="{style.summary}" ui:field="summary">Summary</g:Label>
+				</div>
+			</td>
+			<td style="vertical-align:top;font-family:Arial;font-size:7pt;width:80px">
+				<g:InlineLabel ui:field="datetime"/>
+			</td>
+		</div>
+	</g:HTMLPanel>
+</ui:UiBinder> 
