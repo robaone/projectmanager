@@ -23,5 +23,6 @@
 				</tr>
 			</tbody>
 		</table>
+		<g:SimplePanel ui:field="comments" width="100%"/>
 	</g:HTMLPanel>
 </ui:UiBinder> 

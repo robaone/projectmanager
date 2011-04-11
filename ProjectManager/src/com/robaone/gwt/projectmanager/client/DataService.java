@@ -3,6 +3,7 @@ package com.robaone.gwt.projectmanager.client;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import com.robaone.gwt.projectmanager.client.data.Category;
+import com.robaone.gwt.projectmanager.client.data.Comment;
 import com.robaone.gwt.projectmanager.client.data.Contractor;
 import com.robaone.gwt.projectmanager.client.data.ContractorData;
 import com.robaone.gwt.projectmanager.client.data.ContractorListing;
@@ -62,5 +63,9 @@ public interface DataService extends RemoteService {
 	DataServiceResponse<Project> getProject(String id) throws Exception;
 
 	DataServiceResponse<Project> saveProject(Project project) throws Exception;
+
+	DataServiceResponse<Comment> getCommentsForGoal(String id) throws Exception;
+
+	DataServiceResponse<Comment> saveCommentforGoal(Comment m_comment) throws Exception;
 
 }

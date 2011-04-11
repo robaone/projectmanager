@@ -14,6 +14,7 @@ import com.robaone.gwt.projectmanager.client.DataService;
 import com.robaone.gwt.projectmanager.client.DataServiceResponse;
 import com.robaone.gwt.projectmanager.client.ProjectConstants;
 import com.robaone.gwt.projectmanager.client.data.Category;
+import com.robaone.gwt.projectmanager.client.data.Comment;
 import com.robaone.gwt.projectmanager.client.data.Contractor;
 import com.robaone.gwt.projectmanager.client.data.ContractorData;
 import com.robaone.gwt.projectmanager.client.data.ContractorListing;
@@ -266,6 +267,26 @@ public class DataServiceImpl extends RemoteServiceServlet implements
 		try{
 			ProjectLogManagerInterface man = ManagerFactory.getProjectManager(this);
 			return man.saveProject(project);
+		}catch(Exception e){
+			throw new Exception(e.getMessage());
+		}
+	}
+	@Override
+	public DataServiceResponse<Comment> getCommentsForGoal(String id)
+			throws Exception {
+		try{
+			ProjectLogManagerInterface man = ManagerFactory.getProjectManager(this);
+			return man.saveCommentsForGoal(id);
+		}catch(Exception e){
+			throw new Exception(e.getMessage());
+		}
+	}
+	@Override
+	public DataServiceResponse<Comment> saveCommentforGoal(Comment m_comment)
+			throws Exception {
+		try{
+			ProjectLogManagerInterface man = ManagerFactory.getProjectManager(this);
+			return man.saveCommentforGoal(m_comment);
 		}catch(Exception e){
 			throw new Exception(e.getMessage());
 		}

@@ -1,0 +1,15 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style>
+		.comments {
+			background-color: rgb(200, 200, 200);
+			cursor: pointer;
+		}
+	</ui:style>
+	<g:HTMLPanel>
+		<g:VerticalPanel width="100%" ui:field="list" />
+		<g:SimplePanel ui:field="newcomment"/>
+		<g:Label ui:field="hide" styleName="{style.comments}">Hide</g:Label>
+	</g:HTMLPanel>
+</ui:UiBinder> 

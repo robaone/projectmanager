@@ -1,6 +1,7 @@
 package com.robaone.gwt.projectmanager.server.interfaces;
 
 import com.robaone.gwt.projectmanager.client.DataServiceResponse;
+import com.robaone.gwt.projectmanager.client.data.Comment;
 import com.robaone.gwt.projectmanager.client.data.FeedItem;
 import com.robaone.gwt.projectmanager.client.data.Project;
 import com.robaone.gwt.projectmanager.client.data.ProjectGoal;
@@ -22,5 +23,9 @@ public interface ProjectLogManagerInterface {
 	DataServiceResponse<Project> getProject(String id) throws Exception;
 
 	DataServiceResponse<Project> saveProject(Project project) throws Exception;
+
+	DataServiceResponse<Comment> saveCommentsForGoal(String id) throws Exception;
+
+	DataServiceResponse<Comment> saveCommentforGoal(Comment m_comment) throws Exception;
 
 }

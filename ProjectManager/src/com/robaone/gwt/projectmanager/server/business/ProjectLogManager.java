@@ -15,6 +15,7 @@ import com.robaone.dbase.hierarchial.ProjectDatabase;
 import com.robaone.dbase.hierarchial.types.ConfigType;
 import com.robaone.gwt.projectmanager.client.DataServiceResponse;
 import com.robaone.gwt.projectmanager.client.ProjectConstants;
+import com.robaone.gwt.projectmanager.client.data.Comment;
 import com.robaone.gwt.projectmanager.client.data.FeedItem;
 import com.robaone.gwt.projectmanager.client.data.Project;
 import com.robaone.gwt.projectmanager.client.data.ProjectGoal;
@@ -296,6 +297,20 @@ public class ProjectLogManager implements ProjectLogManagerInterface {
 		retval.addData(project);
 		retval.setStatus(0);
 		return retval;
+	}
+
+	@Override
+	public DataServiceResponse<Comment> saveCommentsForGoal(String id)
+			throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public DataServiceResponse<Comment> saveCommentforGoal(Comment m_comment)
+			throws Exception {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

@@ -14,6 +14,8 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.datepicker.client.DateBox;
 import com.robaone.gwt.projectmanager.client.data.ProjectGoal;
+import com.robaone.gwt.projectmanager.client.ui.comments.CommentCountUi;
+import com.robaone.gwt.projectmanager.client.ui.comments.CommentListUi;
 
 public class GoalViewUi extends Composite {
 
@@ -26,6 +28,8 @@ public class GoalViewUi extends Composite {
 	@UiField InlineLabel datebox;
 	@UiField InlineLabel status;
 	@UiField Button edit;
+	@UiField SimplePanel comments;
+	CommentCountUi counter;
 	ProjectGoal m_data;
 	public GoalViewUi(ProjectGoal data) {
 		initWidget(uiBinder.createAndBindUi(this));
@@ -34,6 +38,9 @@ public class GoalViewUi extends Composite {
 		DateTimeFormat df = DateTimeFormat.getFormat("MM/dd/yyyy");
 		try{datebox.setText(df.format(data.getDueDate()));}catch(Exception e){}
 		status.setText(data.getStatus());
+		counter = new CommentCountUi();
+		counter.load(data.getId());
+		comments.setWidget(counter);
 	}
 
 	@UiHandler("edit")

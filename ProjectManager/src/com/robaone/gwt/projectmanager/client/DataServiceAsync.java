@@ -3,6 +3,7 @@ package com.robaone.gwt.projectmanager.client;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.robaone.gwt.projectmanager.client.ProjectConstants.USER_TYPE;
 import com.robaone.gwt.projectmanager.client.data.Category;
+import com.robaone.gwt.projectmanager.client.data.Comment;
 import com.robaone.gwt.projectmanager.client.data.Contractor;
 import com.robaone.gwt.projectmanager.client.data.ContractorData;
 import com.robaone.gwt.projectmanager.client.data.ContractorListing;
@@ -77,5 +78,11 @@ public interface DataServiceAsync {
 
 	void saveProject(Project project,
 			AsyncCallback<DataServiceResponse<Project>> asyncCallback);
+
+	void getCommentsForGoal(String id,
+			AsyncCallback<DataServiceResponse<Comment>> asyncCallback);
+
+	void saveCommentforGoal(Comment m_comment,
+			AsyncCallback<DataServiceResponse<Comment>> asyncCallback);
 
 }
