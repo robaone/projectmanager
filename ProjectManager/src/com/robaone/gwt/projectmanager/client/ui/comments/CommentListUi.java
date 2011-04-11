@@ -5,6 +5,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
@@ -15,6 +16,7 @@ import com.robaone.gwt.projectmanager.client.DataServiceResponse;
 import com.robaone.gwt.projectmanager.client.ProjectConstants;
 import com.robaone.gwt.projectmanager.client.ProjectManager;
 import com.robaone.gwt.projectmanager.client.data.Comment;
+import com.robaone.gwt.projectmanager.client.data.UserData;
 
 public class CommentListUi extends Composite {
 
@@ -32,8 +34,29 @@ public class CommentListUi extends Composite {
 
 	public void load(String id) {
 		this.m_goalid = id;
-		this.newcomment.setWidget(new CommentEditUi(id,this));
-		ProjectManager.dataService.getCommentsForGoal(id,new AsyncCallback<DataServiceResponse<Comment>>(){
+		ProjectManager.dataService.getLoginStatus(new AsyncCallback<DataServiceResponse<UserData>>(){
+
+			@Override
+			public void onFailure(Throwable caught) {
+				showError(caught.getMessage());
+			}
+
+			@Override
+			public void onSuccess(DataServiceResponse<UserData> result) {
+				try {
+					showList(result);
+				} catch (Exception e) {
+					onFailure(e);
+				}
+			}
+			
+		});
+	}
+
+	protected void showList(DataServiceResponse<UserData> result) throws Exception {
+		if(result.getStatus() == ProjectConstants.OK){
+		this.newcomment.setWidget(new CommentEditUi(this.m_goalid,this,result.getData(0)));
+		ProjectManager.dataService.getCommentsForGoal(this.m_goalid,new AsyncCallback<DataServiceResponse<Comment>>(){
 
 			@Override
 			public void onFailure(Throwable caught) {
@@ -46,7 +69,7 @@ public class CommentListUi extends Composite {
 					if(result.getStatus() == ProjectConstants.OK){
 						for(int i = 0; i < result.getDataCount();i++){
 							CommentViewUi view = new CommentViewUi();
-							view.load(result.getData(i));
+							view.load(result.getData(i), CommentListUi.this);
 							if(i < list.getWidgetCount()){
 								list.insert(view, i);
 								list.remove(i+1);
@@ -66,11 +89,13 @@ public class CommentListUi extends Composite {
 			}
 			
 		});
+		}else{
+			showError(result.getError());
+		}
 	}
 
 	protected void showError(String message) {
-		// TODO Auto-generated method stub
-		
+		Window.alert(message);
 	}
 
 	@UiField Label hide;

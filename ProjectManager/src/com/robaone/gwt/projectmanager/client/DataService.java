@@ -68,4 +68,6 @@ public interface DataService extends RemoteService {
 
 	DataServiceResponse<Comment> saveCommentforGoal(Comment m_comment) throws Exception;
 
+	DataServiceResponse<Comment> deleteComment(Comment m_comment) throws Exception;
+
 }

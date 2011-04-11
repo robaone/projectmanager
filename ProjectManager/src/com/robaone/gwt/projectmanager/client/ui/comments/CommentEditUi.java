@@ -2,17 +2,25 @@ package com.robaone.gwt.projectmanager.client.ui.comments;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.datepicker.client.DateBox;
 import com.robaone.gwt.projectmanager.client.DataServiceResponse;
 import com.robaone.gwt.projectmanager.client.ProjectConstants;
 import com.robaone.gwt.projectmanager.client.ProjectManager;
 import com.robaone.gwt.projectmanager.client.data.Comment;
+import com.robaone.gwt.projectmanager.client.data.UserData;
 
 public class CommentEditUi extends Composite {
 
@@ -24,21 +32,60 @@ public class CommentEditUi extends Composite {
 
 	private Comment m_comment;
 	private CommentListUi m_parent;
+	private DateBox m_workdate;
 	public CommentEditUi() {
 		initWidget(uiBinder.createAndBindUi(this));
+		initialize();
 	}
 
-	public CommentEditUi(String id,CommentListUi list) {
+	private void initialize() {
+		DateTimeFormat df = DateTimeFormat.getFormat("MM/dd/yyyy");
+		m_workdate = new DateBox();
+		m_workdate.setFormat(new DateBox.DefaultFormat(df));
+		workdatepanel.setWidget(m_workdate);
+	}
+
+	public CommentEditUi(String id,CommentListUi list,UserData user) {
 		initWidget(uiBinder.createAndBindUi(this));
 		m_comment = new Comment();
+		m_comment.setUserData(user);
 		m_parent = list;
 		m_comment.setGoalId(id);
+		initialize();
+	}
+	public CommentEditUi(Comment comment,CommentListUi list){
+		initWidget(uiBinder.createAndBindUi(this));
+		m_comment = comment;
+		m_parent = list;
+		initialize();
+		this.load(comment);
+	}
+
+	@UiField Image profilepic;
+	@UiField InlineLabel name;
+	@UiField TextBox hours;
+	@UiField SimplePanel workdatepanel;
+	@UiField TextArea comment;
+	private void load(Comment commnt) {
+		this.m_comment = commnt;
+		String name_str = commnt.getUserData().getFirstname() == null ? commnt.getUserData().getUsername() : (commnt.getUserData().getFirstname()+ " "+commnt.getUserData().getLastname());
+		name.setText(name_str);
+		profilepic.setUrl(commnt.getUserData().getPictureUrl());
+		hours.setText(commnt.getHours() == null ? "" : commnt.getHours().toString());
+		comment.setText(commnt.getComment());
 	}
 
 	@UiField Button post;
 	
 	@UiHandler("post")
 	public void post(ClickEvent event){
+		m_comment.setComment(comment.getText());
+		try{
+			m_comment.setHours(new Double(this.hours.getText()));
+		}catch(Exception e){
+			m_comment.setHours(null);
+		}
+		m_comment.setWorkDate(this.m_workdate.getValue());
 		ProjectManager.dataService.saveCommentforGoal(m_comment,new AsyncCallback<DataServiceResponse<Comment>>(){
 
 			@Override
@@ -51,7 +98,7 @@ public class CommentEditUi extends Composite {
 				try{
 					if(result.getStatus() == ProjectConstants.OK){
 						m_parent.load(result.getData(0).getGoalId());
-						m_parent.newcomment.setWidget(new CommentEditUi(result.getData(0).getGoalId(),m_parent));
+						m_parent.newcomment.setWidget(new CommentEditUi(result.getData(0).getGoalId(),m_parent,result.getData(0).getUserData()));
 					}else{
 						throw new Exception(result.getError());
 					}

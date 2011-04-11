@@ -28,4 +28,6 @@ public interface ProjectLogManagerInterface {
 
 	DataServiceResponse<Comment> saveCommentforGoal(Comment m_comment) throws Exception;
 
+	DataServiceResponse<Comment> deleteComment(Comment m_comment) throws Exception;
+
 }

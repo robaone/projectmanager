@@ -85,4 +85,7 @@ public interface DataServiceAsync {
 	void saveCommentforGoal(Comment m_comment,
 			AsyncCallback<DataServiceResponse<Comment>> asyncCallback);
 
+	void deleteComment(Comment m_comment,
+			AsyncCallback<DataServiceResponse<Comment>> asyncCallback);
+
 }

@@ -291,5 +291,15 @@ public class DataServiceImpl extends RemoteServiceServlet implements
 			throw new Exception(e.getMessage());
 		}
 	}
+	@Override
+	public DataServiceResponse<Comment> deleteComment(Comment m_comment)
+			throws Exception {
+		try{
+			ProjectLogManagerInterface man = ManagerFactory.getProjectManager(this);
+			return man.deleteComment(m_comment);
+		}catch(Exception e){
+			throw new Exception(e.getMessage());
+		}
+	}
 
 }

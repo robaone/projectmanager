@@ -19,6 +19,7 @@ import com.robaone.gwt.projectmanager.client.data.Comment;
 import com.robaone.gwt.projectmanager.client.data.FeedItem;
 import com.robaone.gwt.projectmanager.client.data.Project;
 import com.robaone.gwt.projectmanager.client.data.ProjectGoal;
+import com.robaone.gwt.projectmanager.client.data.UserData;
 import com.robaone.gwt.projectmanager.server.DataServiceImpl;
 import com.robaone.gwt.projectmanager.server.ProjectDebug;
 import com.robaone.gwt.projectmanager.server.interfaces.ProjectLogManagerInterface;
@@ -302,15 +303,38 @@ public class ProjectLogManager implements ProjectLogManagerInterface {
 	@Override
 	public DataServiceResponse<Comment> saveCommentsForGoal(String id)
 			throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		DataServiceResponse<Comment> retval = new DataServiceResponse<Comment>();
+		Comment com = new Comment();
+		com.setGoalId(id);
+		com.setId("0");
+		UserData udata = new UserData();
+		udata.setUsername("test@microdg.com");
+		udata.setFirstname("Test");
+		udata.setLastname("User");
+		udata.setPhonenumber("630.555.5555");
+		com.setUserData(udata);
+		com.setHours(new Double(0));
+		com.setWorkDate(new java.util.Date());
+		com.setModifiedDate(new java.util.Date());
+		com.setComment("This is a comment.");
+		retval.addData(com);
+		return retval;
 	}
 
 	@Override
 	public DataServiceResponse<Comment> saveCommentforGoal(Comment m_comment)
 			throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		DataServiceResponse<Comment> retval = new DataServiceResponse<Comment>();
+		retval.addData(m_comment);
+		return retval;
+	}
+
+	@Override
+	public DataServiceResponse<Comment> deleteComment(Comment m_comment)
+			throws Exception {
+		DataServiceResponse<Comment> retval = new DataServiceResponse<Comment>();
+		retval.addData(m_comment);
+		return retval;
 	}
 
 }
