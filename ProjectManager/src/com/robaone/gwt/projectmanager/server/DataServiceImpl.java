@@ -260,5 +260,15 @@ public class DataServiceImpl extends RemoteServiceServlet implements
 			throw new Exception(e.getMessage());
 		}
 	}
+	@Override
+	public DataServiceResponse<Project> saveProject(Project project)
+			throws Exception {
+		try{
+			ProjectLogManagerInterface man = ManagerFactory.getProjectManager(this);
+			return man.saveProject(project);
+		}catch(Exception e){
+			throw new Exception(e.getMessage());
+		}
+	}
 
 }

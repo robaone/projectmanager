@@ -75,4 +75,7 @@ public interface DataServiceAsync {
 	void getProject(String id,
 			AsyncCallback<DataServiceResponse<Project>> asyncCallback);
 
+	void saveProject(Project project,
+			AsyncCallback<DataServiceResponse<Project>> asyncCallback);
+
 }

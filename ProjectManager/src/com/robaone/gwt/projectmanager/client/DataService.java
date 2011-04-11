@@ -61,4 +61,6 @@ public interface DataService extends RemoteService {
 
 	DataServiceResponse<Project> getProject(String id) throws Exception;
 
+	DataServiceResponse<Project> saveProject(Project project) throws Exception;
+
 }

@@ -25,6 +25,8 @@ import com.google.gwt.user.client.ui.TabBar;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.TabBar.Tab;
+import com.robaone.gwt.projectmanager.client.ProjectManager;
+import com.robaone.gwt.projectmanager.client.ui.MainContent;
 import com.robaone.gwt.projectmanager.client.ui.project.NewProjectUI2;
 import com.robaone.gwt.projectmanager.client.ui.project.ProjectTab;
 import com.robaone.gwt.projectmanager.client.ui.tasks.TasksList.TASK;
@@ -72,7 +74,7 @@ public class SectionTabs extends Composite {
 		this.tab_flow.add(tab);
 		tabs.put(title, content);
 		contents.put(content, title);
-		
+
 		return this.tab_flow.getWidgetCount()-1;
 	}
 	public void selectTab(int i) {
@@ -135,12 +137,16 @@ public class SectionTabs extends Composite {
 				@Override
 				public void onClick(ClickEvent event) {
 					int index = SectionTabs.this.getTabIndex(w);
-					SectionTabs.this.removeTab(index);
-					if(token != null){
-						History.newItem(token, false);
+					try{
+						SectionTabs.this.removeTab(index);
+						if(token != null){
+							History.newItem(token, false);
+						}
+					}catch(Exception e){
+
 					}
 				}
-				
+
 			});
 			HorizontalPanel hp = new HorizontalPanel();
 			hp.add(l);
@@ -154,21 +160,45 @@ public class SectionTabs extends Composite {
 			return this.m_content_widget;
 		}
 	}
-	public int addTab(final Widget w, String title, boolean b,final String token) {
+	class TabLabel extends Label{
+		Widget m_widget;
+		public TabLabel(String text){
+			super(text);
+		}
+		public void setWidget(Widget w){
+			this.m_widget = w;
+		}
+		public Widget getWidget(){
+			MainContent main = (MainContent)ProjectManager.getSection(ProjectManager.MAIN_CONTENT);
+			for(int i = 0; i < main.getDecoratedTabPanel().getTabCount();i++){
+				Widget tab = main.getDecoratedTabPanel().getTabWidget(i);
+				if(tab.equals(this)){
+					this.m_widget = main.getDecoratedTabPanel().getTab(i);
+					break;
+				}
+			}
+			return this.m_widget;
+		}
+	}
+	public int addTab(Widget w, String title, boolean b,final String token) {
 		if(b){
-			Label l = new Label(title);
+			TabLabel l = new TabLabel(title);
+			l.setWidget(w);
 			Closable c = new Closable(w,l,this,token);
 			l.addClickHandler(new ClickHandler(){
 
 				@Override
 				public void onClick(ClickEvent event) {
+					TabLabel l = (TabLabel) event.getSource();
+					
+					Widget w = l.getWidget();
 					int index = SectionTabs.this.getTabIndex(w);
 					SectionTabs.this.selectTab(index);
 					if(token != null){
 						History.newItem(token, false);
 					}
 				}
-				
+
 			});
 			return this.addTab(w, c);
 		}else{

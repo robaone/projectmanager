@@ -77,7 +77,7 @@ public class ProjectLogManager implements ProjectLogManagerInterface {
 		cfg = new ConfigManager(path+"/"+Project.TAGS,tags,"Tag IDs","The list if ids for the tags on this project",session);
 		retval.addData(project);
 		retval.setStatus(0);
-		this.getFeed(); //For testing
+		//this.getFeed(); //For testing
 		return retval;
 	}
 	public HDBSessionData getHDBSessionData(){
@@ -260,6 +260,42 @@ public class ProjectLogManager implements ProjectLogManagerInterface {
 			}
 		
 		return str;
+	}
+
+	@Override
+	public DataServiceResponse<Project> saveProject(Project project)
+			throws Exception {
+		DataServiceResponse<Project> retval = new DataServiceResponse<Project>();
+		if(project.getProjectName() == null || project.getProjectName().length() < 3){
+			retval.addFieldError(Project.PROJECTNAME, "The project name needs to be longer than 3 characters");
+			retval.setStatus(ProjectConstants.FIELD_VERIFICATION_ERROR);
+		}
+		if(retval.getStatus() != ProjectConstants.OK){
+			return retval;
+		}
+		ConfigManager cfg = ConfigManager.findConfig(new BigDecimal(project.getId()));
+		String path = cfg.getAbsolutePath();
+		HDBSessionData session = this.getHDBSessionData();
+		cfg = new ConfigManager(path+"/"+Project.PROJECTNAME,project.getProjectName(),ConfigType.STRING,"Project Name","The project name",session);
+		cfg = new ConfigManager(path+"/"+Project.DESCRIPTION,project.getDescription(),ConfigType.TEXT,"Project Description","A detailed description of the project",session);
+		cfg = new ConfigManager(path+"/"+Project.DUEDATE,project.getDue_date(),"Due Date","The Date the project is due to be completed",session);
+		cfg = new ConfigManager(path+"/"+Project.ESTIMATEDHOURS,project.getEst_hours(),"Estimated Hours","The number of hours it will take to complete the project",session);
+		cfg = new ConfigManager(path+"/"+Project.IMPORTANT,project.isImportant(),"Important","This value is true if the project is important.  Important projects get priority over normal projects",session);
+		JSONObject jo = new JSONObject();
+		jo.put(Project.ASSIGNMENTS, project.getAssignments());
+		cfg = new ConfigManager(path+"/"+Project.ASSIGNMENTS,jo,"Assignments","A list of people who are attached to a project",session);
+		TagManager tagman = new TagManager(this.parent);
+		String[] tagids = new String[project.getTags().length];
+		for(int i = 0; i < project.getTags().length;i++){
+			BigDecimal tagid = tagman.getTagIdForName(project.getTags()[i]);
+			tagids[i] = tagid.toString();
+		}
+		JSONObject tags = new JSONObject();
+		tags.put(Project.TAGS, tagids);
+		cfg = new ConfigManager(path+"/"+Project.TAGS,tags,"Tag IDs","The list if ids for the tags on this project",session);
+		retval.addData(project);
+		retval.setStatus(0);
+		return retval;
 	}
 
 }

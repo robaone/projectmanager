@@ -81,7 +81,7 @@ public class MainContent extends Composite {
 
 
 				};
-				//t.schedule(15000);
+				t.scheduleRepeating(5000);
 			}
 
 		});
