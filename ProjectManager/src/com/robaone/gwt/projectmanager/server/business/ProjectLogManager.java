@@ -238,6 +238,7 @@ public class ProjectLogManager implements ProjectLogManagerInterface {
 		project.setImportant(map.get(Project.IMPORTANT).getBoolean());
 		project.setProjectName(map.get(Project.PROJECTNAME).getString());
 		project.setAssignments(getStringArray(map.get(Project.ASSIGNMENTS).getJSON().getJSONArray(Project.ASSIGNMENTS)));
+		project.setStatus(map.get(Project.STATUS).getString());
 		try{
 			String[] tagids = getStringArray(map.get(Project.TAGS).getJSON().getJSONArray(Project.TAGS));
 			Vector<String> tagnames = new Vector<String>();
@@ -279,13 +280,21 @@ public class ProjectLogManager implements ProjectLogManagerInterface {
 		String path = cfg.getAbsolutePath();
 		HDBSessionData session = this.getHDBSessionData();
 		cfg = new ConfigManager(path+"/"+Project.PROJECTNAME,project.getProjectName(),ConfigType.STRING,"Project Name","The project name",session);
+		cfg.setValue(project.getProjectName(), session);
 		cfg = new ConfigManager(path+"/"+Project.DESCRIPTION,project.getDescription(),ConfigType.TEXT,"Project Description","A detailed description of the project",session);
+		cfg.setValue(project.getDescription(), session);
 		cfg = new ConfigManager(path+"/"+Project.DUEDATE,project.getDue_date(),"Due Date","The Date the project is due to be completed",session);
+		cfg.setValue(project.getDue_date(), session);
 		cfg = new ConfigManager(path+"/"+Project.ESTIMATEDHOURS,project.getEst_hours(),"Estimated Hours","The number of hours it will take to complete the project",session);
+		cfg.setValue(project.getEst_hours(), session);
 		cfg = new ConfigManager(path+"/"+Project.IMPORTANT,project.isImportant(),"Important","This value is true if the project is important.  Important projects get priority over normal projects",session);
+		cfg.setValue(project.isImportant(), session);
+		cfg = new ConfigManager(path+"/"+Project.STATUS,project.getStatus(),ConfigType.STRING,"Status","The status of the project.  Important entries are 'Not Started','On Hold','In Progress','Done' and 'Cancelled'.",session);
+		cfg.setValue(project.getStatus(), session);
 		JSONObject jo = new JSONObject();
 		jo.put(Project.ASSIGNMENTS, project.getAssignments());
 		cfg = new ConfigManager(path+"/"+Project.ASSIGNMENTS,jo,"Assignments","A list of people who are attached to a project",session);
+		cfg.setValue(jo, session);
 		TagManager tagman = new TagManager(this.parent);
 		String[] tagids = new String[project.getTags().length];
 		for(int i = 0; i < project.getTags().length;i++){
@@ -295,13 +304,14 @@ public class ProjectLogManager implements ProjectLogManagerInterface {
 		JSONObject tags = new JSONObject();
 		tags.put(Project.TAGS, tagids);
 		cfg = new ConfigManager(path+"/"+Project.TAGS,tags,"Tag IDs","The list if ids for the tags on this project",session);
+		cfg.setValue(tags, session);
 		retval.addData(project);
 		retval.setStatus(0);
 		return retval;
 	}
 
 	@Override
-	public DataServiceResponse<Comment> saveCommentsForGoal(String id)
+	public DataServiceResponse<Comment> getCommentsForGoal(String id)
 			throws Exception {
 		DataServiceResponse<Comment> retval = new DataServiceResponse<Comment>();
 		Comment com = new Comment();
@@ -312,6 +322,7 @@ public class ProjectLogManager implements ProjectLogManagerInterface {
 		udata.setFirstname("Test");
 		udata.setLastname("User");
 		udata.setPhonenumber("630.555.5555");
+		udata.setPictureUrl("projectmanager/profilepicture.png");
 		com.setUserData(udata);
 		com.setHours(new Double(0));
 		com.setWorkDate(new java.util.Date());
@@ -335,6 +346,11 @@ public class ProjectLogManager implements ProjectLogManagerInterface {
 		DataServiceResponse<Comment> retval = new DataServiceResponse<Comment>();
 		retval.addData(m_comment);
 		return retval;
+	}
+
+	@Override
+	public int getCommentCountforGoal(String id) throws Exception {
+		return 0;
 	}
 
 }

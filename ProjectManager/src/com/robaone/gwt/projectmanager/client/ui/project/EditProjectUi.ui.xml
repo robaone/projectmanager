@@ -129,6 +129,12 @@
 						</td>
 					</tr>
 					<tr>
+						<td class="{style.label}">Status:</td>
+						<td>
+							<g:TextBox ui:field="status"></g:TextBox>
+						</td>
+					</tr>
+					<tr>
 						<td></td>
 						<td>
 							<g:Button ui:field="create_button">Save Project</g:Button>

@@ -51,6 +51,9 @@ public class CommentEditUi extends Composite {
 		m_comment.setUserData(user);
 		m_parent = list;
 		m_comment.setGoalId(id);
+		profilepic.setUrl(user.getPictureUrl());
+		String name_str = user.getFirstname() == null ? user.getUsername() : (user.getFirstname() + " " + user.getLastname());
+		name.setText(name_str);
 		initialize();
 	}
 	public CommentEditUi(Comment comment,CommentListUi list){
@@ -86,6 +89,7 @@ public class CommentEditUi extends Composite {
 			m_comment.setHours(null);
 		}
 		m_comment.setWorkDate(this.m_workdate.getValue());
+		final boolean isnew = m_comment.getId() == null ? true: false;
 		ProjectManager.dataService.saveCommentforGoal(m_comment,new AsyncCallback<DataServiceResponse<Comment>>(){
 
 			@Override
@@ -97,8 +101,17 @@ public class CommentEditUi extends Composite {
 			public void onSuccess(DataServiceResponse<Comment> result) {
 				try{
 					if(result.getStatus() == ProjectConstants.OK){
-						m_parent.load(result.getData(0).getGoalId());
-						m_parent.newcomment.setWidget(new CommentEditUi(result.getData(0).getGoalId(),m_parent,result.getData(0).getUserData()));
+						if(isnew){
+							m_parent.load(result.getData(0).getGoalId());
+							m_parent.newcomment.setWidget(new CommentEditUi(result.getData(0).getGoalId(),m_parent,result.getData(0).getUserData()));
+						}else{
+							Widget w = CommentEditUi.this.getParent();
+							if(w instanceof SimplePanel){
+								CommentViewUi view = new CommentViewUi();
+								view.load(result.getData(0),m_parent);
+								((SimplePanel) w).setWidget(view);
+							}
+						}
 					}else{
 						throw new Exception(result.getError());
 					}

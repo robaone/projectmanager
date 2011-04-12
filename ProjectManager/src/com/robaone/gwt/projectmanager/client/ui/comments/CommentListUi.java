@@ -21,7 +21,7 @@ import com.robaone.gwt.projectmanager.client.data.UserData;
 public class CommentListUi extends Composite {
 
 	private static CommentListUiUiBinder uiBinder = GWT
-			.create(CommentListUiUiBinder.class);
+	.create(CommentListUiUiBinder.class);
 
 	interface CommentListUiUiBinder extends UiBinder<Widget, CommentListUi> {
 	}
@@ -30,6 +30,7 @@ public class CommentListUi extends Composite {
 
 	public CommentListUi() {
 		initWidget(uiBinder.createAndBindUi(this));
+		list.setWidth("100%");
 	}
 
 	public void load(String id) {
@@ -49,48 +50,48 @@ public class CommentListUi extends Composite {
 					onFailure(e);
 				}
 			}
-			
+
 		});
 	}
 
 	protected void showList(DataServiceResponse<UserData> result) throws Exception {
 		if(result.getStatus() == ProjectConstants.OK){
-		this.newcomment.setWidget(new CommentEditUi(this.m_goalid,this,result.getData(0)));
-		ProjectManager.dataService.getCommentsForGoal(this.m_goalid,new AsyncCallback<DataServiceResponse<Comment>>(){
+			this.newcomment.setWidget(new CommentEditUi(this.m_goalid,this,result.getData(0)));
+			ProjectManager.dataService.getCommentsForGoal(this.m_goalid,new AsyncCallback<DataServiceResponse<Comment>>(){
 
-			@Override
-			public void onFailure(Throwable caught) {
-				showError(caught.getMessage());
-			}
-
-			@Override
-			public void onSuccess(DataServiceResponse<Comment> result) {
-				try{
-					if(result.getStatus() == ProjectConstants.OK){
-						for(int i = 0; i < result.getDataCount();i++){
-							CommentViewUi view = new CommentViewUi();
-							view.load(result.getData(i), CommentListUi.this);
-							SimplePanel p = new SimplePanel();
-							p.setWidget(view);
-							if(i < list.getWidgetCount()){
-								list.insert(p, i);
-								list.remove(i+1);
-							}
-							list.add(view);
-							
-						}
-						for(int i = result.getDataCount();i < list.getWidgetCount();){
-							list.remove(i);
-						}
-					}else{
-						throw new Exception(result.getError());
-					}
-				}catch(Exception e){
-					onFailure(e);
+				@Override
+				public void onFailure(Throwable caught) {
+					showError(caught.getMessage());
 				}
-			}
-			
-		});
+
+				@Override
+				public void onSuccess(DataServiceResponse<Comment> result) {
+					try{
+						if(result.getStatus() == ProjectConstants.OK){
+							for(int i = 0; i < result.getDataCount();i++){
+								CommentViewUi view = new CommentViewUi();
+								view.load(result.getData(i), CommentListUi.this);
+								if(i < list.getWidgetCount()){
+									SimplePanel p = (SimplePanel)list.getWidget(i);
+									p.setWidget(view);
+								}else{
+									SimplePanel p = new SimplePanel();
+									p.setWidget(view);
+									list.add(p);
+								}
+							}
+							for(int i = result.getDataCount();i < list.getWidgetCount();){
+								list.remove(i);
+							}
+						}else{
+							throw new Exception(result.getError());
+						}
+					}catch(Exception e){
+						onFailure(e);
+					}
+				}
+
+			});
 		}else{
 			showError(result.getError());
 		}
@@ -103,7 +104,7 @@ public class CommentListUi extends Composite {
 	@UiField Label hide;
 	@UiField VerticalPanel list;
 	@UiField SimplePanel newcomment;
-	
+
 	@UiHandler("hide")
 	public void hide(ClickEvent event){
 		Widget w = this.getParent();

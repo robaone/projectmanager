@@ -5,6 +5,18 @@
 		table.mytable td {
 			vertical-align:top;
 		}
+		table.mytable{
+			width:100%;
+		}
+		.right{
+			text-align:right;
+		}
+		.float_left{
+			float:left;
+		}
+		.inline{
+			display:inline;
+		}
 	</ui:style>
 	<g:HTMLPanel>
 		<table class="{style.mytable}">
@@ -18,11 +30,11 @@
 						<span>Hours:</span>
 						<g:TextBox ui:field="hours"></g:TextBox>
 						<span>Date:</span>
-						<g:SimplePanel ui:field="workdatepanel"></g:SimplePanel>
+						<g:SimplePanel ui:field="workdatepanel" styleName="{style.inline}"></g:SimplePanel>
 						<br/>
-						<g:TextArea ui:field="comment" width="100%" height="230px"></g:TextArea>
+						<g:TextArea ui:field="comment" width="100%" height="100px"></g:TextArea>
 						<br/>
-						<g:Button ui:field="post">Post</g:Button>
+						<g:Button ui:field="post" styleName="{style.right}">Post</g:Button>
 					</td>
 				</tr>
 			</tbody>

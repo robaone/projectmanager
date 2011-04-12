@@ -6,6 +6,7 @@ import java.util.Date;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class Project implements IsSerializable {
+	public static final String STATUS = "status";
 	public static String PROJECTNAME = "projectname";
 	public static String DESCRIPTION = "description";
 	public static String DUEDATE = "due_date";
@@ -21,6 +22,7 @@ public class Project implements IsSerializable {
 	private String[] assignments;
 	private boolean important;
 	private String id;
+	private String status;
 	public void setProjectName(String projectname) {
 		this.projectname = projectname;
 	}
@@ -68,6 +70,12 @@ public class Project implements IsSerializable {
 	}
 	public String getId(){
 		return this.id;
+	}
+	public String getStatus() {
+		return this.status;
+	}
+	public void setStatus(String sts){
+		this.status = sts;
 	}
 	
 }

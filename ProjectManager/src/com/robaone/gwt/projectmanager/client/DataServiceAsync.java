@@ -88,4 +88,6 @@ public interface DataServiceAsync {
 	void deleteComment(Comment m_comment,
 			AsyncCallback<DataServiceResponse<Comment>> asyncCallback);
 
+	void getCommentCountforGoal(String id, AsyncCallback<Integer> asyncCallback);
+
 }

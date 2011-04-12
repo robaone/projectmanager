@@ -5,10 +5,12 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.robaone.gwt.projectmanager.client.ProjectManager;
 
 public class CommentCountUi extends Composite {
 
@@ -26,6 +28,23 @@ public class CommentCountUi extends Composite {
 	private String m_goalid;
 	public void load(String id) {
 		this.m_goalid = id;
+		ProjectManager.dataService.getCommentCountforGoal(id,new AsyncCallback<Integer>(){
+
+			@Override
+			public void onFailure(Throwable caught) {
+				showError(caught.getMessage());
+			}
+
+			@Override
+			public void onSuccess(Integer result) {
+				commentcount.setText(result+" comments");
+			}
+			
+		});
+	}
+
+	protected void showError(String message) {
+		commentcount.setText(message);
 	}
 
 	@UiHandler("commentcount")

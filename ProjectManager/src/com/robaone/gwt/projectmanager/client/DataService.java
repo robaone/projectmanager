@@ -70,4 +70,6 @@ public interface DataService extends RemoteService {
 
 	DataServiceResponse<Comment> deleteComment(Comment m_comment) throws Exception;
 
+	int getCommentCountforGoal(String id) throws Exception;
+
 }

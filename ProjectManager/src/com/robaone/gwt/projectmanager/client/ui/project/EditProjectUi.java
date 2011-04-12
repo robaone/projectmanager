@@ -157,6 +157,7 @@ public class EditProjectUi extends Composite {
 	@UiField SimplePanel assignment_holder;
 	@UiField Label error;
 	@UiField InlineLabel project_name_error;
+	@UiField TextBox status;
 	private boolean isnew = true;
 	private Project m_data;
 
@@ -166,6 +167,7 @@ public class EditProjectUi extends Composite {
 		project.setProjectName(this.project_name.getText());
 		project.setDescription(this.description.getText());
 		project.setDue_date(this.due_date.getValue());
+		project.setStatus(this.status.getText());
 		if(SharedFieldVerifier.isNumber(this.est_hours.getText())){
 			Double d = new Double(this.est_hours.getText());
 			project.setEst_hours(d.doubleValue());
@@ -253,7 +255,7 @@ public class EditProjectUi extends Composite {
 		this.m_data = project;
 		this.est_hours.setText(project.getEst_hours()+"");
 		this.important.setValue(project.isImportant());
-
+		this.status.setText(project.getStatus());
 	}
 	public MainContent getMainContent() {
 		return this.main;

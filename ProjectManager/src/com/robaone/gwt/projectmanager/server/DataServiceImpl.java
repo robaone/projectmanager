@@ -276,7 +276,7 @@ public class DataServiceImpl extends RemoteServiceServlet implements
 			throws Exception {
 		try{
 			ProjectLogManagerInterface man = ManagerFactory.getProjectManager(this);
-			return man.saveCommentsForGoal(id);
+			return man.getCommentsForGoal(id);
 		}catch(Exception e){
 			throw new Exception(e.getMessage());
 		}
@@ -297,6 +297,15 @@ public class DataServiceImpl extends RemoteServiceServlet implements
 		try{
 			ProjectLogManagerInterface man = ManagerFactory.getProjectManager(this);
 			return man.deleteComment(m_comment);
+		}catch(Exception e){
+			throw new Exception(e.getMessage());
+		}
+	}
+	@Override
+	public int getCommentCountforGoal(String id) throws Exception {
+		ProjectLogManagerInterface man = ManagerFactory.getProjectManager(this);
+		try{
+			return man.getCommentCountforGoal(id);
 		}catch(Exception e){
 			throw new Exception(e.getMessage());
 		}

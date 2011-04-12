@@ -24,10 +24,12 @@ public interface ProjectLogManagerInterface {
 
 	DataServiceResponse<Project> saveProject(Project project) throws Exception;
 
-	DataServiceResponse<Comment> saveCommentsForGoal(String id) throws Exception;
+	DataServiceResponse<Comment> getCommentsForGoal(String id) throws Exception;
 
 	DataServiceResponse<Comment> saveCommentforGoal(Comment m_comment) throws Exception;
 
 	DataServiceResponse<Comment> deleteComment(Comment m_comment) throws Exception;
+
+	int getCommentCountforGoal(String id) throws Exception;
 
 }
