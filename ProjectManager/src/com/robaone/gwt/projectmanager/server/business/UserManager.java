@@ -1,5 +1,7 @@
 package com.robaone.gwt.projectmanager.server.business;
 
+import java.util.HashMap;
+
 import com.robaone.dbase.hierarchial.ConfigManager;
 import com.robaone.dbase.hierarchial.HDBSessionData;
 import com.robaone.dbase.hierarchial.types.ConfigType;
@@ -243,4 +245,25 @@ public class UserManager extends ProjectConstants implements UserManagerInterfac
 		}
 		return sb.toString().toUpperCase();
 	}
+	@Override
+	public UserData getUserData(String username) throws Exception {
+		String[] params = {username};
+		ConfigManager user_cfg = ConfigManager.findConfig(ConfigManager.path(this, params));
+		if(user_cfg != null){
+			ConfigManager[] user = ConfigManager.findFolderContentbyId(user_cfg.getId());
+			HashMap<String,ConfigManager> map = ConfigManager.getMap(user);
+			UserData data = new UserData();
+			try{data.setAccountType(map.get(UserData.ROLE).getInt().toString());}catch(Exception e){}
+			try{data.setFirstname(map.get(UserData.FIRSTNAME).getString());}catch(Exception e){}
+			try{data.setLastname(map.get(UserData.LASTNAME).getString());}catch(Exception e){}
+			try{data.setPhonenumber(map.get(UserData.PHONENUMBER).getString());}catch(Exception e){}
+			try{data.setPictureUrl(map.get(UserData.PICTUREURL).getString());}catch(Exception e){}
+			data.setUsername(username);
+			try{data.setZip(map.get(UserData.ZIP).getString());}catch(Exception e){}
+			return data;
+		}else{
+			return null;
+		}
+	}
+
 }

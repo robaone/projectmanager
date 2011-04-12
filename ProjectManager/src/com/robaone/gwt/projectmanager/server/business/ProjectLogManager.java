@@ -23,10 +23,13 @@ import com.robaone.gwt.projectmanager.client.data.UserData;
 import com.robaone.gwt.projectmanager.server.DataServiceImpl;
 import com.robaone.gwt.projectmanager.server.ProjectDebug;
 import com.robaone.gwt.projectmanager.server.interfaces.ProjectLogManagerInterface;
+import com.robaone.gwt.projectmanager.server.interfaces.UserManagerInterface;
 
 public class ProjectLogManager implements ProjectLogManagerInterface {
 
 	private static final String PROJECTS = "projects";
+	private static final String PROJECTGOALS = "projectgoals";
+	private static final String COMMENTS = "comments";
 	private DataServiceImpl parent;
 
 	public ProjectLogManager(DataServiceImpl dataServiceImpl) {
@@ -58,7 +61,7 @@ public class ProjectLogManager implements ProjectLogManagerInterface {
 			path = ConfigManager.path(this,params);
 			cfg = ConfigManager.findConfig(path);
 		}while(cfg != null);
-		project.setId(params[1]);
+		project.setId(cfg.getId().toString());
 		HDBSessionData session = this.getHDBSessionData();
 		cfg = new ConfigManager(path+"/"+Project.PROJECTNAME,project.getProjectName(),ConfigType.STRING,"Project Name","The project name",session);
 		cfg = new ConfigManager(path+"/"+Project.DESCRIPTION,project.getDescription(),ConfigType.TEXT,"Project Description","A detailed description of the project",session);
@@ -108,17 +111,28 @@ public class ProjectLogManager implements ProjectLogManagerInterface {
 	public DataServiceResponse<ProjectGoal> saveProjectGoal(ProjectGoal m_data)
 	throws Exception {
 		DataServiceResponse<ProjectGoal> retval = new DataServiceResponse<ProjectGoal>();
-		String[] cp = {"projectgoals","counter"};
-		int counter = ConfigManager.newCounter(this, cp, this.getHDBSessionData());
-		m_data.setId(""+counter);
-		retval.addData(m_data);
-		String[] params = {"projectgoals",""+counter};
-		String path = ConfigManager.path(this, params);
+		ConfigManager project_cfg = ConfigManager.findConfig(new BigDecimal(m_data.getProjectId()));
+		if(project_cfg == null){
+			retval.setStatus(ProjectConstants.GENERAL_ERROR);
+			retval.setError("Associated project could not be found");
+		}
+		String[] cp = {PROJECTGOALS,"counter"};
+		String path = null;
+		if(m_data.getId() == null){
+			int counter = ConfigManager.newCounter(this, cp, this.getHDBSessionData());
+			path = project_cfg.getAbsolutePath();
+			path += "/"+PROJECTGOALS+"/"+counter;
+		}else{
+			ConfigManager cfg = ConfigManager.findConfig(new BigDecimal(m_data.getId()));
+			path = cfg.getAbsolutePath();
+		}
 		HDBSessionData sessiondata = this.getHDBSessionData();
 		ConfigManager name = new ConfigManager(path+"/"+ProjectGoal.NAME,m_data.getName(),ConfigType.STRING,"Name","The name of the goal",sessiondata);
 		name.setValue(m_data.getName(), sessiondata);
 		ConfigManager projectid = new ConfigManager(path+"/"+ProjectGoal.PROJECTID,m_data.getProjectId(),ConfigType.STRING,"Project id","This field is used to reference the projects",sessiondata);
 		projectid.setValue(m_data.getProjectId(), sessiondata);
+		m_data.setId(name.getFolderID().toString());
+		retval.addData(m_data);
 
 		ConfigManager status = null;
 		try{
@@ -147,9 +161,8 @@ public class ProjectLogManager implements ProjectLogManagerInterface {
 	public DataServiceResponse<ProjectGoal> deleteProjectGoal(ProjectGoal m_data)
 	throws Exception {
 		DataServiceResponse<ProjectGoal> retval = new DataServiceResponse<ProjectGoal>();
-		String[] params = {"projectgoals",m_data.getId()};
-		ConfigManager cfg = new ConfigManager(ConfigManager.path(this, params));
-		cfg.delete(this.getHDBSessionData());
+		ConfigManager goal_cfg = ConfigManager.findConfig(new BigDecimal(m_data.getId()));
+		goal_cfg.delete(this.getHDBSessionData());
 		return retval;
 	}
 
@@ -157,44 +170,22 @@ public class ProjectLogManager implements ProjectLogManagerInterface {
 	public DataServiceResponse<ProjectGoal> getGoalsForProject(Project proj)
 	throws Exception {
 		DataServiceResponse<ProjectGoal> retval = new DataServiceResponse<ProjectGoal>();
-		java.sql.Connection con = null;
-		java.sql.PreparedStatement ps = null;
-		java.sql.ResultSet rs = null;
-		ProjectDatabase db = new ProjectDatabase();
-		try{
-			con = db.getConnection();
-			String[] params = {"projectgoals"};
-			ConfigManager cfg = new ConfigManager(ConfigManager.path(this, params));
-			String str = "select parent from CONFIG where parent in (select ID from CONFIG where parent = ?) and "+
-			"name = ? and string_value = ?";
-			try{cfg.getId();}catch(java.lang.NullPointerException ne){
-				return retval;
-			}
-			ps = con.prepareStatement(str);
-			ps.setBigDecimal(1, cfg.getId());
-			ps.setString(2, ProjectGoal.PROJECTID);
-			ps.setString(3, proj.getId());
-			rs = ps.executeQuery();
-			while(rs.next()){
-
-				ConfigManager[] cfs = ConfigManager.findFolderContentbyId(rs.getBigDecimal(1));
+		ConfigManager project_cfg = ConfigManager.findConfig(new BigDecimal(proj.getId()));
+		if(project_cfg != null){
+			String path = project_cfg.getAbsolutePath() + "/" + PROJECTGOALS;
+			ConfigManager[] goals = ConfigManager.findFolderContentbyPath(path);
+			for(int i = 0; i < goals.length;i++){
+				ConfigManager[] cfs = ConfigManager.findFolderContentbyId(goals[i].getId());
 				HashMap<String,ConfigManager> map = ConfigManager.getMap(cfs);
-
 				ProjectGoal goal = new ProjectGoal();
-				goal.setId(cfg.getId().toString());
+				goal.setId(goals[i].getId().toString());
 				try{goal.setDueDate(map.get(ProjectGoal.DUEDATE).getDateTime());}catch(Exception e){}
 				goal.setName(map.get(ProjectGoal.NAME).getString());
 				try{goal.setStatus(map.get(ProjectGoal.STATUS).getString());}catch(Exception e){}
 				goal.setProjectId(map.get(ProjectGoal.PROJECTID).getString());
+				retval.addData(goal);
 			}
-		}catch(Exception e){
-			e.printStackTrace();
-			throw e;
-		}finally{
-			try{rs.close();}catch(Exception e){}
-			try{ps.close();}catch(Exception e){}
-			try{con.close();}catch(Exception e){}
-		}
+		}			
 		return retval;
 	}
 
@@ -314,21 +305,31 @@ public class ProjectLogManager implements ProjectLogManagerInterface {
 	public DataServiceResponse<Comment> getCommentsForGoal(String id)
 			throws Exception {
 		DataServiceResponse<Comment> retval = new DataServiceResponse<Comment>();
-		Comment com = new Comment();
-		com.setGoalId(id);
-		com.setId("0");
-		UserData udata = new UserData();
-		udata.setUsername("test@microdg.com");
-		udata.setFirstname("Test");
-		udata.setLastname("User");
-		udata.setPhonenumber("630.555.5555");
-		udata.setPictureUrl("projectmanager/profilepicture.png");
-		com.setUserData(udata);
-		com.setHours(new Double(0));
-		com.setWorkDate(new java.util.Date());
-		com.setModifiedDate(new java.util.Date());
-		com.setComment("This is a comment.");
-		retval.addData(com);
+		ConfigManager goal_cfg = ConfigManager.findConfig(new BigDecimal(id));
+		if(goal_cfg != null){
+			String path = goal_cfg.getAbsolutePath()+"/"+COMMENTS;
+			ConfigManager[] comment_cfg = ConfigManager.findFolderContentbyPath(path);
+			for(int i = 0; i < comment_cfg.length;i++){
+				ConfigManager[] cmmt = ConfigManager.findFolderContentbyId(comment_cfg[i].getId());
+				HashMap<String,ConfigManager> map = ConfigManager.getMap(cmmt);
+				Comment a_comment = new Comment();
+				a_comment.setId(comment_cfg[i].getId().toString());
+				a_comment.setComment(map.get(Comment.COMMENT).getString());
+				a_comment.setGoalId(map.get(Comment.GOALID).getString());
+				a_comment.setHours(map.get(Comment.HOURS).getDouble());
+				a_comment.setModifiedDate(map.get(Comment.COMMENT).getModifiedDate());
+				a_comment.setWorkDate(map.get(Comment.WORKDATE).getDateTime());
+				UserManager uman = new UserManager(this.parent);
+				a_comment.setUserData(((UserManagerInterface)uman).getUserData(map.get(Comment.COMMENT).getCreatedBy()));
+				retval.addData(a_comment);
+			}
+			/*
+			HDBSessionData session = this.getHDBSessionData();
+			String[] params = {COMMENTS,"counter"};
+			int counter = ConfigManager.newCounter(this, params, session);
+			path += "/"+counter;
+			*/
+		}
 		return retval;
 	}
 
@@ -336,6 +337,33 @@ public class ProjectLogManager implements ProjectLogManagerInterface {
 	public DataServiceResponse<Comment> saveCommentforGoal(Comment m_comment)
 			throws Exception {
 		DataServiceResponse<Comment> retval = new DataServiceResponse<Comment>();
+		ConfigManager goal = ConfigManager.findConfig(new BigDecimal(m_comment.getGoalId()));
+		if(goal == null){
+			throw new Exception("The associated goal could not be found");
+		}
+		String path = goal.getAbsolutePath() + "/"+COMMENTS;
+		HDBSessionData session = this.getHDBSessionData();
+		if(m_comment.getId() == null){
+			String[] params = {COMMENTS,"counter"};
+			int counter = ConfigManager.newCounter(this, params, session);
+			path += "/"+counter;
+		}else{
+			ConfigManager cfg = new ConfigManager(new BigDecimal(m_comment.getId()));
+			path = cfg.getAbsolutePath();
+		}
+		ConfigManager cfg = new ConfigManager(path+"/"+Comment.COMMENT,m_comment.getComment(),ConfigType.TEXT,"Comment","The comment text",session);
+		cfg.setValue(m_comment.getComment(), session);
+		java.util.Date modified = cfg.getModifiedDate();
+		cfg = new ConfigManager(path+"/"+Comment.GOALID,m_comment.getGoalId(),ConfigType.STRING,"The goalid","",session);
+		cfg.setValue(m_comment.getGoalId(), session);
+		m_comment.setId(cfg.getId().toString());
+		cfg = new ConfigManager(path+"/"+Comment.HOURS,m_comment.getHours(),"Hours","Hours of work",session);
+		cfg.setValue(m_comment.getHours(), session);
+		cfg = new ConfigManager(path+"/"+Comment.WORKDATE,m_comment.getWorkDate(),"Work Date","The day the work was done",session);
+		cfg.setValue(m_comment.getWorkDate(), session);
+		m_comment.setModifiedDate(modified);
+		
+		
 		retval.addData(m_comment);
 		return retval;
 	}
@@ -344,12 +372,21 @@ public class ProjectLogManager implements ProjectLogManagerInterface {
 	public DataServiceResponse<Comment> deleteComment(Comment m_comment)
 			throws Exception {
 		DataServiceResponse<Comment> retval = new DataServiceResponse<Comment>();
+		ConfigManager cfg = new ConfigManager(new BigDecimal(m_comment.getId()));
+		cfg.delete(this.getHDBSessionData());
 		retval.addData(m_comment);
 		return retval;
 	}
 
 	@Override
 	public int getCommentCountforGoal(String id) throws Exception {
+		ConfigManager g_cfg = ConfigManager.findConfig(new BigDecimal(id));
+		if(g_cfg != null){
+			String path = g_cfg.getAbsolutePath();
+			path += "/"+COMMENTS;
+			ConfigManager[] comments = ConfigManager.findFolderContentbyPath(path);
+			return comments.length;
+		}
 		return 0;
 	}
 

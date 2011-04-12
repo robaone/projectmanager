@@ -5,6 +5,10 @@ import java.util.Date;
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 public class Comment implements IsSerializable {
+	public static final String COMMENT = "comment";
+	public static final String GOALID = "goalid";
+	public static final String HOURS = "hours";
+	public static final String WORKDATE = "workdate";
 	private String goalid;
 	private String id;
 	private UserData userdata;

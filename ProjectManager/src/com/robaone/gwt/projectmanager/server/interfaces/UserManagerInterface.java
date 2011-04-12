@@ -22,4 +22,6 @@ public interface UserManagerInterface {
 
 	DataServiceResponse<UserData> getLoginStatus() throws Exception;
 
+	UserData getUserData(String createdBy) throws Exception;
+
 }
