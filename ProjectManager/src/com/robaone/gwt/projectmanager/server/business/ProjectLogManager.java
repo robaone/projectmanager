@@ -61,9 +61,9 @@ public class ProjectLogManager implements ProjectLogManagerInterface {
 			path = ConfigManager.path(this,params);
 			cfg = ConfigManager.findConfig(path);
 		}while(cfg != null);
-		project.setId(cfg.getId().toString());
 		HDBSessionData session = this.getHDBSessionData();
 		cfg = new ConfigManager(path+"/"+Project.PROJECTNAME,project.getProjectName(),ConfigType.STRING,"Project Name","The project name",session);
+		project.setId(cfg.getFolderID().toString());
 		cfg = new ConfigManager(path+"/"+Project.DESCRIPTION,project.getDescription(),ConfigType.TEXT,"Project Description","A detailed description of the project",session);
 		cfg = new ConfigManager(path+"/"+Project.DUEDATE,project.getDue_date(),"Due Date","The Date the project is due to be completed",session);
 		cfg = new ConfigManager(path+"/"+Project.ESTIMATEDHOURS,project.getEst_hours(),"Estimated Hours","The number of hours it will take to complete the project",session);
@@ -229,7 +229,7 @@ public class ProjectLogManager implements ProjectLogManagerInterface {
 		project.setImportant(map.get(Project.IMPORTANT).getBoolean());
 		project.setProjectName(map.get(Project.PROJECTNAME).getString());
 		project.setAssignments(getStringArray(map.get(Project.ASSIGNMENTS).getJSON().getJSONArray(Project.ASSIGNMENTS)));
-		project.setStatus(map.get(Project.STATUS).getString());
+		try{project.setStatus(map.get(Project.STATUS).getString());}catch(Exception e){}
 		try{
 			String[] tagids = getStringArray(map.get(Project.TAGS).getJSON().getJSONArray(Project.TAGS));
 			Vector<String> tagnames = new Vector<String>();
@@ -316,9 +316,9 @@ public class ProjectLogManager implements ProjectLogManagerInterface {
 				a_comment.setId(comment_cfg[i].getId().toString());
 				a_comment.setComment(map.get(Comment.COMMENT).getString());
 				a_comment.setGoalId(map.get(Comment.GOALID).getString());
-				a_comment.setHours(map.get(Comment.HOURS).getDouble());
+				try{a_comment.setHours(map.get(Comment.HOURS).getDouble());}catch(Exception e){}
 				a_comment.setModifiedDate(map.get(Comment.COMMENT).getModifiedDate());
-				a_comment.setWorkDate(map.get(Comment.WORKDATE).getDateTime());
+				try{a_comment.setWorkDate(map.get(Comment.WORKDATE).getDateTime());}catch(Exception e){}
 				UserManager uman = new UserManager(this.parent);
 				a_comment.setUserData(((UserManagerInterface)uman).getUserData(map.get(Comment.COMMENT).getCreatedBy()));
 				retval.addData(a_comment);
@@ -354,13 +354,27 @@ public class ProjectLogManager implements ProjectLogManagerInterface {
 		ConfigManager cfg = new ConfigManager(path+"/"+Comment.COMMENT,m_comment.getComment(),ConfigType.TEXT,"Comment","The comment text",session);
 		cfg.setValue(m_comment.getComment(), session);
 		java.util.Date modified = cfg.getModifiedDate();
-		cfg = new ConfigManager(path+"/"+Comment.GOALID,m_comment.getGoalId(),ConfigType.STRING,"The goalid","",session);
+		cfg = new ConfigManager(path+"/"+Comment.GOALID,m_comment.getGoalId(),ConfigType.STRING,"The goalid","This references back to the associate goal.",session);
 		cfg.setValue(m_comment.getGoalId(), session);
-		m_comment.setId(cfg.getId().toString());
+		m_comment.setId(cfg.getFolderID().toString());
+		if(m_comment.getHours() != null){
 		cfg = new ConfigManager(path+"/"+Comment.HOURS,m_comment.getHours(),"Hours","Hours of work",session);
 		cfg.setValue(m_comment.getHours(), session);
+		}else{
+			cfg = ConfigManager.findConfig(path+"/"+Comment.HOURS);
+			if(cfg != null){
+				cfg.setValueAsNull(session);
+			}
+		}
+		if(m_comment.getWorkDate() != null){
 		cfg = new ConfigManager(path+"/"+Comment.WORKDATE,m_comment.getWorkDate(),"Work Date","The day the work was done",session);
 		cfg.setValue(m_comment.getWorkDate(), session);
+		}else{
+			cfg = ConfigManager.findConfig(path+"/"+Comment.WORKDATE);
+			if(cfg != null){
+				cfg.setValueAsNull(session);
+			}
+		}
 		m_comment.setModifiedDate(modified);
 		
 		
