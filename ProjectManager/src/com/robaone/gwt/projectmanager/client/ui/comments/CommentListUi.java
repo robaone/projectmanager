@@ -70,8 +70,10 @@ public class CommentListUi extends Composite {
 						for(int i = 0; i < result.getDataCount();i++){
 							CommentViewUi view = new CommentViewUi();
 							view.load(result.getData(i), CommentListUi.this);
+							SimplePanel p = new SimplePanel();
+							p.setWidget(view);
 							if(i < list.getWidgetCount()){
-								list.insert(view, i);
+								list.insert(p, i);
 								list.remove(i+1);
 							}
 							list.add(view);
