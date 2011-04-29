@@ -38,7 +38,7 @@ public class FormUi extends Composite {
 		initWidget(uiBinder.createAndBindUi(this));
 		this.errors.setVisible(false);
 	}
-	
+
 	@UiField InlineLabel title;
 	@UiField FlowPanel errors;
 	@UiField Label description;
@@ -99,47 +99,56 @@ public class FormUi extends Composite {
 		}
 		return retval;
 	}
+	public void addField(String[][] field_def){
+		HashMap<String,String> retval = new HashMap<String,String>();
+		for(int i = 0; i < field_def.length;i++){
+			retval.put(field_def[i][0], field_def[i][1]);
+		}
+		addField(retval);
+	}
+	public void addField(HashMap<String, String> info) {
+		FormFieldUi field = new FormFieldUi();
+		field.setTitle(info.get(TITLE));
+		field.setDescription(info.get(DESCRIPTION));
+		field.setInfo(info.get(HELP));
+		field.setRequired(info.get(REQUIRED).equals("true"));
+		String value = null;
+		JSONArray values = null;
+		try{value = info.get(VALUE);}catch(Exception e){}
+		try{values = JSONParser.parseStrict(value).isArray();}catch(Exception e){}
+		JSONValue items = null;
+		try{items = JSONParser.parseStrict(info.get(ITEMS));}catch(Exception e){}
+		if(info.get(TYPE).equals(TYPES.List.toString())){
+			ListFieldUi item = new ListFieldUi(info.get(NAME));
+			try{item.setValue(value, items.isArray());}catch(Exception e){}
+			field.setField(item);
+		}else if(info.get(TYPE).equals(TYPES.Check.toString())){
+			CheckFieldUi item = new CheckFieldUi(info.get(NAME));
+			try{item.setValues(values,items.isArray());}catch(Exception e){}
+			field.setField(item);
+		}if(info.get(TYPE).equals(TYPES.Radio.toString())){
+			RadioFieldUi item = new RadioFieldUi(info.get(NAME));
+			try{item.setValue(value, items.isArray());}catch(Exception e){}
+			field.setField(item);
+		}if(info.get(TYPE).equals(TYPES.Text.toString())){
+			TextFieldUi item = new TextFieldUi(info.get(NAME));
+			item.setText(value);
+			field.setField(item);
+		}if(info.get(TYPE).equals(TYPES.TextArea.toString())){
+			TextAreaFieldUi item = new TextAreaFieldUi(info.get(NAME));
+			item.setText(value);
+			field.setField(item);
+		}if(info.get(TYPE).equals(TYPES.Password.toString())){
+			PasswordFieldUi item = new PasswordFieldUi(info.get(NAME));
+			item.setText(value);
+			field.setField(item);
+		}
+		this.fields.add(field);
+		this.m_fieldmap.put(field.getName(), field);
+	}
 	public void setFields(Vector<HashMap<String, String>> fields2) {
 		for(int i = 0; i < fields2.size();i++){
-			HashMap<String,String> info = fields2.get(i);
-			FormFieldUi field = new FormFieldUi();
-			field.setTitle(info.get(TITLE));
-			field.setDescription(info.get(DESCRIPTION));
-			field.setInfo(info.get(HELP));
-			field.setRequired(info.get(REQUIRED).equals("true"));
-			String value = null;
-			JSONArray values = null;
-			try{value = info.get(VALUE);}catch(Exception e){}
-			try{values = JSONParser.parseStrict(value).isArray();}catch(Exception e){}
-			JSONValue items = null;
-			try{items = JSONParser.parseStrict(info.get(ITEMS));}catch(Exception e){}
-			if(info.get(TYPE).equals(TYPES.List.toString())){
-				ListFieldUi item = new ListFieldUi(info.get(NAME));
-				try{item.setValue(value, items.isArray());}catch(Exception e){}
-				field.setField(item);
-			}else if(info.get(TYPE).equals(TYPES.Check.toString())){
-				CheckFieldUi item = new CheckFieldUi(info.get(NAME));
-				try{item.setValues(values,items.isArray());}catch(Exception e){}
-				field.setField(item);
-			}if(info.get(TYPE).equals(TYPES.Radio.toString())){
-				RadioFieldUi item = new RadioFieldUi(info.get(NAME));
-				try{item.setValue(value, items.isArray());}catch(Exception e){}
-				field.setField(item);
-			}if(info.get(TYPE).equals(TYPES.Text.toString())){
-				TextFieldUi item = new TextFieldUi(info.get(NAME));
-				item.setText(value);
-				field.setField(item);
-			}if(info.get(TYPE).equals(TYPES.TextArea.toString())){
-				TextAreaFieldUi item = new TextAreaFieldUi(info.get(NAME));
-				item.setText(value);
-				field.setField(item);
-			}if(info.get(TYPE).equals(TYPES.Password.toString())){
-				PasswordFieldUi item = new PasswordFieldUi(info.get(NAME));
-				item.setText(value);
-				field.setField(item);
-			}
-			this.fields.add(field);
-			this.m_fieldmap.put(field.getName(), field);
+			addField(fields2.get(i));
 		}
 	}
 	public void setFieldError(String name,String error){
