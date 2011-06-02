@@ -47,6 +47,18 @@ public class FormViewUi extends Composite {
 	@UiField Button edit;
 	@UiField Button cancel;
 	@UiField Button next;
+	public Button getCancelButton(){
+		return cancel;
+	}
+	public Button getBackButton(){
+		return back;
+	}
+	public Button getEditButton(){
+		return edit;
+	}
+	public Button getNextButton(){
+		return next;
+	}
 	HashMap<String,FormFieldUi> m_fieldmap = new HashMap<String,FormFieldUi>();
 	public void setTitle(String str){
 		this.title.setText(str);
