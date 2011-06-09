@@ -3,6 +3,7 @@ package com.robaone.gwt.projectmanager.server.business;
 import java.util.HashMap;
 
 import com.robaone.dbase.hierarchial.ConfigManager;
+import com.robaone.dbase.hierarchial.ConfigStruct;
 import com.robaone.dbase.hierarchial.HDBSessionData;
 import com.robaone.dbase.hierarchial.types.ConfigType;
 import com.robaone.gwt.projectmanager.client.DataServiceResponse;
@@ -14,6 +15,7 @@ import com.robaone.gwt.projectmanager.server.DataServiceImpl;
 import com.robaone.gwt.projectmanager.server.FieldVerifier;
 import com.robaone.gwt.projectmanager.server.ProjectDebug;
 import com.robaone.gwt.projectmanager.server.SessionData;
+import com.robaone.gwt.projectmanager.server.data.DBData;
 import com.robaone.gwt.projectmanager.server.interfaces.UserManagerInterface;
 
 public class UserManager extends ProjectConstants implements UserManagerInterface {
@@ -32,7 +34,6 @@ public class UserManager extends ProjectConstants implements UserManagerInterfac
 	public DataServiceResponse<UserData> getUserData() {
 		SessionData sdata = this.getParent().getSessionData();
 		DataServiceResponse<UserData> retval = new DataServiceResponse<UserData>();
-		/*
 		if(sdata == null || sdata.getUserData() == null){
 			retval.setStatus(NOT_LOGGED_IN);
 			retval.setError("No session data");
@@ -42,7 +43,7 @@ public class UserManager extends ProjectConstants implements UserManagerInterfac
 			retval.addData(sdata.getUserData());
 			ProjectDebug.write(ProjectDebug.SOURCE.LOCAL, "User, "+sdata.getUserData().getUsername()+", is logged in");
 		}
-		*/
+		/*
 		if(sdata == null){
 			try {
 				return this.createAccount("a@b.com", "12345678", "60504", USER_TYPE.SUPERUSER);
@@ -54,6 +55,7 @@ public class UserManager extends ProjectConstants implements UserManagerInterfac
 			retval.setStatus(OK);
 			retval.addData(sdata.getUserData());
 		}
+		*/
 		return retval;
 	}
 	@Override
@@ -74,7 +76,7 @@ public class UserManager extends ProjectConstants implements UserManagerInterfac
 		if(retval.getStatus() == OK){
 			String[] params = {username,"password"};
 			String path = ConfigManager.path(this, params);
-			ConfigManager user_password = ConfigManager.findConfig(path);
+			ConfigManager user_password = new DBData().findConfig(path);
 			if(user_password == null){
 				retval.setStatus(NOT_LOGGED_IN);
 				retval.setError("Username '"+username+"' not found");
@@ -85,12 +87,13 @@ public class UserManager extends ProjectConstants implements UserManagerInterfac
 						UserData data = new UserData();
 						data.setUsername(username);
 						String[] uparams = {username};
+						DBData dbdata = new DBData();
 						String root_path = ConfigManager.path(this, uparams);
-						try{data.setZip(ConfigManager.findConfig(root_path,"zip").getString());}catch(Exception e){}
-						try{data.setFirstname(ConfigManager.findConfig(root_path, "firstname").getString());}catch(Exception e){}
-						try{data.setLastname(ConfigManager.findConfig(root_path,"lastname").getString());}catch(Exception e){}
-						try{data.setPhonenumber(ConfigManager.findConfig(root_path,"phonenumber").getString());}catch(Exception e){}
-						try{data.setPictureUrl(ConfigManager.findConfig(root_path,"pictureurl").getString());}catch(Exception e){}
+						try{data.setZip(dbdata.findConfig(root_path,"zip").getString());}catch(Exception e){}
+						try{data.setFirstname(dbdata.findConfig(root_path, "firstname").getString());}catch(Exception e){}
+						try{data.setLastname(dbdata.findConfig(root_path,"lastname").getString());}catch(Exception e){}
+						try{data.setPhonenumber(dbdata.findConfig(root_path,"phonenumber").getString());}catch(Exception e){}
+						try{data.setPictureUrl(dbdata.findConfig(root_path,"pictureurl").getString());}catch(Exception e){}
 
 						SessionData sdata = this.parent.createSessionData();
 						sdata.setUserData(data);
@@ -140,7 +143,8 @@ public class UserManager extends ProjectConstants implements UserManagerInterfac
 			 */
 			String[] params = {email};
 			String path = ConfigManager.path(this, params);
-			ConfigManager cfg = ConfigManager.findConfig(path);
+			DBData dbdata = new DBData();
+			ConfigManager cfg = dbdata.findConfig(path);
 			if(cfg == null){
 				/**
 				 * The user does not exist.  Go ahead and create
@@ -153,9 +157,9 @@ public class UserManager extends ProjectConstants implements UserManagerInterfac
 				String encrypted_password = UserManager.byteArrayToHexString(UserManager.computeHash(password));
 				sdata = this.parent.getSessionData();
 				HDBSessionData session = new HDBSessionData(sdata.getUserData().getUsername(),sdata.getCurrentHost());
-				ConfigManager password_cfg = new ConfigManager(path+"/"+UserData.PASSWORD,encrypted_password,ConfigType.STRING,"User password","This is the password for the user account.",session);
-				ConfigManager zip_cfg = new ConfigManager(path+"/"+UserData.ZIP,zip,ConfigType.STRING,"Zip Code","The users' home zipcode",session);
-				ConfigManager role_cfg = new ConfigManager(path+"/"+UserData.ROLE,type.hashCode(),"User Role","The user role set the security and feature settings for this user.",session);
+				ConfigManager password_cfg = dbdata.setdefault(new ConfigStruct(path+"/"+UserData.PASSWORD,encrypted_password,ConfigType.STRING,"User password","This is the password for the user account."),session);
+				ConfigManager zip_cfg = dbdata.setdefault(new ConfigStruct(path+"/"+UserData.ZIP,zip,ConfigType.STRING,"Zip Code","The users' home zipcode"),session);
+				ConfigManager role_cfg = dbdata.setdefault(new ConfigStruct(path+"/"+UserData.ROLE,type.hashCode(),"User Role","The user role set the security and feature settings for this user."),session);
 				data.setAccountType(type.toString());
 				data.setZip(zip_cfg.getString());
 			}else{
@@ -200,15 +204,15 @@ public class UserManager extends ProjectConstants implements UserManagerInterfac
 		if(user != null){
 			String[] params = {user.getUsername(),UserData.PASSWORD};
 			String path = ConfigManager.path(this, params);
-			ConfigManager password_cfg = ConfigManager.findConfig(path);
+			DBData dbdata = new DBData();
+			ConfigManager password_cfg = dbdata.findConfig(path);
 			if(password_cfg != null){
-				String[] p2 = {user.getUsername()};
 				path = ConfigManager.path(this, params) + "/";
 				HDBSessionData session = new HDBSessionData(this.getParent().getSessionData().getUserData().getUsername(),this.getParent().getSessionData().getCurrentHost());
-				ConfigManager firstname_cfg = new ConfigManager(path+UserData.FIRSTNAME,user.getFirstname(),ConfigType.STRING,"FirstName","The user's first name.",session);
-				ConfigManager lastname_cfg = new ConfigManager(path+UserData.LASTNAME,user.getLastname(),ConfigType.STRING,"LastName","The user's last name.",session);
-				ConfigManager zip_cfg = new ConfigManager(path+UserData.ZIP,user.getZip(),ConfigType.STRING,"Zip Code","The users's home zip code.",session);
-				ConfigManager phone_cfg = new ConfigManager(path+UserData.PHONENUMBER,user.getPhonenumber(),ConfigType.STRING,"Phone Number","The user's primary phone number",session);
+				ConfigManager firstname_cfg = dbdata.setdefault(new ConfigStruct(path+UserData.FIRSTNAME,user.getFirstname(),ConfigType.STRING,"FirstName","The user's first name."),session);
+				ConfigManager lastname_cfg = dbdata.setdefault(new ConfigStruct(path+UserData.LASTNAME,user.getLastname(),ConfigType.STRING,"LastName","The user's last name."),session);
+				ConfigManager zip_cfg = dbdata.setdefault(new ConfigStruct(path+UserData.ZIP,user.getZip(),ConfigType.STRING,"Zip Code","The users's home zip code."),session);
+				ConfigManager phone_cfg = dbdata.setdefault(new ConfigStruct(path+UserData.PHONENUMBER,user.getPhonenumber(),ConfigType.STRING,"Phone Number","The user's primary phone number"),session);
 				firstname_cfg.setValue(user.getFirstname(), session);
 				lastname_cfg.setValue(user.getLastname(), session);
 				zip_cfg.setValue(user.getZip(), session);
@@ -248,9 +252,10 @@ public class UserManager extends ProjectConstants implements UserManagerInterfac
 	@Override
 	public UserData getUserData(String username) throws Exception {
 		String[] params = {username};
-		ConfigManager user_cfg = ConfigManager.findConfig(ConfigManager.path(this, params));
+		DBData dbdata = new DBData();
+		ConfigManager user_cfg = dbdata.findConfig(ConfigManager.path(this, params));
 		if(user_cfg != null){
-			ConfigManager[] user = ConfigManager.findFolderContentbyId(user_cfg.getId());
+			ConfigManager[] user = dbdata.findFolderContentbyId(user_cfg.getId());
 			HashMap<String,ConfigManager> map = ConfigManager.getMap(user);
 			UserData data = new UserData();
 			try{data.setAccountType(map.get(UserData.ROLE).getInt().toString());}catch(Exception e){}
