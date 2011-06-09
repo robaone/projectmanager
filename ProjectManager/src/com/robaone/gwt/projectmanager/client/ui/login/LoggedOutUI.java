@@ -16,7 +16,7 @@ public class LoggedOutUI extends Composite {
 		VerticalPanel vp = new VerticalPanel();
 		Label l = new Label("Logged out");
 		vp.add(l);
-		
+		ProjectManager.user_data = null;
 		this.initWidget(vp);
 		
 		

@@ -266,6 +266,7 @@ public class LoginInterface extends Composite {
 				password_error.setVisible(false);
 				general_error.setVisible(false);
 				if(result.getStatus() == ProjectConstants.OK){
+					ProjectManager.user_data = result.getData(0);
 					if(parent instanceof DialogBox){
 						((DialogBox)parent).hide();
 					}
