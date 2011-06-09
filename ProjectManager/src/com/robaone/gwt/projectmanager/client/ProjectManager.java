@@ -50,7 +50,7 @@ public class ProjectManager extends ProjectConstants implements EntryPoint {
 	public static final String SERVER_ERROR = "An error occurred while "
 		+ "attempting to contact the server. Please check your network "
 		+ "connection and try again.";
-
+	public static UserData user_data;
 	/**
 	 * Create a remote service proxy to talk to the server-side Greeting service.
 	 */
@@ -94,6 +94,7 @@ public class ProjectManager extends ProjectConstants implements EntryPoint {
 			public void onSuccess(DataServiceResponse<UserData> result) {
 				try{
 					if(result.getStatus() == OK){
+						user_data = result.getData(0);
 						showAllModules(result.getData(0));
 					}else if(result.getStatus() == NOT_LOGGED_IN){
 						showLogin();	
@@ -222,6 +223,7 @@ public class ProjectManager extends ProjectConstants implements EntryPoint {
 
 
 		MainContent main;
+		ProjectManager.user_data = data;
 		if(ProjectManager.m_maincontent != null){
 			main = ProjectManager.m_maincontent;
 		}else{
