@@ -158,6 +158,13 @@ public class FormUi extends Composite {
 		this.fields.add(field);
 		this.m_fieldmap.put(field.getName(), field);
 	}
+	public void clear(){
+		this.fields.clear();
+		this.m_fieldmap.clear();
+	}
+	public FormFieldUi getField(String name){
+		return this.m_fieldmap.get(name);
+	}
 	public void setFields(Vector<HashMap<String, String>> fields2) {
 		for(int i = 0; i < fields2.size();i++){
 			addField(fields2.get(i));
