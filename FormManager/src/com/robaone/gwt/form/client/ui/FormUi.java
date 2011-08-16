@@ -176,6 +176,14 @@ public class FormUi extends Composite {
 			field.setError(error);
 		}
 	}
+	public void clearErrors(){
+		this.setErrors(null);
+		String[] keys = this.m_fieldmap.keySet().toArray(new String[0]);
+		for(int i = 0; i < keys.length;i++){
+			FormFieldUi field = this.m_fieldmap.get(keys[i]);
+			field.clearError();
+		}
+	}
 	public void addFieldKeyUpHandler(String name,KeyUpHandler handler){
 		FormFieldUi field = this.m_fieldmap.get(name);
 		field.addKeyUpHandler(handler);
