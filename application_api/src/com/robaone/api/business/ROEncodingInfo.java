@@ -6,14 +6,14 @@ import org.apache.xml.serialize.EncodingInfo;
  * @author arobateau
  *
  */
-public class SOEncodingInfo extends EncodingInfo {
+public class ROEncodingInfo extends EncodingInfo {
 	private int m_lastPrintable;
 	/**
 	 * @param ianaName
 	 * @param javaName
 	 * @param lastPrintable
 	 */
-	public SOEncodingInfo(String ianaName, String javaName, int lastPrintable) {
+	public ROEncodingInfo(String ianaName, String javaName, int lastPrintable) {
 		super(ianaName, javaName, lastPrintable);
 		this.m_lastPrintable = lastPrintable;
 	}
