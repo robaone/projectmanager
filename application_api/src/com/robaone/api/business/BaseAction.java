@@ -21,7 +21,6 @@ import javax.xml.xpath.XPathFactory;
 import net.oauth.OAuthAccessor;
 import net.oauth.OAuthMessage;
 import net.oauth.OAuthProblemException;
-import net.oauth.example.provider.core.SoCorpOAuthProvider;
 import net.oauth.server.OAuthServlet;
 
 import org.json.JSONObject;
@@ -37,6 +36,7 @@ import com.robaone.api.data.jdo.User_jdo;
 import com.robaone.api.data.jdo.User_jdoManager;
 import com.robaone.api.json.DSResponse;
 import com.robaone.api.json.JSONResponse;
+import com.robaone.api.oauth.ROAPIOAuthProvider;
 import com.robaone.dbase.hierarchial.ConfigManager;
 import com.robaone.dbase.hierarchial.ConnectionBlock;
 
@@ -111,8 +111,8 @@ public class BaseAction<T> {
 	public void validate() throws Exception {
 		OAuthMessage requestMessage = OAuthServlet.getMessage(request, null);
 
-		final OAuthAccessor accessor = SoCorpOAuthProvider.getAccessor(requestMessage);
-		SoCorpOAuthProvider.VALIDATOR.validateMessage(requestMessage, accessor);
+		final OAuthAccessor accessor = ROAPIOAuthProvider.getAccessor(requestMessage);
+		ROAPIOAuthProvider.VALIDATOR.validateMessage(requestMessage, accessor);
 
 		// make sure token is authorized
 		if (!Boolean.TRUE.equals(accessor.getProperty("authorized"))) {
@@ -144,7 +144,7 @@ public class BaseAction<T> {
 	public void deAuthorize() throws Exception {
 		OAuthMessage requestMessage = OAuthServlet.getMessage(request, null);
 
-		final OAuthAccessor accessor = SoCorpOAuthProvider.getAccessor(requestMessage);
+		final OAuthAccessor accessor = ROAPIOAuthProvider.getAccessor(requestMessage);
 		ConnectionBlock block = new ConnectionBlock(){
 
 			@Override
