@@ -22,10 +22,10 @@ import org.apache.xml.serialize.XMLSerializer;
  * @author arobateau
  *
  */
-public class SOTransformer {
+public class ROTransformer {
 	private TransformerFactory tFactory;
 	private Transformer transformer;
-	public SOTransformer(){
+	public ROTransformer(){
 		this.tFactory = TransformerFactory.newInstance();
 		try {
 			this.transformer = tFactory.newTransformer();
@@ -33,7 +33,7 @@ public class SOTransformer {
 			this.transformer = null;
 		}
 	}
-	public SOTransformer(String xsl_document) throws Exception {
+	public ROTransformer(String xsl_document) throws Exception {
 		StreamSource stream = this.getStreamSource(xsl_document);
 		this.tFactory = TransformerFactory.newInstance();
 		try {
@@ -97,7 +97,7 @@ public class SOTransformer {
 		}
 		
 	}
-	public SOTransformer(Reader stream){
+	public ROTransformer(Reader stream){
 		this.tFactory = TransformerFactory.newInstance();
 		try {
 			this.transformer = tFactory.newTransformer(new StreamSource(stream));
@@ -105,7 +105,7 @@ public class SOTransformer {
 			this.transformer = null;
 		}
 	}
-	public SOTransformer(InputStream stream){
+	public ROTransformer(InputStream stream){
 		this.tFactory = TransformerFactory.newInstance();
 		try {
 			this.transformer = tFactory.newTransformer(new StreamSource(stream));

@@ -9,7 +9,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Vector;
 
-import com.robaone.api.business.SOTransformer;
+import com.robaone.api.business.ROTransformer;
 import com.robaone.api.business.StringEncrypter;
 import com.robaone.api.data.blocks.FindCredentialsBlock;
 import com.robaone.api.data.jdo.Credentials_jdo;
@@ -73,7 +73,7 @@ public class AppDatabase {
 		}
 	}
 	public static String transform(String stylesheet, String xml) throws Exception {
-		SOTransformer trn = new SOTransformer(stylesheet);
+		ROTransformer trn = new ROTransformer(stylesheet);
 		return trn.transform(xml);
 	}
 	public static void writeLog(String string) {

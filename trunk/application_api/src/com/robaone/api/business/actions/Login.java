@@ -11,7 +11,7 @@ import org.json.XML;
 
 import com.robaone.api.business.BaseAction;
 import com.robaone.api.business.FieldValidator;
-import com.robaone.api.business.SOTransformer;
+import com.robaone.api.business.ROTransformer;
 import com.robaone.api.business.StringEncrypter;
 import com.robaone.api.data.AppDatabase;
 import com.robaone.api.data.DatabaseImpl;
@@ -127,7 +127,7 @@ public class Login extends BaseAction<User_jdo> {
 									message.setSubject("Account Activation Request");
 									message.setHtml(true);
 									message.setCreationdate(new java.sql.Timestamp(new java.util.Date().getTime()));
-									SOTransformer trn = new SOTransformer(AppDatabase.getStylesheet("accountactivation"));
+									ROTransformer trn = new ROTransformer(AppDatabase.getStylesheet("accountactivation"));
 									String msg_data = "";
 									JSONObject jo = new JSONObject();
 									jo.put("token", token);
@@ -252,7 +252,7 @@ public class Login extends BaseAction<User_jdo> {
 								message.setSubject("Password Reset Request");
 								message.setHtml(true);
 								message.setCreationdate(new java.sql.Timestamp(new java.util.Date().getTime()));
-								SOTransformer trn = new SOTransformer(AppDatabase.getStylesheet("passwordreset"));
+								ROTransformer trn = new ROTransformer(AppDatabase.getStylesheet("passwordreset"));
 								String msg_data = "";
 								JSONObject jo = new JSONObject();
 								jo.put("token", token);
@@ -363,7 +363,7 @@ public class Login extends BaseAction<User_jdo> {
 					jo.put("lastname", new_user.getLast_name());
 					jo.put("token", token);
 					String xml = XML.toString(jo, "data");
-					SOTransformer trn = new SOTransformer(AppDatabase.getStylesheet("registration"));
+					ROTransformer trn = new ROTransformer(AppDatabase.getStylesheet("registration"));
 					String msg = trn.transform(xml);
 					new_message.setBody(msg);
 					new_message.setCreationdate(new java.sql.Timestamp(new java.util.Date().getTime()));
