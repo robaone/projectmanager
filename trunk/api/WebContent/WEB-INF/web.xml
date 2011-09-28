@@ -13,7 +13,7 @@
     <description></description>
     <display-name>DataServlet</display-name>
     <servlet-name>DataServlet</servlet-name>
-    <servlet-class>com.robaone.servlet.DataServlet</servlet-class>
+    <servlet-class>com.robaone.api.servlet.DataServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>RequestTokenServlet</servlet-name>
