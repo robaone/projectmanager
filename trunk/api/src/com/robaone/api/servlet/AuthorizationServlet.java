@@ -38,112 +38,112 @@ import net.oauth.server.OAuthServlet;
  * @author Praveen Alavilli
  */
 public class AuthorizationServlet extends HttpServlet {
-    
-    @Override
-    public void init(ServletConfig config) throws ServletException {
-        super.init(config);
-        // nothing at this point
-    }
-    
-    @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws IOException, ServletException {
-        
-        try{
-            OAuthMessage requestMessage = OAuthServlet.getMessage(request, null);
-            
-            OAuthAccessor accessor = ROAPIOAuthProvider.getAccessor(requestMessage);
-           
-            if (Boolean.TRUE.equals(accessor.getProperty("authorized"))) {
-                // already authorized send the user back
-                returnToConsumer(request, response, accessor);
-            } else {
-                sendToAuthorizePage(request, response, accessor);
-            }
-        
-        } catch (Exception e){
-            ROAPIOAuthProvider.handleException(e, request, response, true);
-        }
-        
-        
-        
-    }
-    
-    @Override 
-    public void doPost(HttpServletRequest request, HttpServletResponse response) 
-            throws IOException, ServletException{
-        
-        try{
-            OAuthMessage requestMessage = OAuthServlet.getMessage(request, null);
-            
-            OAuthAccessor accessor = ROAPIOAuthProvider.getAccessor(requestMessage);
-            
-            String userId = request.getParameter("userId");
-            if(userId == null){
-                sendToAuthorizePage(request, response, accessor);
-            }
-            // set userId in accessor and mark it as authorized
-            ROAPIOAuthProvider.markAsAuthorized(accessor, userId);
-            
-            returnToConsumer(request, response, accessor);
-            
-        } catch (Exception e){
-            ROAPIOAuthProvider.handleException(e, request, response, true);
-        }
-    }
-    
-    private void sendToAuthorizePage(HttpServletRequest request, 
-            HttpServletResponse response, OAuthAccessor accessor)
-    throws IOException, ServletException{
-        String callback = request.getParameter("oauth_callback");
-        if(callback == null || callback.length() <=0) {
-            callback = "none";
-        }
-        String consumer_description = (String)accessor.consumer.getProperty("description");
-        request.setAttribute("CONS_DESC", consumer_description);
-        request.setAttribute("CALLBACK", callback);
-        request.setAttribute("TOKEN", request.getParameter("oauth_token"));
-        request.getRequestDispatcher //
-                    ("/authorize.jsp").forward(request,
-                        response);
-        
-    }
-    
-    private void returnToConsumer(HttpServletRequest request, 
-            HttpServletResponse response, OAuthAccessor accessor)
-    throws IOException, ServletException{
-        // send the user back to site's callBackUrl
-        String callback = request.getParameter("oauth_callback");
-        if("none".equals(callback) 
-            && accessor.consumer.callbackURL != null 
-                && accessor.consumer.callbackURL.length() > 0){
-            // first check if we have something in our properties file
-            callback = accessor.consumer.callbackURL;
-        }
-        
-        if( "none".equals(callback) ) {
-            // no call back it must be a client
-            response.setContentType("text/plain");
-            PrintWriter out = response.getWriter();
-            out.println("You have successfully authorized '" 
-                    + accessor.consumer.getProperty("description") 
-                    + "'. Please close this browser window and click continue"
-                    + " in the client.");
-            out.close();
-        } else {
-            // if callback is not passed in, use the callback from config
-            if(callback == null || callback.length() <=0 )
-                callback = accessor.consumer.callbackURL;
-            String token = accessor.requestToken;
-            if (token != null) {
-                callback = OAuth.addParameters(callback, "oauth_token", token);
-            }
 
-            response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
-            response.setHeader("Location", callback);
-        }
-    }
+	@Override
+	public void init(ServletConfig config) throws ServletException {
+		super.init(config);
+		// nothing at this point
+	}
 
-    private static final long serialVersionUID = 1L;
+	@Override
+	public void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws IOException, ServletException {
+
+		try{
+			OAuthMessage requestMessage = OAuthServlet.getMessage(request, null);
+
+			OAuthAccessor accessor = ROAPIOAuthProvider.getAccessor(requestMessage);
+
+			if (Boolean.TRUE.equals(accessor.getProperty("authorized"))) {
+				// already authorized send the user back
+				returnToConsumer(request, response, accessor);
+			} else {
+				sendToAuthorizePage(request, response, accessor);
+			}
+
+		} catch (Exception e){
+			ROAPIOAuthProvider.handleException(e, request, response, true);
+		}
+
+
+
+	}
+
+	@Override 
+	public void doPost(HttpServletRequest request, HttpServletResponse response) 
+			throws IOException, ServletException{
+
+		try{
+			OAuthMessage requestMessage = OAuthServlet.getMessage(request, null);
+
+			OAuthAccessor accessor = ROAPIOAuthProvider.getAccessor(requestMessage);
+
+			String userId = request.getParameter("userId");
+			if(userId == null){
+				sendToAuthorizePage(request, response, accessor);
+			}else{
+				// set userId in accessor and mark it as authorized
+				ROAPIOAuthProvider.markAsAuthorized(accessor, userId);
+			}
+			returnToConsumer(request, response, accessor);
+
+		} catch (Exception e){
+			ROAPIOAuthProvider.handleException(e, request, response, true);
+		}
+	}
+
+	private void sendToAuthorizePage(HttpServletRequest request, 
+			HttpServletResponse response, OAuthAccessor accessor)
+					throws IOException, ServletException{
+		String callback = request.getParameter("oauth_callback");
+		if(callback == null || callback.length() <=0) {
+			callback = "none";
+		}
+		String consumer_description = (String)accessor.consumer.getProperty("description");
+		request.setAttribute("CONS_DESC", consumer_description);
+		request.setAttribute("CALLBACK", callback);
+		request.setAttribute("TOKEN", request.getParameter("oauth_token"));
+		request.getRequestDispatcher //
+		("/authorize.jsp").forward(request,
+				response);
+
+	}
+
+	private void returnToConsumer(HttpServletRequest request, 
+			HttpServletResponse response, OAuthAccessor accessor)
+					throws IOException, ServletException{
+		// send the user back to site's callBackUrl
+		String callback = request.getParameter("oauth_callback");
+		if("none".equals(callback) 
+				&& accessor.consumer.callbackURL != null 
+				&& accessor.consumer.callbackURL.length() > 0){
+			// first check if we have something in our properties file
+			callback = accessor.consumer.callbackURL;
+		}
+
+		if( "none".equals(callback) ) {
+			// no call back it must be a client
+			response.setContentType("text/plain");
+			PrintWriter out = response.getWriter();
+			out.println("You have successfully authorized '" 
+					+ accessor.consumer.getProperty("description") 
+					+ "'. Please close this browser window and click continue"
+					+ " in the client.");
+			out.close();
+		} else {
+			// if callback is not passed in, use the callback from config
+			if(callback == null || callback.length() <=0 )
+				callback = accessor.consumer.callbackURL;
+			String token = accessor.requestToken;
+			if (token != null) {
+				callback = OAuth.addParameters(callback, "oauth_token", token);
+			}
+
+			response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
+			response.setHeader("Location", callback);
+		}
+	}
+
+	private static final long serialVersionUID = 1L;
 
 }
