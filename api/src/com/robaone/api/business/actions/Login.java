@@ -39,9 +39,9 @@ public class Login extends BaseAction<User_jdo> {
 	public void logout(final JSONObject data) throws Exception {
 		try{
 			this.validate();
+			this.deAuthorize();
 			this.resetSession();
 			this.getResponse().getProperties().setProperty("status", "You are logged out");
-			this.deAuthorize();
 		}catch(Exception e){
 			this.sendError(e);
 		}
