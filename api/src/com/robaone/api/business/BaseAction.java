@@ -124,6 +124,11 @@ public class BaseAction<T> {
 	}
 	public void validate() throws Exception {
 		AppDatabase.writeLog("BaseAction.validate()");
+		boolean debug = false;
+		try{
+			debug = AppDatabase.getProperty("debug").equals("true");
+		}catch(Exception e){}
+		if(debug) return;
 		OAuthMessage requestMessage = OAuthServlet.getMessage(request, null);
 
 		final OAuthAccessor accessor = ROAPIOAuthProvider.getAccessor(requestMessage);

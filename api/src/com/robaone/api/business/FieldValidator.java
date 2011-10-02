@@ -1,5 +1,7 @@
 package com.robaone.api.business;
 
+import java.math.BigDecimal;
+
 public class FieldValidator {
 	public static final String PASSWORD_REQUIREMENT = "You password must be at least 6 characters";
 
@@ -66,5 +68,15 @@ public class FieldValidator {
 
 	public static String getPasswordRequirement() {
 		return FieldValidator.PASSWORD_REQUIREMENT;
+	}
+
+	public static boolean isNumber(String limit) {
+		if(limit == null) return false;
+		try{
+			BigDecimal d = new BigDecimal(limit);
+		}catch(Exception e){
+			return false;
+		}
+		return true;
 	}
 }
