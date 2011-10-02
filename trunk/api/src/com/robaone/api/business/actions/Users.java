@@ -65,6 +65,7 @@ public class Users extends BaseAction<JSONObject> implements Action {
 							while(this.getResultSet().next()){
 								User_jdo user = User_jdoManager.bindUser(getResultSet());
 								JSONObject j = User_jdoManager.toJSONObject(user);
+								j.remove("password");
 								getResponse().addData(j);
 								end++;
 							}
