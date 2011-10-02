@@ -1,6 +1,7 @@
 package com.robaone.api.business.actions;
 
 import java.io.OutputStream;
+import java.math.BigDecimal;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -12,6 +13,7 @@ import org.json.XML;
 import com.robaone.api.business.Action;
 import com.robaone.api.business.BaseAction;
 import com.robaone.api.business.FieldValidator;
+import com.robaone.api.data.AppDatabase;
 import com.robaone.api.data.SessionData;
 import com.robaone.api.data.jdo.User_jdo;
 import com.robaone.api.data.jdo.User_jdoManager;
@@ -106,6 +108,20 @@ public class Users extends BaseAction<JSONObject> implements Action {
 	public void get(JSONObject jo) {
 		try{
 			this.validate();
+			if(!this.requireLogin()){
+				String xml = XML.toString(jo);
+				String iduser = this.findXPathText(xml, "//iduser");
+				if(!FieldValidator.exists(iduser) || !FieldValidator.isNumber(iduser)){
+					getResponse().setStatus(JSONResponse.FIELD_VALIDATION_ERROR);
+					getResponse().addError("iduser", "You must enter a user id number");
+				}
+				if(this.getResponse().getStatus() == JSONResponse.OK){
+					User_jdo user = AppDatabase.getUser(new Integer(iduser));
+					JSONObject juser = User_jdoManager.toJSONObject(user);
+					juser.remove("password");
+					getResponse().addData(juser);
+				}
+			}
 		}catch(Exception e){
 			this.sendError(e);
 		}

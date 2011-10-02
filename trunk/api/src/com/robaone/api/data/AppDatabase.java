@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Vector;
@@ -13,6 +14,8 @@ import com.robaone.api.business.ROTransformer;
 import com.robaone.api.business.StringEncrypter;
 import com.robaone.api.data.blocks.FindCredentialsBlock;
 import com.robaone.api.data.jdo.Credentials_jdo;
+import com.robaone.api.data.jdo.User_jdo;
+import com.robaone.api.data.jdo.User_jdoManager;
 import com.robaone.dbase.hierarchial.ConfigManager;
 import com.robaone.dbase.hierarchial.ConnectionBlock;
 import com.robaone.util.INIFileReader;
@@ -89,6 +92,21 @@ public class AppDatabase {
 	public static Credentials_jdo getCredentials(String string, String token) throws Exception {
 		final Vector<Credentials_jdo> retval = new Vector<Credentials_jdo>();
 		ConnectionBlock block = new FindCredentialsBlock(retval,string,token);
+		ConfigManager.runConnectionBlock(block, new DatabaseImpl().getConnectionManager());
+		return retval.size() > 0 ? retval.get(0) : null;
+	}
+	public static User_jdo getUser(final Integer iduser) throws Exception {
+		final Vector<User_jdo> retval = new Vector<User_jdo>();
+		ConnectionBlock block = new ConnectionBlock(){
+
+			@Override
+			public void run() throws Exception {
+				User_jdoManager man = new User_jdoManager(this.getConnection());
+				User_jdo user = man.getUser(iduser);
+				retval.add(user);
+			}
+			
+		};
 		ConfigManager.runConnectionBlock(block, new DatabaseImpl().getConnectionManager());
 		return retval.size() > 0 ? retval.get(0) : null;
 	}
