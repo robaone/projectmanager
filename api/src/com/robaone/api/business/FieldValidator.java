@@ -74,9 +74,9 @@ public class FieldValidator {
 		if(limit == null) return false;
 		try{
 			BigDecimal d = new BigDecimal(limit);
+			return true;
 		}catch(Exception e){
 			return false;
 		}
-		return true;
 	}
 }

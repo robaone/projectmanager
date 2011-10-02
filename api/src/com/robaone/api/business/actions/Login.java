@@ -115,7 +115,7 @@ public class Login extends BaseAction<User_jdo> {
 								cred.setIduser(user.getIduser());
 								cred.setCreation_date(AppDatabase.getTimestamp());
 								man.save(cred);
-
+								getResponse().getProperties().setProperty("token", token);
 								try{
 									/**
 									 * Create message that has the token that will allow the account activation
@@ -173,7 +173,9 @@ public class Login extends BaseAction<User_jdo> {
 			final String token = this.findXPathText(xml, "//token/text()");
 			final String password = this.findXPathText(xml, "//password/text()");
 			final String password_repeat = this.findXPathText(xml, "//password_repeat/text()");
-			final String emailaddress = this.findXPathText(xml, "//emailaddress/text()");
+			final String username = this.findXPathText(xml, "//username");
+			String emailaddr = this.findXPathText(xml, "//emailaddress/text()");
+			final String emailaddress = emailaddr == null ? username : emailaddr;
 			if(!FieldValidator.isEmail(emailaddress)){
 				getResponse().setStatus(JSONResponse.FIELD_VALIDATION_ERROR);
 				getResponse().addError("emailaddress", "You must enter a valid e-mail address");
@@ -445,7 +447,7 @@ public class Login extends BaseAction<User_jdo> {
 								 * The user password is good.  The user should now be logged in
 								 */
 								getSessionData().setUser(account_record);
-								getProperties().put("home","http://localhost:8080/sohvac");
+								getProperties().put("status","User is logged in");
 								return;
 							}else{
 								/**

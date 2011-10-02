@@ -111,6 +111,15 @@ public class BaseAction<T> {
 	public JSONResponse<T> getResponse(){
 		return this.dsr.getResponse();
 	}
+	public boolean requireLogin(){
+		User_jdo user = this.getSessionData().getUser();
+		if(user == null){
+			this.getResponse().setStatus(JSONResponse.LOGIN_REQUIRED);
+			return true;
+		}else{
+			return false;
+		}
+	}
 	public void writeResonse(){
 		PrintWriter pw = new PrintWriter(this.out);
 		JSONObject jo = new JSONObject(this.dsr);
