@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.robaone.api.data.AppDatabase;
 import com.robaone.api.oauth.ROAPIOAuthProvider;
 
 import net.oauth.OAuth;
@@ -57,12 +58,14 @@ public class RequestTokenServlet extends HttpServlet {
             throws IOException, ServletException {
 
         try {
+        	AppDatabase.writeLog("RequestTokenServlet.processRequest(...)");
             OAuthMessage requestMessage = OAuthServlet.getMessage(request, null);
-            
+            AppDatabase.writeLog("Received signature = "+requestMessage.getParameter("oauth_signature"));
             OAuthConsumer consumer = ROAPIOAuthProvider.getConsumer(requestMessage);
-            
+            AppDatabase.writeLog("consumer found");
             OAuthAccessor accessor = new OAuthAccessor(consumer);
             ROAPIOAuthProvider.VALIDATOR.validateMessage(requestMessage, accessor);
+            AppDatabase.writeLog("message validated");
             {
                 // Support the 'Variable Accessor Secret' extension
                 // described in http://oauth.pbwiki.com/AccessorSecret
@@ -73,7 +76,7 @@ public class RequestTokenServlet extends HttpServlet {
             }
             // generate request_token and secret
             ROAPIOAuthProvider.generateRequestToken(accessor);
-            
+            AppDatabase.writeLog("request token ("+accessor.requestToken+") generated");
             response.setContentType("text/plain");
             OutputStream out = response.getOutputStream();
             OAuth.formEncode(OAuth.newList("oauth_token", accessor.requestToken,
@@ -82,6 +85,7 @@ public class RequestTokenServlet extends HttpServlet {
             out.close();
             
         } catch (Exception e){
+        	e.printStackTrace();
             ROAPIOAuthProvider.handleException(e, request, response, true);
         }
         

@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.robaone.api.data.AppDatabase;
 import com.robaone.api.oauth.ROAPIOAuthProvider;
 
 import net.oauth.OAuth;
@@ -62,6 +63,7 @@ public class AccessTokenServlet extends HttpServlet {
     public void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
         try{
+        	AppDatabase.writeLog("AccessTokenServlet.processRequest(...)");
             OAuthMessage requestMessage = OAuthServlet.getMessage(request, null);
             
             OAuthAccessor accessor = ROAPIOAuthProvider.getAccessor(requestMessage);
@@ -87,6 +89,7 @@ public class AccessTokenServlet extends HttpServlet {
             out.close();
             
         } catch (Exception e){
+        	e.printStackTrace();
             ROAPIOAuthProvider.handleException(e, request, response, true);
         }
     }

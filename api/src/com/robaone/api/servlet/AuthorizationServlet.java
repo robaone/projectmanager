@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.robaone.api.data.AppDatabase;
 import com.robaone.api.oauth.ROAPIOAuthProvider;
 
 import net.oauth.OAuth;
@@ -50,18 +51,22 @@ public class AuthorizationServlet extends HttpServlet {
 			throws IOException, ServletException {
 
 		try{
+			AppDatabase.writeLog("AuthorizationServlet.doGet(...)");
 			OAuthMessage requestMessage = OAuthServlet.getMessage(request, null);
 
 			OAuthAccessor accessor = ROAPIOAuthProvider.getAccessor(requestMessage);
 
 			if (Boolean.TRUE.equals(accessor.getProperty("authorized"))) {
 				// already authorized send the user back
+				AppDatabase.writeLog("user already authorized");
 				returnToConsumer(request, response, accessor);
 			} else {
+				AppDatabase.writeLog("sending to authorization page");
 				sendToAuthorizePage(request, response, accessor);
 			}
 
 		} catch (Exception e){
+			e.printStackTrace();
 			ROAPIOAuthProvider.handleException(e, request, response, true);
 		}
 
@@ -74,6 +79,7 @@ public class AuthorizationServlet extends HttpServlet {
 			throws IOException, ServletException{
 
 		try{
+			AppDatabase.writeLog("AuthorizationServlet.doPost(...)");
 			OAuthMessage requestMessage = OAuthServlet.getMessage(request, null);
 
 			OAuthAccessor accessor = ROAPIOAuthProvider.getAccessor(requestMessage);
@@ -88,6 +94,7 @@ public class AuthorizationServlet extends HttpServlet {
 			returnToConsumer(request, response, accessor);
 
 		} catch (Exception e){
+			e.printStackTrace();
 			ROAPIOAuthProvider.handleException(e, request, response, true);
 		}
 	}

@@ -123,11 +123,12 @@ public class BaseAction<T> {
 		return this.dsr.getResponse().getProperties();
 	}
 	public void validate() throws Exception {
+		AppDatabase.writeLog("BaseAction.validate()");
 		OAuthMessage requestMessage = OAuthServlet.getMessage(request, null);
 
 		final OAuthAccessor accessor = ROAPIOAuthProvider.getAccessor(requestMessage);
 		ROAPIOAuthProvider.VALIDATOR.validateMessage(requestMessage, accessor);
-
+		AppDatabase.writeLog("Request validated");
 		// make sure token is authorized
 		if (!Boolean.TRUE.equals(accessor.getProperty("authorized"))) {
 			OAuthProblemException problem = new OAuthProblemException("permission_denied");
@@ -141,8 +142,9 @@ public class BaseAction<T> {
 			@Override
 			public void run() throws Exception {
 				App_credentials_jdoManager man = new App_credentials_jdoManager(this.getConnection());
-				this.setPreparedStatement(man.prepareStatement(App_credentials_jdo.ACCESS_TOKEN + " = ?"));
+				this.setPreparedStatement(man.prepareStatement(App_credentials_jdo.ACCESS_TOKEN + " = ? or "+App_credentials_jdo.REQUEST_TOKEN + " = ?"));
 				this.getPreparedStatement().setString(1, accessor.accessToken);
+				this.getPreparedStatement().setString(2, accessor.requestToken);
 				this.setResultSet(this.getPreparedStatement().executeQuery());
 				if(this.getResultSet().next()){
 					App_credentials_jdo cred = App_credentials_jdoManager.bindApp_credentials(getResultSet());
@@ -150,6 +152,7 @@ public class BaseAction<T> {
 					User_jdo user = uman.getUser(cred.getIduser());
 					getSessionData().setUser(user);
 					getSessionData().setCredentials(cred);
+					AppDatabase.writeLog("Credentials Saved");
 				}
 			}
 			
@@ -158,7 +161,7 @@ public class BaseAction<T> {
 	}
 	public void deAuthorize() throws Exception {
 		OAuthMessage requestMessage = OAuthServlet.getMessage(request, null);
-
+		AppDatabase.writeLog("BaseAction.deAuthorize()");
 		final OAuthAccessor accessor = ROAPIOAuthProvider.getAccessor(requestMessage);
 		ConnectionBlock block = new ConnectionBlock(){
 
@@ -173,6 +176,7 @@ public class BaseAction<T> {
 					App_credentials_jdo cred = App_credentials_jdoManager.bindApp_credentials(getResultSet());
 					cred.setActive(0);
 					man.save(cred);
+					AppDatabase.writeLog("credentials deauthorized");
 				}
 			}
 			
