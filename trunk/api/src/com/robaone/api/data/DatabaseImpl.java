@@ -22,7 +22,12 @@ public class DatabaseImpl{
 	public java.sql.Connection getConnection() throws Exception {
 		Context initContext = new InitialContext();
 		Context envContext  = (Context)initContext.lookup("java:/comp/env");
-		DataSource ds = (DataSource)envContext.lookup("jdbc/mydatabase");
+		String env = AppDatabase.getProperty("env");
+		DataSource ds;
+		if(env != null && env.equals("dev"))
+			ds = (DataSource)envContext.lookup("jdbc/mydatabase_dev");
+		else
+			ds = (DataSource)envContext.lookup("jdbc/mydatabase");
 		Connection conn = ds.getConnection();
 		return conn;
 	}
