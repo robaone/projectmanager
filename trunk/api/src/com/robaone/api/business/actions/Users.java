@@ -15,6 +15,7 @@ import com.robaone.api.business.FieldValidator;
 import com.robaone.api.data.SessionData;
 import com.robaone.api.data.jdo.User_jdo;
 import com.robaone.api.data.jdo.User_jdoManager;
+import com.robaone.api.json.DSResponse;
 import com.robaone.api.json.JSONResponse;
 import com.robaone.dbase.hierarchial.ConfigManager;
 import com.robaone.dbase.hierarchial.ConnectionBlock;
@@ -24,12 +25,16 @@ public class Users extends BaseAction<JSONObject> implements Action {
 	public Users(OutputStream o, SessionData d, HttpServletRequest r)
 			throws ParserConfigurationException {
 		super(o, d, r);
+		this.setDSResponse(new DSResponse<JSONObject>());
 	}
 
 	@Override
 	public void list(JSONObject jo) {
 		try{
 			this.validate();
+			if(this.requireLogin()){
+				return;
+			}
 			String xml = XML.toString(jo, "request");
 			String limit = this.findXPathText(xml, "//limit");
 			String page = this.findXPathText(xml, "//page");
@@ -52,9 +57,9 @@ public class Users extends BaseAction<JSONObject> implements Action {
 					@Override
 					public void run() throws Exception {
 						User_jdo current_user = getSessionData().getUser();
-						if(current_user.getActive().intValue() == 1){
+						if(current_user.getActive() != null && current_user.getActive().intValue() == 1){
 							User_jdoManager man = new User_jdoManager(this.getConnection());
-							this.setPreparedStatement(man.prepareStatement("ORDER BY "+User_jdo.LAST_NAME+","+User_jdo.FIRST_NAME+" LIMIT "+((pg * lim)-lim)+","+lim));
+							this.setPreparedStatement(this.getConnection().prepareStatement("select * from user order by last_name,first_name limit "+((pg*lim)-lim)+","+lim));
 							this.setResultSet(this.getPreparedStatement().executeQuery());
 							int end = (pg*lim)-lim;
 							while(this.getResultSet().next()){

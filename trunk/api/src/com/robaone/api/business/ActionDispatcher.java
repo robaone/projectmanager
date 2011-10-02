@@ -25,7 +25,7 @@ public class ActionDispatcher {
 	public void runAction(String action,Map parameters,OutputStream out) throws Exception {
 		try{
 			AppDatabase.writeLog("Running Action, "+action);
-			String data = ((String[])parameters.get("data"))[0];
+			String data = parameters.get("data") == null ? "{}" : ((String[])parameters.get("data"))[0];
 			AppDatabase.writeLog("Data = "+data);
 			Class[] parameterTypes = new Class[]{JSONObject.class};
 			Class myClass = Class.forName("com.robaone.api.business.actions."+action.split("[.]")[0]);
@@ -53,7 +53,7 @@ public class ActionDispatcher {
 			JSONObject data = new JSONObject(parameterMap);
 			AppDatabase.writeLog("Data = "+data.toString());
 			Class[] parameterTypes = new Class[]{JSONObject.class};
-			Class myClass = Class.forName("com.sohvac.business.actions."+action.split("[.]")[0]);
+			Class myClass = Class.forName("com.robaone.api.business.actions."+action.split("[.]")[0]);
 			Method meth = myClass.getMethod(action.split("[.]")[1], parameterTypes);
 			Class[] constrpartypes = new Class[]{OutputStream.class,SessionData.class,HttpServletRequest.class};
 			Constructor constr = myClass.getConstructor(constrpartypes);
