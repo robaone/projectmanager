@@ -52,13 +52,13 @@
   </session-config>
   <servlet-mapping>
     <servlet-name>DataServlet</servlet-name>
-    <url-pattern>/DataServlet</url-pattern>
+    <url-pattern>/function_call</url-pattern>
   </servlet-mapping>
   <servlet>
     <description></description>
     <display-name>AuthenticationServlet</display-name>
     <servlet-name>AuthenticationServlet</servlet-name>
-    <servlet-class>com.roboane.servlet.AuthenticationServlet</servlet-class>
+    <servlet-class>com.robaone.api.servlet.AuthenticationServlet</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>AuthenticationServlet</servlet-name>
@@ -68,7 +68,7 @@
     <description></description>
     <display-name>DataServiceServlet</display-name>
     <servlet-name>DataServiceServlet</servlet-name>
-    <servlet-class>com.robaone.servlet.DataServiceServlet</servlet-class>
+    <servlet-class>com.robaone.api.servlet.DataServiceServlet</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>DataServiceServlet</servlet-name>
