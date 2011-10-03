@@ -35,70 +35,69 @@ public class Users extends BaseAction<JSONObject> implements Action {
 	public void list(JSONObject jo) {
 		try{
 			this.validate();
-			if(this.requireLogin()){
-				return;
-			}
-			String xml = XML.toString(jo, "request");
-			String limit = this.findXPathText(xml, "//limit");
-			String page = this.findXPathText(xml, "//page");
-			if(!FieldValidator.isNumber(limit) || Integer.parseInt(limit) < 1){
-				this.getResponse().setStatus(JSONResponse.FIELD_VALIDATION_ERROR);
-				this.getResponse().addError("limit", "Limit must be an integer greater than 1");
-			}
-			if(FieldValidator.exists(page) && (!FieldValidator.isNumber(page) || Integer.parseInt(page) < 1)){
-				this.getResponse().setStatus(JSONResponse.FIELD_VALIDATION_ERROR);
-				this.getResponse().addError("page", "Page must be a number greater than or equal to 1");
-			}else{
-				page = "1";
-			}
-			if(getResponse().getStatus() == JSONResponse.OK){
-				final int lim = Integer.parseInt(limit);
-				final int pg = Integer.parseInt(page);
+			if(!this.requireLogin()){
+				String xml = XML.toString(jo, "request");
+				String limit = this.findXPathText(xml, "//limit");
+				String page = this.findXPathText(xml, "//page");
+				if(!FieldValidator.isNumber(limit) || Integer.parseInt(limit) < 1){
+					this.getResponse().setStatus(JSONResponse.FIELD_VALIDATION_ERROR);
+					this.getResponse().addError("limit", "Limit must be an integer greater than 1");
+				}
+				if(FieldValidator.exists(page) && (!FieldValidator.isNumber(page) || Integer.parseInt(page) < 1)){
+					this.getResponse().setStatus(JSONResponse.FIELD_VALIDATION_ERROR);
+					this.getResponse().addError("page", "Page must be a number greater than or equal to 1");
+				}else{
+					page = FieldValidator.exists(page) ? page : "1";
+				}
+				if(getResponse().getStatus() == JSONResponse.OK){
+					final int lim = Integer.parseInt(limit);
+					final int pg = Integer.parseInt(page);
 
-				ConnectionBlock block = new ConnectionBlock(){
+					ConnectionBlock block = new ConnectionBlock(){
 
-					@Override
-					public void run() throws Exception {
-						User_jdo current_user = getSessionData().getUser();
-						if(current_user.getActive() != null && current_user.getActive().intValue() == 1){
-							User_jdoManager man = new User_jdoManager(this.getConnection());
-							this.setPreparedStatement(this.getConnection().prepareStatement("select * from user order by last_name,first_name limit "+((pg*lim)-lim)+","+lim));
-							this.setResultSet(this.getPreparedStatement().executeQuery());
-							int end = (pg*lim)-lim;
-							while(this.getResultSet().next()){
-								User_jdo user = User_jdoManager.bindUser(getResultSet());
-								JSONObject j = User_jdoManager.toJSONObject(user);
-								j.remove("password");
-								getResponse().addData(j);
-								end++;
-							}
-							getResponse().setStartRow((pg*lim)-lim);
-							getResponse().setEndRow(end);
-							ConnectionBlock block = new ConnectionBlock(){
-
-								@Override
-								public void run() throws Exception {
-									int totalRows = 0;
-									User_jdoManager man = new User_jdoManager(this.getConnection());
-									String str = "select count(*) from "+ man.getTableName();
-									this.setPreparedStatement(this.getConnection().prepareStatement(str));
-									this.setResultSet(this.getPreparedStatement().executeQuery());
-									if(this.getResultSet().next()){
-										totalRows = this.getResultSet().getInt(1);
-									}
-									getResponse().setTotalRows(totalRows);
+						@Override
+						public void run() throws Exception {
+							User_jdo current_user = getSessionData().getUser();
+							if(current_user.getActive() != null && current_user.getActive().intValue() == 1){
+								User_jdoManager man = new User_jdoManager(this.getConnection());
+								this.setPreparedStatement(this.getConnection().prepareStatement("select * from user order by last_name,first_name limit "+((pg*lim)-lim)+","+lim));
+								this.setResultSet(this.getPreparedStatement().executeQuery());
+								int end = (pg*lim)-lim;
+								while(this.getResultSet().next()){
+									User_jdo user = User_jdoManager.bindUser(getResultSet());
+									JSONObject j = User_jdoManager.toJSONObject(user);
+									j.remove("password");
+									getResponse().addData(j);
+									end++;
 								}
+								getResponse().setStartRow((pg*lim)-lim);
+								getResponse().setEndRow(end == 0 ? end : end -1);
+								ConnectionBlock block = new ConnectionBlock(){
 
-							};
-							ConfigManager.runConnectionBlock(block, this.getConnectionManager());
-						}else{
-							getResponse().setStatus(JSONResponse.GENERAL_ERROR);
-							getResponse().setError("The user is not active");
+									@Override
+									public void run() throws Exception {
+										int totalRows = 0;
+										User_jdoManager man = new User_jdoManager(this.getConnection());
+										String str = "select count(*) from "+ man.getTableName();
+										this.setPreparedStatement(this.getConnection().prepareStatement(str));
+										this.setResultSet(this.getPreparedStatement().executeQuery());
+										if(this.getResultSet().next()){
+											totalRows = this.getResultSet().getInt(1);
+										}
+										getResponse().setTotalRows(totalRows);
+									}
+
+								};
+								ConfigManager.runConnectionBlock(block, this.getConnectionManager());
+							}else{
+								getResponse().setStatus(JSONResponse.GENERAL_ERROR);
+								getResponse().setError("The user is not active");
+							}
 						}
-					}
 
-				};
-				ConfigManager.runConnectionBlock(block, db.getConnectionManager());
+					};
+					ConfigManager.runConnectionBlock(block, db.getConnectionManager());
+				}
 			}
 		}catch(Exception e){
 			this.sendError(e);
@@ -164,7 +163,7 @@ public class Users extends BaseAction<JSONObject> implements Action {
 							}
 							man.save(record);
 						}
-						
+
 					};
 					ConfigManager.runConnectionBlock(block, db.getConnectionManager());
 				}
@@ -200,7 +199,7 @@ public class Users extends BaseAction<JSONObject> implements Action {
 								getResponse().setError("User does not exist");
 							}
 						}
-						
+
 					};
 					ConfigManager.runConnectionBlock(block, db.getConnectionManager());
 				}
@@ -238,9 +237,9 @@ public class Users extends BaseAction<JSONObject> implements Action {
 							record.setPassword(password);
 						}
 						man.save(record);
-						getResponse().getProperties().setProperty("statu", "Record created");
+						getResponse().getProperties().setProperty("status", "Record created");
 					}
-					
+
 				};
 				ConfigManager.runConnectionBlock(block, db.getConnectionManager());
 			}

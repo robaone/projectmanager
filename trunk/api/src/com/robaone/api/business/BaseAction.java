@@ -84,20 +84,6 @@ public class BaseAction<T> {
 		}
 	}
 	public void resetSession() throws Exception{
-		if(this.getSessionData() != null && this.getSessionData().getCredentials() != null){
-			ConnectionBlock block = new ConnectionBlock(){
-
-				@Override
-				public void run() throws Exception {
-					App_credentials_jdoManager man = new App_credentials_jdoManager(this.getConnection());
-					getSessionData().getCredentials().setActive(0);
-					man.save(getSessionData().getCredentials());
-					db.writeLog("Deactivated credentials for id = "+getSessionData().getCredentials().getIdapp_credentials());
-				}
-				
-			};
-			ConfigManager.runConnectionBlock(block, db.getConnectionManager());
-		}
 		SessionData d = new SessionData();
 		this.request.getSession().setAttribute("sessiondata", d);
 		this.session = d;
