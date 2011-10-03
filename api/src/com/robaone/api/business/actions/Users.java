@@ -13,6 +13,7 @@ import org.json.XML;
 import com.robaone.api.business.Action;
 import com.robaone.api.business.BaseAction;
 import com.robaone.api.business.FieldValidator;
+import com.robaone.api.business.StringEncrypter;
 import com.robaone.api.data.AppDatabase;
 import com.robaone.api.data.SessionData;
 import com.robaone.api.data.jdo.User_jdo;
@@ -128,9 +129,46 @@ public class Users extends BaseAction<JSONObject> implements Action {
 	}
 
 	@Override
-	public void put(JSONObject jo) {
+	public void put(final JSONObject jo) {
 		try{
 			this.validate();
+			if(!this.requireLogin()){
+				String xml = XML.toString(jo,"request");
+				final String iduser = this.findXPathText(xml, "//iduser");
+				if(!FieldValidator.exists(iduser) || !FieldValidator.isNumber(iduser)){
+					getResponse().setStatus(JSONResponse.FIELD_VALIDATION_ERROR);
+					getResponse().addError("iduser", "You must enter a valid id number");
+				}
+				if(this.getResponse().getStatus() == JSONResponse.OK){
+					ConnectionBlock block = new ConnectionBlock(){
+
+						@Override
+						public void run() throws Exception {
+							User_jdoManager man = new User_jdoManager(this.getConnection());
+							User_jdo record = man.getUser(new Integer(iduser));
+							jo.remove("modification_host");
+							jo.remove("modified_by");
+							jo.remove("modified_date");
+							String password = null;
+							try{
+								password = jo.getString("password");
+								jo.remove("password");
+							}catch(Exception e){}
+							User_jdoManager.bindUserJSON(record, jo);
+							record.setModified_by(getSessionData().getUser().getUsername());
+							record.setModification_host(getSessionData().getRemoteHost());
+							record.setModified_date(AppDatabase.getTimestamp());
+							if(password != null){
+								password = StringEncrypter.encryptString(password);
+								record.setPassword(password);
+							}
+							man.save(record);
+						}
+						
+					};
+					ConfigManager.runConnectionBlock(block, db.getConnectionManager());
+				}
+			}
 		}catch(Exception e){
 			this.sendError(e);
 		}
