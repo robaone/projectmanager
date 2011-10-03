@@ -168,4 +168,8 @@ public class BaseAction<T> {
 		this.getResponse().setStatus(JSONResponse.GENERAL_ERROR);
 		this.getResponse().setError(e.getClass().getName()+": "+e.getMessage());
 	}
+	protected boolean requireLogin() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }
