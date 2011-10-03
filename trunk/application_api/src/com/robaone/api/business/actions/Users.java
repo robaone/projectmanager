@@ -14,6 +14,7 @@ import com.robaone.api.data.AppDatabase;
 import com.robaone.api.data.SessionData;
 import com.robaone.api.data.jdo.User_jdo;
 import com.robaone.api.data.jdo.User_jdoManager;
+import com.robaone.api.json.DSResponse;
 import com.robaone.api.json.JSONResponse;
 import com.robaone.dbase.hierarchial.ConfigManager;
 import com.robaone.dbase.hierarchial.ConnectionBlock;
@@ -23,6 +24,7 @@ public class Users extends BaseAction<User_jdo> {
 	public Users(OutputStream o, SessionData d, HttpServletRequest r)
 			throws ParserConfigurationException {
 		super(o, d, r);
+		this.setDSResponse(new DSResponse<User_jdo>());
 	}
 	public void delete(final JSONObject jo) throws Exception{
 		try{
