@@ -38,8 +38,7 @@ public class Login extends BaseAction<User_jdo> {
 	}
 	public void logout(final JSONObject data) throws Exception {
 		try{
-			this.validate();
-			this.deAuthorize();
+			try{this.deAuthorize();}catch(Exception e){}
 			this.resetSession();
 			this.getResponse().getProperties().setProperty("status", "You are logged out");
 		}catch(Exception e){
@@ -73,13 +72,9 @@ public class Login extends BaseAction<User_jdo> {
 			this.getResponse().addError("username", "You must enter a valid email address");
 		}
 		final String password = this.findXPathText(xml, "//password/text()");
-		final String password_repeat = this.findXPathText(xml, "//password_repeat/text()");
 		if(!FieldValidator.validPassword(password)){
 			getResponse().setStatus(JSONResponse.FIELD_VALIDATION_ERROR);
 			getResponse().addError("password", FieldValidator.getPasswordRequirement());
-		}else if(!password.equals(password_repeat)){
-			getResponse().setStatus(JSONResponse.FIELD_VALIDATION_ERROR);
-			getResponse().addError("password_repeat", "Your passwords do not match");
 		}
 		ConnectionBlock block = new ConnectionBlock(){
 
@@ -172,9 +167,8 @@ public class Login extends BaseAction<User_jdo> {
 			String xml = XML.toString(data,"form");
 			final String token = this.findXPathText(xml, "//token/text()");
 			final String password = this.findXPathText(xml, "//password/text()");
-			final String password_repeat = this.findXPathText(xml, "//password_repeat/text()");
 			final String username = this.findXPathText(xml, "//username");
-			String emailaddr = this.findXPathText(xml, "//emailaddress/text()");
+			String emailaddr = username;
 			final String emailaddress = emailaddr == null ? username : emailaddr;
 			if(!FieldValidator.isEmail(emailaddress)){
 				getResponse().setStatus(JSONResponse.FIELD_VALIDATION_ERROR);
@@ -187,13 +181,13 @@ public class Login extends BaseAction<User_jdo> {
 			if(!FieldValidator.validPassword(password)){
 				getResponse().setStatus(JSONResponse.FIELD_VALIDATION_ERROR);
 				getResponse().addError("password", FieldValidator.getPasswordRequirement());
-			}else if(!password.equals(password_repeat)){
-				getResponse().setStatus(JSONResponse.FIELD_VALIDATION_ERROR);
-				getResponse().addError("password_repeat", "Your passwords do not match");
 			}
 			ConnectionBlock block = new ActivationBlock(this,token,password,emailaddress);
 			if(getResponse().getStatus() == JSONResponse.OK){
 				ConfigManager.runConnectionBlock(block, db.getConnectionManager());
+				if(getResponse().getStatus() == JSONResponse.OK){
+					getResponse().getProperties().setProperty("status", "Account activated");
+				}
 			}
 		}catch(Exception e){
 			getResponse().setStatus(JSONResponse.GENERAL_ERROR);
@@ -205,10 +199,10 @@ public class Login extends BaseAction<User_jdo> {
 		 * Request a password reset
 		 */
 		String xml = XML.toString(data,"form");
-		final String emailaddr = this.findXPathText(xml, "//emailaddress/text()");
+		final String emailaddr = this.findXPathText(xml, "//username/text()");
 		if(!FieldValidator.isEmail(emailaddr)){
 			this.getResponse().setStatus(JSONResponse.FIELD_VALIDATION_ERROR);
-			this.getResponse().addError("emailaddress", "You must enter a valid email address");
+			this.getResponse().addError("username", "You must enter a valid username");
 		}
 
 		ConnectionBlock block = new ConnectionBlock(){
@@ -243,6 +237,7 @@ public class Login extends BaseAction<User_jdo> {
 							reset_credentials.setCreation_date(new java.sql.Timestamp(new java.util.Date().getTime()));
 							reset_credentials.setIduser(user.getIduser());
 							man.save(reset_credentials);
+							getResponse().getProperties().setProperty("token", token);
 							/*
 							 * Create the e-mail that will be sent.
 							 */
@@ -350,6 +345,7 @@ public class Login extends BaseAction<User_jdo> {
 					new_cred.setAuthdata(token);
 					new_cred.setIduser(new_user.getIduser());
 					cman.save(new_cred);
+					getResponse().getProperties().setProperty("token", token);
 
 					/*
 					 * Create the e-mail
@@ -485,7 +481,7 @@ public class Login extends BaseAction<User_jdo> {
 		try{
 			String xml = XML.toString(data, "data");
 			final String token = this.findXPathText(xml,"//token/text()");
-			final String emailaddres = this.findXPathText(xml, "//emailaddress/text()");
+			final String emailaddres = this.findXPathText(xml, "//username/text()");
 			final String password = this.findXPathText(xml, "//password/text()");
 			final String password_repeat = this.findXPathText(xml,"//password_repeat/text()");
 			if(!FieldValidator.exists(token)){
@@ -494,7 +490,7 @@ public class Login extends BaseAction<User_jdo> {
 			}
 			if(!FieldValidator.isEmail(emailaddres)){
 				getResponse().setStatus(JSONResponse.FIELD_VALIDATION_ERROR);
-				getResponse().addError("emailaddress", "You must enter a valid e-mail address");
+				getResponse().addError("username", "You must enter a valid e-mail address");
 			}
 			if(!FieldValidator.exists(password)){
 				getResponse().setStatus(JSONResponse.FIELD_VALIDATION_ERROR);
