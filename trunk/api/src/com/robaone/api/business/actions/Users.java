@@ -110,7 +110,7 @@ public class Users extends BaseAction<JSONObject> implements Action {
 		try{
 			this.validate();
 			if(!this.requireLogin()){
-				String xml = XML.toString(jo);
+				String xml = XML.toString(jo,"request");
 				String iduser = this.findXPathText(xml, "//iduser");
 				if(!FieldValidator.exists(iduser) || !FieldValidator.isNumber(iduser)){
 					getResponse().setStatus(JSONResponse.FIELD_VALIDATION_ERROR);
