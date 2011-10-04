@@ -38,6 +38,9 @@ public class Users extends BaseAction<JSONObject> implements Action {
 			if(!this.requireLogin()){
 				String xml = XML.toString(jo, "request");
 				String limit = this.findXPathText(xml, "//limit");
+				if(limit == null || limit.length() == 0){
+					limit = "10";
+				}
 				String page = this.findXPathText(xml, "//page");
 				if(!FieldValidator.isNumber(limit) || Integer.parseInt(limit) < 1){
 					this.getResponse().setStatus(JSONResponse.FIELD_VALIDATION_ERROR);
