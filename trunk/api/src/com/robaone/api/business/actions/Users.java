@@ -2,6 +2,7 @@ package com.robaone.api.business.actions;
 
 import java.io.OutputStream;
 import java.math.BigDecimal;
+import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -16,6 +17,9 @@ import com.robaone.api.business.FieldValidator;
 import com.robaone.api.business.StringEncrypter;
 import com.robaone.api.data.AppDatabase;
 import com.robaone.api.data.SessionData;
+import com.robaone.api.data.blocks.UserRolesBlock;
+import com.robaone.api.data.jdo.Roles_jdo;
+import com.robaone.api.data.jdo.Roles_jdoManager;
 import com.robaone.api.data.jdo.User_jdo;
 import com.robaone.api.data.jdo.User_jdoManager;
 import com.robaone.api.json.DSResponse;
@@ -23,6 +27,12 @@ import com.robaone.api.json.JSONResponse;
 import com.robaone.dbase.hierarchial.ConfigManager;
 import com.robaone.dbase.hierarchial.ConnectionBlock;
 
+/**
+ * 
+ * Roles are: 0 root, 1 administrator, 2 customer service, 3 service provider, 4 user
+ * @author Ansel
+ *
+ */
 public class Users extends BaseAction<JSONObject> implements Action {
 
 	public Users(OutputStream o, SessionData d, HttpServletRequest r)
@@ -250,5 +260,41 @@ public class Users extends BaseAction<JSONObject> implements Action {
 			this.sendError(e);
 		}
 	}
-
+	public void addRole(final JSONObject jo){
+		try{
+			
+		}catch(Exception e){
+			this.sendError(e);
+		}
+	}
+	public void getRoles(final JSONObject jo){
+		try{
+			this.validate();
+			if(!this.requireLogin()){
+				String xml = XML.toString(jo, "request");
+				final String iduser = this.findXPathText(xml, "//iduser");
+				if(!FieldValidator.exists(iduser) || !FieldValidator.isNumber(iduser)){
+					getResponse().setStatus(JSONResponse.FIELD_VALIDATION_ERROR);
+					getResponse().addError("iduser", "You must enter a valid iduser");
+				}else{
+					Vector<Roles_jdo> roles = new Vector<Roles_jdo>();
+					ConfigManager.runConnectionBlock(new UserRolesBlock(roles,new Integer(iduser)), db.getConnectionManager());
+					for(int i = 0; i < roles.size();i++){
+						getResponse().addData(Roles_jdoManager.toJSONObject(roles.get(i)));
+					}
+				}
+			}
+		}catch(Exception e){
+			this.sendError(e);
+		}
+	}
+	protected boolean hasRole(Integer iduser,int role) throws Exception {
+		Roles_jdo[] roles = AppDatabase.getUserRoles(iduser);
+		for(int i = 0; i < roles.length;i++){
+			if(roles[i].getRole().intValue() == role){
+				return true;
+			}
+		}
+		return false;
+	}
 }
