@@ -13,7 +13,9 @@ import java.util.Vector;
 import com.robaone.api.business.ROTransformer;
 import com.robaone.api.business.StringEncrypter;
 import com.robaone.api.data.blocks.FindCredentialsBlock;
+import com.robaone.api.data.blocks.UserRolesBlock;
 import com.robaone.api.data.jdo.Credentials_jdo;
+import com.robaone.api.data.jdo.Roles_jdo;
 import com.robaone.api.data.jdo.User_jdo;
 import com.robaone.api.data.jdo.User_jdoManager;
 import com.robaone.dbase.hierarchial.ConfigManager;
@@ -21,6 +23,11 @@ import com.robaone.dbase.hierarchial.ConnectionBlock;
 import com.robaone.util.INIFileReader;
 
 public class AppDatabase {
+	public static final int ROLE_ROOT = 0;
+	public static final int ROLE_ADMINISTRATOR = 1;
+	public static final int ROLE_CUSTOMERSERVICE = 2;
+	public static final int ROLE_SERVICEPROVIDER = 3;
+	public static final int ROLE_USER = 4;
 	private static final String PAGE_NOT_FOUND_ERROR = "<h1>Page Not Found</h1>";
 	private static INIFileReader inifile;
 	public static String getProperty(String prop){
@@ -95,6 +102,9 @@ public class AppDatabase {
 		ConfigManager.runConnectionBlock(block, new DatabaseImpl().getConnectionManager());
 		return retval.size() > 0 ? retval.get(0) : null;
 	}
+	public static void addUserRole(final Integer iduser, int role) throws Exception {
+		
+	}
 	public static User_jdo getUser(final Integer iduser) throws Exception {
 		final Vector<User_jdo> retval = new Vector<User_jdo>();
 		ConnectionBlock block = new ConnectionBlock(){
@@ -109,5 +119,11 @@ public class AppDatabase {
 		};
 		ConfigManager.runConnectionBlock(block, new DatabaseImpl().getConnectionManager());
 		return retval.size() > 0 ? retval.get(0) : null;
+	}
+	public static Roles_jdo[] getUserRoles(Integer iduser) throws Exception {
+		Vector<Roles_jdo> retval = new Vector<Roles_jdo>();
+		UserRolesBlock block = new UserRolesBlock(retval,iduser);
+		ConfigManager.runConnectionBlock(block, new DatabaseImpl().getConnectionManager());
+		return retval.toArray(new Roles_jdo[0]);
 	}
 }

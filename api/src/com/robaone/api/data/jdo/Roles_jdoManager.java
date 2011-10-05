@@ -15,20 +15,20 @@ import org.json.*;
 import java.util.HashMap;
 import java.util.Iterator;
 
-public class Credentials_jdoManager {
+public class Roles_jdoManager {
   private Connection m_con;
-  private final static String SELECT = "select ~ from #TABLE# where idcredentials = ?";
+  private final static String SELECT = "select ~ from #TABLE# where idroles = ?";
   private final static String INSERT = "insert into #TABLE# ";
   private final static String QUERY = "select ~ from #TABLE# where ";
   private final static String UPDATE = "update #TABLE# set ";
-  private final static String SEARCH = "select COUNT(#TABLE#.IDCREDENTIALS) from #TABLE# where #TABLE#.IDCREDENTIALS = ?";
-  private final static String DELETE = "delete from #TABLE# where #TABLE#.IDCREDENTIALS = ?";
-  private final static String IDENTITY = "IDCREDENTIALS";
+  private final static String SEARCH = "select COUNT(#TABLE#.IDROLES) from #TABLE# where #TABLE#.IDROLES = ?";
+  private final static String DELETE = "delete from #TABLE# where #TABLE#.IDROLES = ?";
+  private final static String IDENTITY = "IDROLES";
   private final static RO_JDO_IdentityManager NEXT_SQL = new RO_JDO_MySQL();
-  public final static String FIELDS = "#TABLE#.IDCREDENTIALS,#TABLE#.IDUSER,#TABLE#.AUTHENTICATOR,#TABLE#.AUTHDATA,#TABLE#.CREATED_BY,#TABLE#.MODIFIED_BY,#TABLE#.CREATION_DATE,#TABLE#.MODIFICATION_DATE,#TABLE#.CREATION_HOST,#TABLE#.MODIFICATION_HOST";
-  private String TABLE = "CREDENTIALS";
+  public final static String FIELDS = "#TABLE#.IDROLES,#TABLE#.IDUSER,#TABLE#.ROLE";
+  private String TABLE = "ROLES";
   protected boolean debug = false;
-  public Credentials_jdoManager(Connection con){
+  public Roles_jdoManager(Connection con){
     this.m_con = con;
     try{
     	if(System.getProperty("debug").equals("Y")){
@@ -45,23 +45,23 @@ public class Credentials_jdoManager {
   public void setTableName(String tablename){
     TABLE = tablename;
   }
-  public static Credentials_jdo bindCredentials(ResultSet rs) throws SQLException{
-Credentials_jdo retval = null;
-    retval = Credentials_jdoManager.createObject(rs);
+  public static Roles_jdo bindRoles(ResultSet rs) throws SQLException{
+Roles_jdo retval = null;
+    retval = Roles_jdoManager.createObject(rs);
     return retval;
   }
 
-  public Credentials_jdo getCredentials(Integer idcredentials){
+  public Roles_jdo getRoles(Integer idroles){
     PreparedStatement ps = null;
     ResultSet rs = null;
-    Credentials_jdo retval = null;
+    Roles_jdo retval = null;
     try{
       String sql = this.getSQL(SELECT.split("[~]")[0]+FIELDS+SELECT.split("[~]")[1]);
       ps = this.getConnection().prepareStatement(sql);
-      ps.setObject(1,idcredentials);
+      ps.setObject(1,idroles);
       rs = ps.executeQuery();
       if(rs.next()){
-        retval = Credentials_jdoManager.createObject(rs);
+        retval = Roles_jdoManager.createObject(rs);
       }
     }catch(Exception e){
 
@@ -76,9 +76,9 @@ Credentials_jdo retval = null;
 * @return
 * @throws SQLException
 */
-  private static Credentials_jdo createObject(ResultSet rs) throws SQLException {
-    Credentials_jdo retval = null;
-    retval = new Credentials_jdo();
+  private static Roles_jdo createObject(ResultSet rs) throws SQLException {
+    Roles_jdo retval = null;
+    retval = new Roles_jdo();
     /*
      *
      * Insert values from Result Set into object
@@ -98,7 +98,7 @@ Credentials_jdo retval = null;
 
     return retval;
   }
-  public void save(Credentials_jdo record) throws Exception {
+  public void save(Roles_jdo record) throws Exception {
     Connection con = this.getConnection();
     con.setAutoCommit(false);
     boolean finished = false;
@@ -205,7 +205,7 @@ Credentials_jdo retval = null;
           field_index ++;
         }
         int updated = insert_ps.executeUpdate();
-        record.setIdcredentials(NEXT_SQL.getIdentity(this.m_con));
+        record.setIdroles(NEXT_SQL.getIdentity(this.m_con));
         con.commit();
         finished = true;
         if(updated == 0){
@@ -226,10 +226,10 @@ Credentials_jdo retval = null;
 			  con.setAutoCommit(true);
   }
 }
-	protected void handleAfterInsert(Credentials_jdo record) {}
-	protected void handleAfterUpdate(Credentials_jdo record) {}
-	protected void handleBeforeUpdate(Credentials_jdo record) {}
-  private void setAllClean(Credentials_jdo record){
+	protected void handleAfterInsert(Roles_jdo record) {}
+	protected void handleAfterUpdate(Roles_jdo record) {}
+	protected void handleBeforeUpdate(Roles_jdo record) {}
+  private void setAllClean(Roles_jdo record){
     try{
       for(int i = 0; i < record.getFieldCount();i++){
          String fieldname = record.getField(i);
@@ -239,7 +239,7 @@ Credentials_jdo retval = null;
       }
     }catch(Exception e){}
   }
-  public void delete(Credentials_jdo record) throws Exception {
+  public void delete(Roles_jdo record) throws Exception {
     Connection con = this.getConnection();
     String sql_delete = this.getSQL(DELETE);
     PreparedStatement ps = con.prepareStatement(sql_delete);
@@ -253,9 +253,9 @@ Credentials_jdo retval = null;
     PreparedStatement ps = this.getConnection().prepareStatement(sql);
     return ps;
   }
-public Credentials_jdo newCredentials() {
-Credentials_jdo retval = new Credentials_jdo();
- retval.setIdcredentials(null);
+public Roles_jdo newRoles() {
+Roles_jdo retval = new Roles_jdo();
+ retval.setIdroles(null);
  return retval;
 }
   public String getSQL(String sql){
@@ -263,7 +263,7 @@ Credentials_jdo retval = new Credentials_jdo();
     retval = sql.replaceAll("#TABLE#",TABLE);
     return retval;
   }
-  public static JSONObject toJSONObject(Credentials_jdo record) throws Exception {
+  public static JSONObject toJSONObject(Roles_jdo record) throws Exception {
     JSONObject retval = null;
     if(record != null){
       JSONObject object = new JSONObject();
@@ -276,11 +276,11 @@ Credentials_jdo retval = new Credentials_jdo();
     }
     return retval;
   }
-  public static void bindCredentialsJSON(Credentials_jdo record,String jsondata) throws Exception {
+  public static void bindRolesJSON(Roles_jdo record,String jsondata) throws Exception {
     JSONObject jo = new JSONObject(jsondata);
-    Credentials_jdoManager.bindCredentialsJSON(record,jo);
+    Roles_jdoManager.bindRolesJSON(record,jo);
   }
-  public static void bindCredentialsJSON(Credentials_jdo record, JSONObject jo) throws Exception {
+  public static void bindRolesJSON(Roles_jdo record, JSONObject jo) throws Exception {
     Iterator keys = jo.keys();
     HashMap keymap = new HashMap();
     while(keys.hasNext()){
@@ -290,116 +290,41 @@ Credentials_jdo retval = new Credentials_jdo();
     }
     if(record != null && jo != null){
       try{
-        if(jo.isNull((String)keymap.get(Credentials_jdo.IDCREDENTIALS))){
-          if(keymap.get(Credentials_jdo.IDCREDENTIALS) != null)
-            record.setIdcredentials(null);
+        if(jo.isNull((String)keymap.get(Roles_jdo.IDROLES))){
+          if(keymap.get(Roles_jdo.IDROLES) != null)
+            record.setIdroles(null);
         }else{
-             record.setIdcredentials(new Integer(jo.getInt((String)keymap.get(Credentials_jdo.IDCREDENTIALS))));
+             record.setIdroles(new Integer(jo.getInt((String)keymap.get(Roles_jdo.IDROLES))));
         }
       }catch(org.json.JSONException e){
       }
       try{
-        if(jo.isNull((String)keymap.get(Credentials_jdo.IDUSER))){
-          if(keymap.get(Credentials_jdo.IDUSER) != null)
+        if(jo.isNull((String)keymap.get(Roles_jdo.IDUSER))){
+          if(keymap.get(Roles_jdo.IDUSER) != null)
             record.setIduser(null);
         }else{
-             record.setIduser(new Integer(jo.getInt((String)keymap.get(Credentials_jdo.IDUSER))));
+             record.setIduser(new Integer(jo.getInt((String)keymap.get(Roles_jdo.IDUSER))));
         }
       }catch(org.json.JSONException e){
       }
       try{
-        if(jo.isNull((String)keymap.get(Credentials_jdo.AUTHENTICATOR))){
-          if(keymap.get(Credentials_jdo.AUTHENTICATOR) != null)
-            record.setAuthenticator(null);
+        if(jo.isNull((String)keymap.get(Roles_jdo.ROLE))){
+          if(keymap.get(Roles_jdo.ROLE) != null)
+            record.setRole(null);
         }else{
-             record.setAuthenticator(new String(jo.getString((String)keymap.get(Credentials_jdo.AUTHENTICATOR))));
-        }
-      }catch(org.json.JSONException e){
-      }
-      try{
-        if(jo.isNull((String)keymap.get(Credentials_jdo.AUTHDATA))){
-          if(keymap.get(Credentials_jdo.AUTHDATA) != null)
-            record.setAuthdata(null);
-        }else{
-             record.setAuthdata(new String(jo.getString((String)keymap.get(Credentials_jdo.AUTHDATA))));
-        }
-      }catch(org.json.JSONException e){
-      }
-      try{
-        if(jo.isNull((String)keymap.get(Credentials_jdo.CREATED_BY))){
-          if(keymap.get(Credentials_jdo.CREATED_BY) != null)
-            record.setCreated_by(null);
-        }else{
-             record.setCreated_by(new String(jo.getString((String)keymap.get(Credentials_jdo.CREATED_BY))));
-        }
-      }catch(org.json.JSONException e){
-      }
-      try{
-        if(jo.isNull((String)keymap.get(Credentials_jdo.MODIFIED_BY))){
-          if(keymap.get(Credentials_jdo.MODIFIED_BY) != null)
-            record.setModified_by(null);
-        }else{
-             record.setModified_by(new String(jo.getString((String)keymap.get(Credentials_jdo.MODIFIED_BY))));
-        }
-      }catch(org.json.JSONException e){
-      }
-      try{
-        if(jo.isNull((String)keymap.get(Credentials_jdo.CREATION_DATE))){
-          if(keymap.get(Credentials_jdo.CREATION_DATE) != null)
-            record.setCreation_date(null);
-        }else{
-          try{
-             record.setCreation_date(new java.sql.Timestamp(jo.getLong((String)keymap.get(Credentials_jdo.CREATION_DATE))));
-          }catch(JSONException e){
-            java.text.SimpleDateFormat df = new java.text.SimpleDateFormat("yyyy-MM-dd kk:mm:ss.S");
-            long time = df.parse(jo.getString((String)keymap.get(Credentials_jdo.CREATION_DATE))).getTime();
-            record.setCreation_date(new java.sql.Timestamp(time));
-          }
-        }
-      }catch(org.json.JSONException e){
-      }
-      try{
-        if(jo.isNull((String)keymap.get(Credentials_jdo.MODIFICATION_DATE))){
-          if(keymap.get(Credentials_jdo.MODIFICATION_DATE) != null)
-            record.setModification_date(null);
-        }else{
-          try{
-             record.setModification_date(new java.sql.Timestamp(jo.getLong((String)keymap.get(Credentials_jdo.MODIFICATION_DATE))));
-          }catch(JSONException e){
-            java.text.SimpleDateFormat df = new java.text.SimpleDateFormat("yyyy-MM-dd kk:mm:ss.S");
-            long time = df.parse(jo.getString((String)keymap.get(Credentials_jdo.MODIFICATION_DATE))).getTime();
-            record.setModification_date(new java.sql.Timestamp(time));
-          }
-        }
-      }catch(org.json.JSONException e){
-      }
-      try{
-        if(jo.isNull((String)keymap.get(Credentials_jdo.CREATION_HOST))){
-          if(keymap.get(Credentials_jdo.CREATION_HOST) != null)
-            record.setCreation_host(null);
-        }else{
-             record.setCreation_host(new String(jo.getString((String)keymap.get(Credentials_jdo.CREATION_HOST))));
-        }
-      }catch(org.json.JSONException e){
-      }
-      try{
-        if(jo.isNull((String)keymap.get(Credentials_jdo.MODIFICATION_HOST))){
-          if(keymap.get(Credentials_jdo.MODIFICATION_HOST) != null)
-            record.setModification_host(null);
-        }else{
-             record.setModification_host(new String(jo.getString((String)keymap.get(Credentials_jdo.MODIFICATION_HOST))));
+             record.setRole(new Integer(jo.getInt((String)keymap.get(Roles_jdo.ROLE))));
         }
       }catch(org.json.JSONException e){
       }
     }
   }
-	public Credentials_jdo bindCredentialsJSON(String jsondata) throws Exception {
-		Credentials_jdo retval = null;
+	public Roles_jdo bindRolesJSON(String jsondata) throws Exception {
+		Roles_jdo retval = null;
 		JSONObject jo = new JSONObject(jsondata);
-		retval = this.bindCredentialsJSON(jo);
+		retval = this.bindRolesJSON(jo);
 		return retval;
 	}
-	private Credentials_jdo bindCredentialsJSON(JSONObject jo) throws Exception{
+	private Roles_jdo bindRolesJSON(JSONObject jo) throws Exception{
 		Iterator keys = jo.keys();
 		HashMap keymap = new HashMap();
 		while(keys.hasNext()){
@@ -407,15 +332,15 @@ Credentials_jdo retval = new Credentials_jdo();
 			String lc_key = key.toUpperCase();
 			keymap.put(lc_key, key);
 		}
-		Credentials_jdo record = null;
+		Roles_jdo record = null;
 		try{
 			if(!jo.isNull((String)keymap.get(IDENTITY))){
-			record = this.getCredentials(new Integer(jo.getInt((String)keymap.get(IDENTITY))));
+			record = this.getRoles(new Integer(jo.getInt((String)keymap.get(IDENTITY))));
 			}
 		}catch(JSONException e){}
 		if(record == null){
-			record = this.newCredentials();
+			record = this.newRoles();
 		}
-		Credentials_jdoManager.bindCredentialsJSON(record, jo);
+		Roles_jdoManager.bindRolesJSON(record, jo);
 		return record;
 	}}
