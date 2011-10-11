@@ -16,6 +16,7 @@ import com.robaone.api.data.blocks.FindCredentialsBlock;
 import com.robaone.api.data.blocks.UserRolesBlock;
 import com.robaone.api.data.jdo.Credentials_jdo;
 import com.robaone.api.data.jdo.Roles_jdo;
+import com.robaone.api.data.jdo.Roles_jdoManager;
 import com.robaone.api.data.jdo.User_jdo;
 import com.robaone.api.data.jdo.User_jdoManager;
 import com.robaone.dbase.hierarchial.ConfigManager;
@@ -102,8 +103,39 @@ public class AppDatabase {
 		ConfigManager.runConnectionBlock(block, new DatabaseImpl().getConnectionManager());
 		return retval.size() > 0 ? retval.get(0) : null;
 	}
-	public static void addUserRole(final Integer iduser, int role) throws Exception {
-		
+	public static void addUserRole(final Integer iduser,final int role) throws Exception {
+		ConnectionBlock block = new ConnectionBlock(){
+
+			@Override
+			public void run() throws Exception {
+				Roles_jdoManager man = new Roles_jdoManager(this.getConnection());
+				Roles_jdo role_record = man.newRoles();
+				role_record.setIduser(iduser);
+				role_record.setRole(role);
+				man.save(role_record);
+			}
+			
+		};
+		ConfigManager.runConnectionBlock(block, new DatabaseImpl().getConnectionManager());
+	}
+	public static void removeUserRole(final Integer iduser,final int role) throws Exception {
+		ConnectionBlock block = new ConnectionBlock(){
+
+			@Override
+			public void run() throws Exception {
+				Roles_jdoManager man = new Roles_jdoManager(this.getConnection());
+				this.setPreparedStatement(man.prepareStatement(Roles_jdo.ROLE + " = ? and "+Roles_jdo.IDUSER + " = ?"));
+				this.getPreparedStatement().setInt(1, role);
+				this.getPreparedStatement().setInt(2, iduser.intValue());
+				this.setResultSet(this.getPreparedStatement().executeQuery());
+				if(this.getResultSet().next()){
+					Roles_jdo record = Roles_jdoManager.bindRoles(this.getResultSet());
+					man.delete(record);
+				}
+			}
+			
+		};
+		ConfigManager.runConnectionBlock(block , new DatabaseImpl().getConnectionManager());
 	}
 	public static User_jdo getUser(final Integer iduser) throws Exception {
 		final Vector<User_jdo> retval = new Vector<User_jdo>();
@@ -125,5 +157,31 @@ public class AppDatabase {
 		UserRolesBlock block = new UserRolesBlock(retval,iduser);
 		ConfigManager.runConnectionBlock(block, new DatabaseImpl().getConnectionManager());
 		return retval.toArray(new Roles_jdo[0]);
+	}
+	public static boolean hasRole(final Integer iduser,final int... roles) throws Exception {
+		final Vector<Boolean> retval = new Vector<Boolean>();
+		ConnectionBlock block = new ConnectionBlock(){
+
+			@Override
+			public void run() throws Exception {
+				String str = "select * from roles where iduser = ? and role in (";
+				for(int i = 0; i < roles.length;i++){
+					str += (i > 0 ? "," : "") + "?";
+				}
+				str += ")";
+				this.setPreparedStatement(this.getConnection().prepareStatement(str));
+				this.getPreparedStatement().setInt(1, iduser.intValue());
+				for(int i = 0; i < roles.length;i++){
+					this.getPreparedStatement().setInt(i+2, roles[i]);
+				}
+				this.setResultSet(this.getPreparedStatement().executeQuery());
+				if(this.getResultSet().next()){
+					retval.add(new Boolean(true));
+				}
+			}
+			
+		};
+		ConfigManager.runConnectionBlock(block, new DatabaseImpl().getConnectionManager());
+		return retval.size() > 0 ? retval.get(0).booleanValue() : false;
 	}
 }
