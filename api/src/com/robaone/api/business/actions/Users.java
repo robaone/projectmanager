@@ -305,6 +305,12 @@ public class Users extends BaseAction<JSONObject> implements Action {
 					getResponse().setStatus(JSONResponse.FIELD_VALIDATION_ERROR);
 					getResponse().addError("role", "You must enter a valid role");
 				}
+				if(getResponse().getStatus() == JSONResponse.OK && 
+						new Integer(role).intValue() == 0 && 
+						AppDatabase.getUser(new Integer(iduser)).getUsername().equals(AppDatabase.getProperty("root.username"))){
+					getResponse().setStatus(JSONResponse.GENERAL_ERROR);
+					getResponse().setError("You cannot remove this role from this user");
+				}
 				if(this.getResponse().getStatus() == JSONResponse.OK)
 					AppDatabase.removeUserRole(new Integer(iduser), new Integer(role).intValue());
 			}
