@@ -28,13 +28,13 @@ import com.robaone.api.json.JSONResponse;
 import com.robaone.dbase.hierarchial.ConfigManager;
 import com.robaone.dbase.hierarchial.ConnectionBlock;
 
-public class Login extends BaseAction<User_jdo> {
+public class Login extends BaseAction<JSONObject> {
 	public static final String TOKEN_FIELD = "token";
 	public static final String PASSWORD_FIELD = "password";
 	public static final String EMAILADDRESS_FIELD = "emailaddress";
 	public Login(OutputStream out,SessionData session,HttpServletRequest r) throws ParserConfigurationException{
 		super(out,session,r);
-		this.setDSResponse(new DSResponse<User_jdo>());
+		this.setDSResponse(new DSResponse<JSONObject>());
 	}
 	public void logout(final JSONObject data) throws Exception {
 		try{
@@ -52,7 +52,9 @@ public class Login extends BaseAction<User_jdo> {
 			User_jdo user = this.getSessionData().getUser();
 			if(user != null){
 				user.setPassword("");
-				this.getResponse().addData(user);
+				JSONObject jdata = User_jdoManager.toJSONObject(user);
+				jdata.remove("password");
+				this.getResponse().addData(jdata);
 			}else{
 				this.getResponse().setStatus(JSONResponse.LOGIN_REQUIRED);
 				this.getResponse().setError("Not logged in");
@@ -411,6 +413,12 @@ public class Login extends BaseAction<User_jdo> {
 					if(this.getResultSet().next()){
 						User_jdo account_record = User_jdoManager.bindUser(this.getResultSet());
 						/**
+						 * Update the roles if this is the root user
+						 */
+						if(account_record.getUsername().equalsIgnoreCase(AppDatabase.getProperty("root.username"))){
+							try{AppDatabase.addUserRole(account_record.getIduser(), 0);}catch(Exception e){}
+						}
+						/**
 						 * Check to see if the user account has been activated
 						 */
 						/*
@@ -442,6 +450,8 @@ public class Login extends BaseAction<User_jdo> {
 								/**
 								 * The user password is good.  The user should now be logged in
 								 */
+								account_record.setFailed_attempts(0);
+								man.save(account_record);
 								getSessionData().setUser(account_record);
 								getProperties().put("status","User is logged in");
 								return;
