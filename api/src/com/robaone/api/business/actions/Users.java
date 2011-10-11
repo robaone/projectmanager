@@ -45,7 +45,7 @@ public class Users extends BaseAction<JSONObject> implements Action {
 	public void list(JSONObject jo) {
 		try{
 			this.validate();
-			if(!this.requireLogin()){
+			if(!this.requireLogin() && AppDatabase.hasRole(this.getSessionData().getUser().getIduser(),0,1,2)){
 				String xml = XML.toString(jo, "request");
 				String limit = this.findXPathText(xml, "//limit");
 				if(limit == null || limit.length() == 0){
@@ -111,6 +111,8 @@ public class Users extends BaseAction<JSONObject> implements Action {
 					};
 					ConfigManager.runConnectionBlock(block, db.getConnectionManager());
 				}
+			}else{
+				getResponse().getProperties().setProperty("status","Access Denied");
 			}
 		}catch(Exception e){
 			this.sendError(e);
@@ -129,10 +131,16 @@ public class Users extends BaseAction<JSONObject> implements Action {
 					getResponse().addError("iduser", "You must enter a user id number");
 				}
 				if(this.getResponse().getStatus() == JSONResponse.OK){
-					User_jdo user = AppDatabase.getUser(new Integer(iduser));
-					JSONObject juser = User_jdoManager.toJSONObject(user);
-					juser.remove("password");
-					getResponse().addData(juser);
+					if(!AppDatabase.hasRole(getSessionData().getUser().getIduser(), 0,1,2) &&
+							new Integer(iduser).intValue() != getSessionData().getUser().getIduser().intValue()){
+						getResponse().setStatus(JSONResponse.GENERAL_ERROR);
+						getResponse().setError("Access Denied");
+					}else{
+						User_jdo user = AppDatabase.getUser(new Integer(iduser));
+						JSONObject juser = User_jdoManager.toJSONObject(user);
+						juser.remove("password");
+						getResponse().addData(juser);
+					}
 				}
 			}
 		}catch(Exception e){
@@ -262,7 +270,44 @@ public class Users extends BaseAction<JSONObject> implements Action {
 	}
 	public void addRole(final JSONObject jo){
 		try{
-			
+			this.validate();
+			if(!this.requireLogin()){
+				String xml = XML.toString(jo,"request");
+				String iduser = this.findXPathText(xml, "//iduser");
+				String role = this.findXPathText(xml, "//role");
+				if(!FieldValidator.isNumber(iduser)){
+					getResponse().setStatus(JSONResponse.FIELD_VALIDATION_ERROR);
+					getResponse().addError("iduser", "You must enter a user id number");
+				}
+				if(!FieldValidator.isNumber(role) || !(Integer.parseInt(role) >= 0 && Integer.parseInt(role) <= 4)){
+					getResponse().setStatus(JSONResponse.FIELD_VALIDATION_ERROR);
+					getResponse().addError("role", "You must enter a valid role");
+				}
+				if(this.getResponse().getStatus() == JSONResponse.OK)
+					AppDatabase.addUserRole(new Integer(iduser), new Integer(role).intValue());
+			}
+		}catch(Exception e){
+			this.sendError(e);
+		}
+	}
+	public void removeRole(final JSONObject jo){
+		try{
+			this.validate();
+			if(!this.requireLogin()){
+				String xml = XML.toString(jo,"request");
+				String iduser = this.findXPathText(xml, "//iduser");
+				String role = this.findXPathText(xml, "//role");
+				if(!FieldValidator.isNumber(iduser)){
+					getResponse().setStatus(JSONResponse.FIELD_VALIDATION_ERROR);
+					getResponse().addError("iduser", "You must enter a user id number");
+				}
+				if(!FieldValidator.isNumber(role) || !(Integer.parseInt(role) >= 0 && Integer.parseInt(role) <= 4)){
+					getResponse().setStatus(JSONResponse.FIELD_VALIDATION_ERROR);
+					getResponse().addError("role", "You must enter a valid role");
+				}
+				if(this.getResponse().getStatus() == JSONResponse.OK)
+					AppDatabase.removeUserRole(new Integer(iduser), new Integer(role).intValue());
+			}
 		}catch(Exception e){
 			this.sendError(e);
 		}
