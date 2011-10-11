@@ -26,6 +26,7 @@ public class ActionDispatcher {
 		try{
 			AppDatabase.writeLog("Running Action, "+action);
 			String data = parameters.get("data") == null ? "{}" : ((String[])parameters.get("data"))[0];
+			if(data.length() == 0) data = "{}";
 			AppDatabase.writeLog("Data = "+data);
 			Class[] parameterTypes = new Class[]{JSONObject.class};
 			Class myClass = Class.forName("com.robaone.api.business.actions."+action.split("[.]")[0]);
