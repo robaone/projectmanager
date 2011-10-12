@@ -18,21 +18,21 @@ public class Payment extends BaseAction<JSONObject> {
 	}
 	public void prepare(JSONObject jo){
 		try{
-			
+			//TODO: Implement
 		}catch(Exception e){
 			this.sendError(e);
 		}
 	}
 	public void submit(JSONObject jo){
 		try{
-			
+			//TODO: Implement
 		}catch(Exception e){
 			this.sendError(e);
 		}
 	}
 	public void status(JSONObject jo){
 		try{
-			
+			//TODO: Implement
 		}catch(Exception e){
 			this.sendError(e);
 		}
