@@ -1,11 +1,9 @@
 package com.robaone.api.business.actions;
 
 import java.io.OutputStream;
-import java.math.BigDecimal;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.json.JSONObject;
@@ -75,7 +73,6 @@ public class Users extends BaseAction<JSONObject> implements Action {
 						public void run() throws Exception {
 							User_jdo current_user = getSessionData().getUser();
 							if(current_user.getActive() != null && current_user.getActive().intValue() == 1){
-								User_jdoManager man = new User_jdoManager(this.getConnection());
 								String sql = "select * from user order by last_name,first_name";
 								if(roleFilter.length > 0){
 									sql = "select * from user,roles where user.iduser = roles.iduser and roles.role in (";

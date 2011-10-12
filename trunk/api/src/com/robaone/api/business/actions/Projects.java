@@ -18,42 +18,42 @@ public class Projects extends BaseAction<JSONObject> {
 	}
 	public void list(JSONObject jo){
 		try{
-			
+			//TODO: Implement
 		}catch(Exception e){
 			this.sendError(e);
 		}
 	}
 	public void get(JSONObject jo){
 		try{
-			
+			//TODO: Implement
 		}catch(Exception e){
 			this.sendError(e);
 		}
 	}
 	public void put(JSONObject jo){
 		try{
-			
+			//TODO: Implement
 		}catch(Exception e){
 			this.sendError(e);
 		}
 	}
 	public void create(JSONObject jo){
 		try{
-			
+			//TODO: Implement
 		}catch(Exception e){
 			this.sendError(e);
 		}
 	}
 	public void delete(JSONObject jo){
 		try{
-			
+			//TODO: Implement
 		}catch(Exception e){
 			this.sendError(e);
 		}
 	}
 	public void cancel(JSONObject jo){
 		try{
-			
+			//TODO: Implement
 		}catch(Exception e){
 			this.sendError(e);
 		}
