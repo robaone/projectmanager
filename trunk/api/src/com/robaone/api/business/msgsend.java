@@ -81,8 +81,6 @@ public class msgsend extends BaseProgram {
 		 * Initialize the JavaMail Session.
 		 */
 		Properties props = System.getProperties();
-		// XXX - could use Session.getTransport() and Transport.connect()
-		// XXX - assume we're using SMTP
 		if (mailhost != null)
 			props.put("mail.smtp.host", mailhost);
 
