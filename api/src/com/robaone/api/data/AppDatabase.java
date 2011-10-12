@@ -28,7 +28,7 @@ public class AppDatabase {
 	public static final int ROLE_ADMINISTRATOR = 1;
 	public static final int ROLE_CUSTOMERSERVICE = 2;
 	public static final int ROLE_SERVICEPROVIDER = 3;
-	public static final int ROLE_USER = 4;
+	public static final int ROLE_VENDOR = 4;
 	private static final String PAGE_NOT_FOUND_ERROR = "<h1>Page Not Found</h1>";
 	private static INIFileReader inifile;
 	public static String getProperty(String prop){

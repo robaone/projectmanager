@@ -34,13 +34,16 @@ import com.robaone.dbase.hierarchial.ConnectionBlock;
  *
  */
 public class Users extends BaseAction<JSONObject> implements Action {
-
+	int[] roleFilter = new int[0];
 	public Users(OutputStream o, SessionData d, HttpServletRequest r)
 			throws ParserConfigurationException {
 		super(o, d, r);
 		this.setDSResponse(new DSResponse<JSONObject>());
 	}
 
+	protected void filterRoles(int... roles){
+		roleFilter = roles;
+	}
 	@Override
 	public void list(JSONObject jo) {
 		try{
@@ -73,7 +76,20 @@ public class Users extends BaseAction<JSONObject> implements Action {
 							User_jdo current_user = getSessionData().getUser();
 							if(current_user.getActive() != null && current_user.getActive().intValue() == 1){
 								User_jdoManager man = new User_jdoManager(this.getConnection());
-								this.setPreparedStatement(this.getConnection().prepareStatement("select * from user order by last_name,first_name limit "+((pg*lim)-lim)+","+lim));
+								String sql = "select * from user order by last_name,first_name";
+								if(roleFilter.length > 0){
+									sql = "select * from user,roles where user.iduser = roles.iduser and roles.role in (";
+									for(int i = 0 ;i < roleFilter.length;i++){
+										sql += (i > 0 ? "," : "") +"?";
+									}
+									sql = sql.substring(0,sql.length()-1) + ") order by last_name,first_name";
+								}
+								this.setPreparedStatement(this.getConnection().prepareStatement(sql+" limit "+((pg*lim)-lim)+","+lim));
+								if(roleFilter.length > 0){
+									for(int i = 0; i < roleFilter.length;i++){
+										this.getPreparedStatement().setInt(i+1, roleFilter[i]);
+									}
+								}
 								this.setResultSet(this.getPreparedStatement().executeQuery());
 								int end = (pg*lim)-lim;
 								while(this.getResultSet().next()){
