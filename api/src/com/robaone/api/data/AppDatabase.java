@@ -10,14 +10,17 @@ import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
+import javax.security.auth.login.LoginException;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 import org.json.XML;
 
@@ -57,6 +60,21 @@ public class AppDatabase {
 		}
 		return null;
 	}
+	public static JSONObject getSession(String sessionid) throws Exception {
+		String temp_folder = getProperty("temp.folder");
+		String json_str = FileUtils.readFileToString(new File(temp_folder+System.getProperty("file.separator")+sessionid));
+		JSONObject jo = new JSONObject(json_str);
+		return jo;
+	}
+	public static void putSession(String sessionid, JSONObject jo) throws Exception {
+		String temp_folder = getProperty("temp.folder");
+		FileUtils.writeStringToFile(new File(temp_folder+System.getProperty("file.separator")+sessionid), jo.toString());
+	}
+	public static void removeSession(String sessionid) throws Exception {
+		String temp_folder = getProperty("temp.folder");
+		File f = new File(temp_folder+System.getProperty("file.separator")+sessionid);
+		f.delete();
+	}
 	public static String getPage(String page){
 		String page_folder = getProperty("page.folder");
 		String retval = null;
@@ -67,14 +85,17 @@ public class AppDatabase {
 		}
 		return retval;
 	}
-	public static String generatePage(String page,Map<String,String> parameters,JSONObject session){
+	public static String generatePage(String page,Map<String,String> parameters,JSONObject session) throws Exception{
 		String retval = null;
+		String instanceid = ""+new java.util.Date().getTime();
 		try{
+			AppDatabase.putSession(instanceid, session);
 			String xsl_folder = getProperty("xsl.folder");
 			JSONObject jo = new JSONObject();
 			jo.put("sessiondata", session);
 			jo.put("parameters", parameters);
 			jo.put("page", page);
+			jo.put("instanceid", instanceid);
 			String xml = XML.toString(jo, "data");
 			StreamSource source = new StreamSource(new StringReader(xml));
 			StreamSource stylesource = new StreamSource(xsl_folder+System.getProperty("file.separator")+page+".xsl");
@@ -85,8 +106,18 @@ public class AppDatabase {
 			StreamResult result = new StreamResult(out);
 			transformer.transform(source, result);
 			retval = out.toString();
-		}catch(Exception e){
-			retval = "<h1>Error</h1><p>"+e.getMessage()+"</p>";
+			JSONObject session_jo = AppDatabase.getSession(instanceid);
+			Boolean b = new Boolean(false);
+			try{ b = session_jo.getBoolean("request_login");}catch(Exception e){}
+			if(b){
+				throw new LoginException("login requested"); 
+			}
+		}finally{
+			try {
+				AppDatabase.removeSession(instanceid);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		return retval;
 	}
