@@ -24,6 +24,7 @@ import net.oauth.OAuthProblemException;
 import net.oauth.server.OAuthServlet;
 
 import org.json.JSONObject;
+import org.json.XML;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -50,6 +51,29 @@ public class BaseAction<T> {
 	XPathFactory xfactory;
 	XPath xpath;
 	protected DatabaseImpl db = new DatabaseImpl();
+	abstract public class FunctionCall{
+		protected BaseAction action;
+		private String xml;
+		abstract protected void run(JSONObject jo) throws Exception;
+		public String findXPathString(String xpath) throws Exception{
+			return action.findXPathText(xml, xpath);
+		}
+		public void run(BaseAction action,JSONObject jo){
+			try{
+				this.action = action;
+				action.validate();
+				if(action.requireLogin() == false){
+					String xml = XML.toString(jo, "request");
+					run(jo);
+				}else{
+					action.getResponse().setStatus(JSONResponse.LOGIN_REQUIRED);
+					action.getResponse().setError("Login Required");
+				}
+			}catch(Exception e){
+				action.sendError(e);
+			}
+		}
+	}
 	public BaseAction(OutputStream o, SessionData d, HttpServletRequest request) throws ParserConfigurationException{
 		this.out = o;
 		this.session = d;

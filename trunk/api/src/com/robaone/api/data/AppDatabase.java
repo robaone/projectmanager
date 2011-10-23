@@ -5,10 +5,21 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.Map;
 import java.util.Vector;
+
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+
+import org.json.JSONObject;
+import org.json.XML;
 
 import com.robaone.api.business.ROTransformer;
 import com.robaone.api.business.StringEncrypter;
@@ -53,6 +64,29 @@ public class AppDatabase {
 			retval = org.apache.commons.io.FileUtils.readFileToString(new File(page_folder+System.getProperty("file.separator")+page+".html"));
 		}catch(Exception e){
 			retval = AppDatabase.PAGE_NOT_FOUND_ERROR;
+		}
+		return retval;
+	}
+	public static String generatePage(String page,Map<String,String> parameters,JSONObject session){
+		String retval = null;
+		try{
+			String xsl_folder = getProperty("xsl.folder");
+			JSONObject jo = new JSONObject();
+			jo.put("sessiondata", session);
+			jo.put("parameters", parameters);
+			jo.put("page", page);
+			String xml = XML.toString(jo, "data");
+			StreamSource source = new StreamSource(new StringReader(xml));
+			StreamSource stylesource = new StreamSource(xsl_folder+System.getProperty("file.separator")+page+".xsl");
+			
+			TransformerFactory factory = TransformerFactory.newInstance();
+			Transformer transformer = factory.newTransformer(stylesource);
+			StringWriter out = new StringWriter();
+			StreamResult result = new StreamResult(out);
+			transformer.transform(source, result);
+			retval = out.toString();
+		}catch(Exception e){
+			retval = "<h1>Error</h1><p>"+e.getMessage()+"</p>";
 		}
 		return retval;
 	}
