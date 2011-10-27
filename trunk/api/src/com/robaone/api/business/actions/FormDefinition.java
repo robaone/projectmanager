@@ -27,7 +27,7 @@ public class FormDefinition {
 	    path = path + System.getProperty("file.separator")+form_xml+".xml";
 	    FileInputStream fin = null;
 	    try{
-	    	AppDatabase.writeLog("Opening: "+path);
+	    	AppDatabase.writeLog("00003: Opening: "+path);
 	    	fin = new FileInputStream(new File(path));
 	    	AppDatabase.copyStream(fin,out);
 	    }catch(Exception e){

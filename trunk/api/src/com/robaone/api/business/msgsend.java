@@ -128,7 +128,7 @@ public class msgsend extends BaseProgram {
 		// send the thing off
 		Transport.send(msg);
 
-		AppDatabase.writeLog("\nMail was sent successfully.");
+		AppDatabase.writeLog("\n00017: Mail was sent successfully.");
 
 		/*
 		 * Save a copy of the message, if requested.

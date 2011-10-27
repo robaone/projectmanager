@@ -130,7 +130,7 @@ public class Login extends BaseAction<JSONObject> {
 									jo.put("token", token);
 									jo.put("user", new JSONObject(user));
 									msg_data = XML.toString(jo,"data");
-									AppDatabase.writeLog(msg_data);
+									AppDatabase.writeLog("00004: "+msg_data);
 									message.setBody(trn.transform(msg_data));
 									qman.save(message);
 									getResponse().getProperties().setProperty("status", "E-mail sent with token");
@@ -257,7 +257,7 @@ public class Login extends BaseAction<JSONObject> {
 								jo.put("token", token);
 								jo.put("user", new JSONObject(user));
 								msg_data = XML.toString(jo,"data");
-								AppDatabase.writeLog(msg_data);
+								AppDatabase.writeLog("00005: "+msg_data);
 								message.setBody(trn.transform(msg_data));
 								qman.save(message);
 								getResponse().getProperties().setProperty("status", "E-mail sent with token");
@@ -553,7 +553,7 @@ public class Login extends BaseAction<JSONObject> {
 						}catch(Exception e){
 							getResponse().setStatus(JSONResponse.GENERAL_ERROR);
 							getResponse().setError("Failed to reset password");
-							AppDatabase.writeLog(e.getClass().getName()+": "+e.getMessage());
+							AppDatabase.writeLog("00006: "+e.getClass().getName()+": "+e.getMessage());
 							e.printStackTrace();
 						}
 					}else{

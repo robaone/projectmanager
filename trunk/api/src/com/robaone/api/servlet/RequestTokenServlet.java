@@ -58,14 +58,14 @@ public class RequestTokenServlet extends HttpServlet {
             throws IOException, ServletException {
 
         try {
-        	AppDatabase.writeLog("RequestTokenServlet.processRequest(...)");
+        	AppDatabase.writeLog("00031: RequestTokenServlet.processRequest(...)");
             OAuthMessage requestMessage = OAuthServlet.getMessage(request, null);
-            AppDatabase.writeLog("Received signature = "+requestMessage.getParameter("oauth_signature"));
+            AppDatabase.writeLog("00032: Received signature = "+requestMessage.getParameter("oauth_signature"));
             OAuthConsumer consumer = ROAPIOAuthProvider.getConsumer(requestMessage);
-            AppDatabase.writeLog("consumer found");
+            AppDatabase.writeLog("00033: consumer found");
             OAuthAccessor accessor = new OAuthAccessor(consumer);
             ROAPIOAuthProvider.VALIDATOR.validateMessage(requestMessage, accessor);
-            AppDatabase.writeLog("message validated");
+            AppDatabase.writeLog("00034: message validated");
             {
                 // Support the 'Variable Accessor Secret' extension
                 // described in http://oauth.pbwiki.com/AccessorSecret
@@ -76,7 +76,7 @@ public class RequestTokenServlet extends HttpServlet {
             }
             // generate request_token and secret
             ROAPIOAuthProvider.generateRequestToken(accessor);
-            AppDatabase.writeLog("request token ("+accessor.requestToken+") generated");
+            AppDatabase.writeLog("00035: request token ("+accessor.requestToken+") generated");
             response.setContentType("text/plain");
             OutputStream out = response.getOutputStream();
             OAuth.formEncode(OAuth.newList("oauth_token", accessor.requestToken,

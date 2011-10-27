@@ -134,7 +134,7 @@ public class BaseAction<T> {
 		PrintWriter pw = new PrintWriter(this.out);
 		JSONObject jo = new JSONObject(this.dsr);
 		pw.print(jo.toString());
-		AppDatabase.writeLog("Response = "+jo.toString());
+		AppDatabase.writeLog("00011: Response = "+jo.toString());
 		pw.flush();
 		pw.close();
 	}
@@ -142,7 +142,7 @@ public class BaseAction<T> {
 		return this.dsr.getResponse().getProperties();
 	}
 	public void validate() throws Exception {
-		AppDatabase.writeLog("BaseAction.validate()");
+		AppDatabase.writeLog("00012: BaseAction.validate()");
 		boolean debug = false;
 		try{
 			debug = AppDatabase.getProperty("debug").equals("true");
@@ -152,7 +152,7 @@ public class BaseAction<T> {
 
 		final OAuthAccessor accessor = ROAPIOAuthProvider.getAccessor(requestMessage);
 		ROAPIOAuthProvider.VALIDATOR.validateMessage(requestMessage, accessor);
-		AppDatabase.writeLog("Request validated");
+		AppDatabase.writeLog("00013: Request validated");
 		// make sure token is authorized
 		if (!Boolean.TRUE.equals(accessor.getProperty("authorized"))) {
 			OAuthProblemException problem = new OAuthProblemException("permission_denied");
@@ -176,7 +176,7 @@ public class BaseAction<T> {
 					User_jdo user = uman.getUser(cred.getIduser());
 					getSessionData().setUser(user);
 					getSessionData().setCredentials(cred);
-					AppDatabase.writeLog("Credentials Saved");
+					AppDatabase.writeLog("00014: Credentials Saved");
 				}
 			}
 			
@@ -185,7 +185,7 @@ public class BaseAction<T> {
 	}
 	public void deAuthorize() throws Exception {
 		OAuthMessage requestMessage = OAuthServlet.getMessage(request, null);
-		AppDatabase.writeLog("BaseAction.deAuthorize()");
+		AppDatabase.writeLog("00015: BaseAction.deAuthorize()");
 		final OAuthAccessor accessor = ROAPIOAuthProvider.getAccessor(requestMessage);
 		ConnectionBlock block = new ConnectionBlock(){
 
@@ -200,7 +200,7 @@ public class BaseAction<T> {
 					App_credentials_jdo cred = App_credentials_jdoManager.bindApp_credentials(getResultSet());
 					cred.setActive(0);
 					man.save(cred);
-					AppDatabase.writeLog("credentials deauthorized");
+					AppDatabase.writeLog("00016: credentials deauthorized");
 				}
 			}
 			

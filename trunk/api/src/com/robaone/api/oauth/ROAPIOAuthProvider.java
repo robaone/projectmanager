@@ -68,7 +68,7 @@ public class ROAPIOAuthProvider {
 	public static synchronized OAuthConsumer getConsumer(
 			OAuthMessage requestMessage)
 					throws Exception {
-
+		AppDatabase.writeLog("00019: ROAPIOAuthProvider.getConsumer(...)" );
 		OAuthConsumer consumer = null;
 		// try to load from local cache if not throw exception
 		final String consumer_key = requestMessage.getConsumerKey();
@@ -77,6 +77,7 @@ public class ROAPIOAuthProvider {
 
 			@Override
 			public void run() throws Exception {
+				AppDatabase.writeLog("00020:  Retrieving Apps_jdo");
 				Apps_jdoManager man = new Apps_jdoManager(this.getConnection());
 				this.setPreparedStatement(man.prepareStatement(Apps_jdo.CONSUMER_KEY + " = ?"));
 				this.getPreparedStatement().setString(1, consumer_key);
@@ -84,6 +85,7 @@ public class ROAPIOAuthProvider {
 				if(this.getResultSet().next()){
 					Apps_jdo app = Apps_jdoManager.bindApps(getResultSet());
 					// Create OAuthConsumer w/ key and secret
+					AppDatabase.writeLog("00021:  Creating consumer object");
 					OAuthConsumer consumer = new OAuthConsumer(
 							app.getCallback_url(), 
 							consumer_key, 
@@ -101,6 +103,7 @@ public class ROAPIOAuthProvider {
 
 		};
 		ConfigManager.runConnectionBlock(block, new DatabaseImpl().getConnectionManager());
+		AppDatabase.writeLog("00022: End ROAPIOAuthProvider.getConsumer()");
 		return retval.size() > 0 ? retval.get(0) : null;
 	}
 
