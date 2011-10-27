@@ -85,12 +85,28 @@ public class AppDatabase {
 		}
 		return retval;
 	}
-	public static String generatePage(String page,Map<String,String> parameters,JSONObject session) throws Exception{
+	public static String getPage(String page,String section){
+		String page_folder = getProperty("page.folder");
+		String retval = null;
+		try{
+			retval = org.apache.commons.io.FileUtils.readFileToString(new File(page_folder+System.getProperty("file.separator")+section+System.getProperty("file.separator")+page+".html"));
+		}catch(Exception e){
+			retval = AppDatabase.PAGE_NOT_FOUND_ERROR;
+		}
+		return retval;
+	}
+	public static String generatePage(String page,Map<String,String> parameters,JSONObject session) throws Exception {
+		return generatePage(page,null,parameters,session);
+	}
+	public static String generatePage(String page,String section,Map<String,String> parameters,JSONObject session) throws Exception{
 		String retval = null;
 		String instanceid = ""+new java.util.Date().getTime();
 		try{
 			AppDatabase.putSession(instanceid, session);
 			String xsl_folder = getProperty("xsl.folder");
+			if(section != null){
+				xsl_folder = xsl_folder + System.getProperty("file.separator") + section;
+			}
 			JSONObject jo = new JSONObject();
 			jo.put("sessiondata", session);
 			jo.put("parameters", parameters);

@@ -51,17 +51,17 @@ public class AuthorizationServlet extends HttpServlet {
 			throws IOException, ServletException {
 
 		try{
-			AppDatabase.writeLog("AuthorizationServlet.doGet(...)");
+			AppDatabase.writeLog("00025: AuthorizationServlet.doGet(...)");
 			OAuthMessage requestMessage = OAuthServlet.getMessage(request, null);
 
 			OAuthAccessor accessor = ROAPIOAuthProvider.getAccessor(requestMessage);
 
 			if (Boolean.TRUE.equals(accessor.getProperty("authorized"))) {
 				// already authorized send the user back
-				AppDatabase.writeLog("user already authorized");
+				AppDatabase.writeLog("00026: user already authorized");
 				returnToConsumer(request, response, accessor);
 			} else {
-				AppDatabase.writeLog("sending to authorization page");
+				AppDatabase.writeLog("00027: sending to authorization page");
 				sendToAuthorizePage(request, response, accessor);
 			}
 
@@ -79,7 +79,7 @@ public class AuthorizationServlet extends HttpServlet {
 			throws IOException, ServletException{
 
 		try{
-			AppDatabase.writeLog("AuthorizationServlet.doPost(...)");
+			AppDatabase.writeLog("00028: AuthorizationServlet.doPost(...)");
 			OAuthMessage requestMessage = OAuthServlet.getMessage(request, null);
 
 			OAuthAccessor accessor = ROAPIOAuthProvider.getAccessor(requestMessage);

@@ -63,7 +63,7 @@ public class AccessTokenServlet extends HttpServlet {
     public void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
         try{
-        	AppDatabase.writeLog("AccessTokenServlet.processRequest(...)");
+        	AppDatabase.writeLog("00023: AccessTokenServlet.processRequest(...)");
             OAuthMessage requestMessage = OAuthServlet.getMessage(request, null);
             
             OAuthAccessor accessor = ROAPIOAuthProvider.getAccessor(requestMessage);
@@ -91,6 +91,8 @@ public class AccessTokenServlet extends HttpServlet {
         } catch (Exception e){
         	e.printStackTrace();
             ROAPIOAuthProvider.handleException(e, request, response, true);
+        } finally {
+        	AppDatabase.writeLog("00024: End AccessTokenServlet.processRequest()");
         }
     }
 

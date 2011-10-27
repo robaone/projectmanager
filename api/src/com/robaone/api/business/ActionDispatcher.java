@@ -24,10 +24,10 @@ public class ActionDispatcher {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void runAction(String action,Map parameters,OutputStream out) throws Exception {
 		try{
-			AppDatabase.writeLog("Running Action, "+action);
+			AppDatabase.writeLog("00007: Running Action, "+action);
 			String data = parameters.get("data") == null ? "{}" : ((String[])parameters.get("data"))[0];
 			if(data.length() == 0) data = "{}";
-			AppDatabase.writeLog("Data = "+data);
+			AppDatabase.writeLog("00008: Data = "+data);
 			Class[] parameterTypes = new Class[]{JSONObject.class};
 			Class myClass = Class.forName("com.robaone.api.business.actions."+action.split("[.]")[0]);
 			Method meth = myClass.getMethod(action.split("[.]")[1], parameterTypes);
@@ -50,9 +50,9 @@ public class ActionDispatcher {
 			ServletOutputStream out) throws Exception {
 		try{
 			String action = this.getParameter(parameterMap,"_action");
-			AppDatabase.writeLog("Running Action, "+action);
+			AppDatabase.writeLog("00009: Running Action, "+action);
 			JSONObject data = new JSONObject(parameterMap);
-			AppDatabase.writeLog("Data = "+data.toString());
+			AppDatabase.writeLog("00010: Data = "+data.toString());
 			Class[] parameterTypes = new Class[]{JSONObject.class};
 			Class myClass = Class.forName("com.robaone.api.business.actions."+action.split("[.]")[0]);
 			Method meth = myClass.getMethod(action.split("[.]")[1], parameterTypes);

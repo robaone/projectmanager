@@ -47,7 +47,7 @@ public class DataServlet extends HttpServlet {
 
 	private void processRequest(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		AppDatabase.writeLog("Start Server Side Code:");
+		AppDatabase.writeLog("00030: Start Server Side Code:");
 		SessionData sdata = (SessionData)request.getSession().getAttribute("sessiondata");
 		if(sdata == null){
 			sdata = new SessionData();

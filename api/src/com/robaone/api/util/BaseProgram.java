@@ -24,7 +24,7 @@ abstract public class BaseProgram {
 			System.exit(1);
 		}finally{
 			try {
-				this.writeLog("-- Done --");
+				this.writeLog("00036: -- Done --");
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

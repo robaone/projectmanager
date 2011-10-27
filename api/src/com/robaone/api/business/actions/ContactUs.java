@@ -31,7 +31,7 @@ public class ContactUs {
 	}
 
 	public void Submit(final JSONObject data) throws Exception{
-		AppDatabase.writeLog("com.sohvac.business.actions.ContactUs.Submit(\""+data+"\")");
+		AppDatabase.writeLog("00002: com.sohvac.business.actions.ContactUs.Submit(\""+data+"\")");
 		try{
 			DSResponse<Error> dsr = new DSResponse<Error>();
 			String name = null,email = null,zip = null,comments = null;
