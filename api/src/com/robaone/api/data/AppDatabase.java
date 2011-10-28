@@ -95,14 +95,18 @@ public class AppDatabase {
 		}
 		return retval;
 	}
+	public static String storeSessionData(JSONObject session) throws Exception {
+		String instanceid = ""+new java.util.Date().getTime();
+		AppDatabase.putSession(instanceid, session);
+		return instanceid;
+	}
 	public static String generatePage(String page,Map<String,String> parameters,JSONObject session) throws Exception {
 		return generatePage(page,null,parameters,session);
 	}
 	public static String generatePage(String page,String section,Map<String,String> parameters,JSONObject session) throws Exception{
 		String retval = null;
-		String instanceid = ""+new java.util.Date().getTime();
+		String instanceid = storeSessionData(session);
 		try{
-			AppDatabase.putSession(instanceid, session);
 			String xsl_folder = getProperty("xsl.folder");
 			if(section != null){
 				xsl_folder = xsl_folder + System.getProperty("file.separator") + section;
