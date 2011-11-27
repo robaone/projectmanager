@@ -55,12 +55,12 @@ public class CheckFieldUi extends Composite implements FormField {
 		this.m_name = name;
 	}
 
-	public void setValues(JSONArray values, JSONArray array) {
-		for(int i = 0; i < values.size();i++){
-			String item = array.get(i).isString().stringValue();
+	public void setValues(String[] values, String[] array) {
+		for(int i = 0; i < values.length;i++){
+			String item = array[i];
 			boolean match = false;
-			for(int j = 0; j < array.size();j++){
-				String val = values.get(j).isString().stringValue();
+			for(int j = 0; j < array.length;j++){
+				String val = values[i];
 				if(val.equals(item)){
 					match = true;
 					break;

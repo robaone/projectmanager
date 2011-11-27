@@ -29,7 +29,7 @@ public class RadioFieldUi extends Composite  implements FormField {
 	public void setValue(String value,String[] items){
 		for(int i = 0; i < items.length;i++){
 			RadioButton radio = new RadioButton(this.getName()+"_g", items[i]);
-			if(value.equals(items[i])){
+			if(value != null && value.equals(items[i])){
 				radio.setValue(true);
 			}
 			content.add(radio);
