@@ -1,0 +1,11 @@
+<?xml version="1.0" ?>
+<formui>
+	<title>Test</title>
+	<description>Description</description>
+	<field name="username" required="true" type="text">
+		<title>Username:</title>
+		<help>Enter your e-mail address</help>
+		<description>Description</description>
+	</field>
+	<submit label="Login" action="" onSuccess="http://www.google.com" />
+</formui>
