@@ -331,7 +331,7 @@ public class FormUi extends Composite {
 								}catch(Exception e){}
 								try{
 									final Node node = findElement(formui, "submit").get(0);
-									back.setText(node.getAttributes().getNamedItem("label").getNodeValue());
+									submit.setText(node.getAttributes().getNamedItem("label").getNodeValue());
 									addSubmitHandler(new ClickHandler(){
 
 										@Override
@@ -344,7 +344,7 @@ public class FormUi extends Composite {
 								}catch(Exception e){}
 								try{
 									final Node node = findElement(formui, "cancel").get(0);
-									back.setText(node.getAttributes().getNamedItem("label").getNodeValue());
+									cancel.setText(node.getAttributes().getNamedItem("label").getNodeValue());
 									addCancelHandler(new ClickHandler(){
 
 										@Override
@@ -357,7 +357,7 @@ public class FormUi extends Composite {
 								}catch(Exception e){}
 								try{
 									final Node node = findElement(formui, "next").get(0);
-									back.setText(node.getAttributes().getNamedItem("label").getNodeValue());
+									next.setText(node.getAttributes().getNamedItem("label").getNodeValue());
 									addNextHandler(new ClickHandler(){
 
 										@Override
