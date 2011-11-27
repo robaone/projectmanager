@@ -19,7 +19,7 @@ public class ListFieldUi extends Composite implements FormField  {
 
 	interface ListFieldUiBinder extends UiBinder<Widget, ListFieldUi> {
 	}
-	
+
 	@UiField ListBox list;
 	private String m_name;
 
@@ -38,21 +38,42 @@ public class ListFieldUi extends Composite implements FormField  {
 		try{retval.add(val);}catch(Exception e){}
 		return retval.toArray(new String[0]);
 	}
-	
-	public void setValue(String value,String[][] items){
+
+	public void setValue(String[] values,String[][] items){
 		int selectedindex = -1;
 		for(int i = 0; i < items.length;i++){
 			if(items[i].length > 1){
 				list.addItem(items[i][0], items[i][1]);
-				if(value != null && items[i][1].equals(value)){
-					selectedindex = i;
+				for(String v : values){
+					if(v != null && items[i][1].equals(v)){
+						selectedindex = i;
+					}	
 				}
 			}else{
 				list.addItem(items[i][0]);
-				if(value != null && items[i][0].equals(value)){
+				for(String v : values){
+					if(v != null && items[i][0].equals(v)){
+						selectedindex = i;
+					}
+				}
+			}
+		}
+		if(selectedindex > -1){
+			list.setSelectedIndex(selectedindex);
+		}
+	}
+
+	public void setValue(String[] values,String[] items){
+		int selectedindex = -1;
+		for(int i = 0; i < items.length;i++){
+
+			list.addItem(items[i]);
+			for(String v : values){
+				if(v != null && items[i].equals(v)){
 					selectedindex = i;
 				}
 			}
+
 		}
 		if(selectedindex > -1){
 			list.setSelectedIndex(selectedindex);
@@ -94,13 +115,13 @@ public class ListFieldUi extends Composite implements FormField  {
 	@Override
 	public void setError(boolean b) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void addKeyUpHandler(KeyUpHandler handler) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 
