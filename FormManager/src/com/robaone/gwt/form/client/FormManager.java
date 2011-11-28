@@ -5,10 +5,13 @@ import java.util.Vector;
 
 import com.robaone.gwt.form.client.ui.FormUi;
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.http.client.RequestBuilder;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
 
@@ -32,19 +35,9 @@ public class FormManager implements EntryPoint {
 	 * This is the entry point method.
 	 */
 	public void onModuleLoad() {
-		NodeList<Element> nodes = RootPanel.get().getElement().getElementsByTagName("div");
-		for(int i = 0; i < nodes.getLength();i++){
-			Element e = nodes.getItem(i);
-			if(e.getId().startsWith("form_manager_")){
-				String url = e.getAttribute("url");
-				e.removeAttribute("url");
-				FormUi form = new FormUi();
-				RootPanel.get(e.getId()).add(form);
-				form.load(url);
-			}
-		}
-		
-		
+		loadForms();
+		loadInlineFrame();
+
 		if(RootPanel.get("test_form_manager_2323") != null){
 			final FormUi form = new FormUi();
 			RootPanel.get().add(form);
@@ -102,7 +95,34 @@ public class FormManager implements EntryPoint {
 			});
 		}
 	}
-
+	private void loadInlineFrame() {
+		if(RootPanel.get("dashboard_main") != null){
+			/**
+			 * Load the app controller
+			 */
+			DashboardAppController app = new DashboardAppController(getRequestBuilder());
+			RootPanel.get("dashboard_main").add(app);
+			app.load(History.getToken());
+		}
+	}
+	public static void loadForms() {
+		NodeList<Element> nodes = RootPanel.get().getElement().getElementsByTagName("div");
+		for(int i = 0; i < nodes.getLength();i++){
+			Element e = nodes.getItem(i);
+			if(e.getId().startsWith("form_manager_")){
+				String url = e.getAttribute("url");
+				if(url != null && url.length() > 0){
+					e.removeAttribute("url");
+					FormUi form = new FormUi();
+					RootPanel.get(e.getId()).add(form);
+					form.load(url);
+				}
+			}
+		}
+	}
+	private RequestBuilder getRequestBuilder() {
+		return new RequestBuilder(RequestBuilder.POST,GWT.getHostPageBaseURL()+"rpc");
+	}
 	private HashMap<String, String[]> getMapforFields(String[][] first_name) {
 		HashMap<String,String[]> retval = new HashMap<String,String[]>();
 		for(int i = 0; i < first_name.length;i++){
