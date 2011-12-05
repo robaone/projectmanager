@@ -4,13 +4,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
@@ -147,7 +146,7 @@ public class AppDatabase {
 		}
 		return page;
 	}
-	public static void copyStream(FileInputStream fin, OutputStream out) throws IOException {
+	public static void copyStream(InputStream fin, OutputStream out) throws IOException {
 		byte[] buffer= new byte[1024];
 		for(int i = fin.read(buffer);i > -1;i = fin.read(buffer)){
 			out.write(buffer,0,i);
