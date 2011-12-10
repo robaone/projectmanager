@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.org/Form"
+	xmlns:tns="http://www.example.org/Form" elementFormDefault="qualified">
+
+    <element name="formui">
+    	<complexType>
+    		<sequence>
+    			<element name="title" type="string"/>
+    			<element name="description" type="string"/>
+    			<element name="field" maxOccurs="unbounded" minOccurs="1">
+    				<complexType>
+    					<sequence>
+    						<element name="description" type="string"/>
+    						<element name="help" type="string"/>
+    						<element name="title" type="string"/>
+    						<element name="value" type="string" maxOccurs="unbounded" minOccurs="0"/>
+    						<element name="choice" type="string" maxOccurs="unbounded" minOccurs="0"/>
+    					</sequence>
+    					<attribute name="name" type="string"/>
+    					<attribute name="required" type="boolean"/>
+    					<attribute name="type">
+    						<simpleType>
+    							<restriction base="string">
+    								<enumeration value="Check"></enumeration>
+    								<enumeration value="List"></enumeration>
+    								<enumeration value="Radio"></enumeration>
+    								<enumeration value="TextArea"></enumeration>
+    								<enumeration value="Text"></enumeration>
+    								<enumeration value="Password"></enumeration>
+    							</restriction>
+    						</simpleType>
+    					</attribute>
+    				</complexType>
+    			</element>
+    		</sequence>
+    	</complexType>
+    </element>
+    
+</schema>
