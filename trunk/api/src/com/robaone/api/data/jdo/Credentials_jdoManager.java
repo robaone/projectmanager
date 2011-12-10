@@ -1,5 +1,5 @@
 /*
-* Created on Oct 04, 2011
+* Created on Dec 09, 2011
 *
 */
 package com.robaone.api.data.jdo;
@@ -100,7 +100,6 @@ Credentials_jdo retval = null;
   }
   public void save(Credentials_jdo record) throws Exception {
     Connection con = this.getConnection();
-    con.setAutoCommit(false);
     boolean finished = false;
     if(record.getDirtyFieldCount() == 0){
       return;
@@ -220,8 +219,6 @@ Credentials_jdo retval = null;
   }finally{
 			 if(finished){
 				  con.commit();
-			  }else{
-				  con.rollback();
 			  }
 			  con.setAutoCommit(true);
   }
