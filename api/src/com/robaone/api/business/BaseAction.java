@@ -4,6 +4,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Properties;
 
@@ -210,5 +212,10 @@ public class BaseAction<T> {
 	public void sendError(Exception e){
 		this.getResponse().setStatus(JSONResponse.GENERAL_ERROR);
 		this.getResponse().setError(e.getClass().getName()+": "+e.getMessage());
+	}
+	protected void convert(ResultSet resultSet) throws SQLException {
+		while(resultSet.next()){
+			//TODO: implement
+		}
 	}
 }
