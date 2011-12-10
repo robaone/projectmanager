@@ -2,38 +2,84 @@
 <schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.org/Form"
 	xmlns:tns="http://www.example.org/Form" elementFormDefault="qualified">
 
-    <element name="formui">
-    	<complexType>
-    		<sequence>
-    			<element name="title" type="string"/>
-    			<element name="description" type="string"/>
-    			<element name="field" maxOccurs="unbounded" minOccurs="1">
-    				<complexType>
-    					<sequence>
-    						<element name="description" type="string"/>
-    						<element name="help" type="string"/>
-    						<element name="title" type="string"/>
-    						<element name="value" type="string" maxOccurs="unbounded" minOccurs="0"/>
-    						<element name="choice" type="string" maxOccurs="unbounded" minOccurs="0"/>
-    					</sequence>
-    					<attribute name="name" type="string"/>
-    					<attribute name="required" type="boolean"/>
-    					<attribute name="type">
-    						<simpleType>
-    							<restriction base="string">
-    								<enumeration value="Check"></enumeration>
-    								<enumeration value="List"></enumeration>
-    								<enumeration value="Radio"></enumeration>
-    								<enumeration value="TextArea"></enumeration>
-    								<enumeration value="Text"></enumeration>
-    								<enumeration value="Password"></enumeration>
-    							</restriction>
-    						</simpleType>
-    					</attribute>
-    				</complexType>
-    			</element>
-    		</sequence>
-    	</complexType>
+    <element name="formui" type="tns:formui_type">
+
     </element>
+
     
+    <element name="back" type="tns:button"></element>
+    
+
+    <complexType name="button">
+    	<attribute name="onSuccess" type="string" use="required"></attribute>
+    	<attribute name="action" type="string" use="required"></attribute>
+    	<attribute name="label" type="string" use="required"></attribute>
+    </complexType>
+
+    <complexType name="formui_type">
+    	<sequence>
+    		<element ref="tns:title" maxOccurs="1" minOccurs="0"></element>
+    		<element ref="tns:description" maxOccurs="1"
+    			minOccurs="0">
+    		</element>
+    		<element ref="tns:field" maxOccurs="unbounded"
+    			minOccurs="0">
+    		</element>
+    		<element ref="tns:back" maxOccurs="1" minOccurs="0"></element>
+    		<element ref="tns:submit"></element>
+    		<element ref="tns:cancel"></element>
+    		<element ref="tns:next"></element>
+    	</sequence>
+    </complexType>
+    
+    <element name="title" type="string"></element>
+
+    <element name="description" type="string"></element>
+
+    <element name="field" type="tns:fieldType"></element>
+
+    <complexType name="fieldType">
+    	<sequence>
+    		<element ref="tns:title"></element>
+    		<element ref="tns:name"></element>
+    		<element ref="tns:description"></element>
+    		<element name="help" type="string"></element>
+    		<element name="value" type="string" maxOccurs="unbounded"
+    			minOccurs="0">
+    		</element>
+    		<element name="item" type="string" maxOccurs="unbounded" minOccurs="0"></element>
+    	</sequence>
+    	<attribute name="name" type="string"></attribute>
+    	<attribute ref="tns:type"></attribute>
+    	<attribute name="required" type="boolean"></attribute>
+    </complexType>
+
+    <element name="name" type="string"></element>
+
+
+
+    <attribute name="type">
+    	<simpleType>
+    		<restriction base="tns:formTypes">
+    			<enumeration value="value"></enumeration>
+    		</restriction>
+    	</simpleType>
+    </attribute>
+    
+    <element name="submit" type="tns:button"></element>
+
+    <element name="cancel" type="tns:button"></element>
+
+    <element name="next" type="tns:button"></element>
+
+    <simpleType name="formTypes">
+    	<restriction base="string">
+    		<enumeration value="text"></enumeration>
+    		<enumeration value="password"></enumeration>
+    		<enumeration value="radio"></enumeration>
+    		<enumeration value="checkbox"></enumeration>
+    		<enumeration value="list"></enumeration>
+    		<enumeration value="textarea"></enumeration>
+    	</restriction>
+    </simpleType>
 </schema>
