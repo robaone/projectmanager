@@ -5,7 +5,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Types;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Properties;
 
@@ -25,6 +28,7 @@ import net.oauth.OAuthMessage;
 import net.oauth.OAuthProblemException;
 import net.oauth.server.OAuthServlet;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.XML;
 import org.w3c.dom.Document;
@@ -213,9 +217,20 @@ public class BaseAction<T> {
 		this.getResponse().setStatus(JSONResponse.GENERAL_ERROR);
 		this.getResponse().setError(e.getClass().getName()+": "+e.getMessage());
 	}
-	protected void convert(ResultSet resultSet) throws SQLException {
+	protected void convert(ResultSet resultSet) throws SQLException, JSONException {
+		ResultSetMetaData rsmdata = resultSet.getMetaData();
 		while(resultSet.next()){
-			//TODO: implement
+			JSONObject jo = new JSONObject();
+			for(int i = 0; i < rsmdata.getColumnCount();i++){
+				String column = rsmdata.getColumnName(i);
+				int type = rsmdata.getColumnType(i);
+				if(type == Types.DATE){
+					jo.put(column, resultSet.getTimestamp(i));
+				}else{
+					jo.put(column, resultSet.getObject(i));
+				}
+			}
+			getResponse().addData((T) jo);
 		}
 	}
 }
