@@ -15,20 +15,20 @@ import org.json.*;
 import java.util.HashMap;
 import java.util.Iterator;
 
-public class App_credentials_jdoManager {
+public class Meetings_jdoManager {
   private Connection m_con;
-  private final static String SELECT = "select ~ from #TABLE# where idapp_credentials = ?";
+  private final static String SELECT = "select ~ from #TABLE# where idmeetings = ?";
   private final static String INSERT = "insert into #TABLE# ";
   private final static String QUERY = "select ~ from #TABLE# where ";
   private final static String UPDATE = "update #TABLE# set ";
-  private final static String SEARCH = "select COUNT(#TABLE#.IDAPP_CREDENTIALS) from #TABLE# where #TABLE#.IDAPP_CREDENTIALS = ?";
-  private final static String DELETE = "delete from #TABLE# where #TABLE#.IDAPP_CREDENTIALS = ?";
-  private final static String IDENTITY = "IDAPP_CREDENTIALS";
+  private final static String SEARCH = "select COUNT(#TABLE#.IDMEETINGS) from #TABLE# where #TABLE#.IDMEETINGS = ?";
+  private final static String DELETE = "delete from #TABLE# where #TABLE#.IDMEETINGS = ?";
+  private final static String IDENTITY = "IDMEETINGS";
   private final static RO_JDO_IdentityManager NEXT_SQL = new RO_JDO_MySQL();
-  public final static String FIELDS = "#TABLE#.IDAPP_CREDENTIALS,#TABLE#.REQUEST_TOKEN,#TABLE#.ACCESS_TOKEN,#TABLE#.CREATED_BY,#TABLE#.CREATION_HOST,#TABLE#.EXPIRATION_DATE,#TABLE#.CREATION_DATE,#TABLE#.ACTIVE,#TABLE#.IDAPPS,#TABLE#.IDUSER,#TABLE#.TOKEN_SECRET";
-  private String TABLE = "APP_CREDENTIALS";
+  public final static String FIELDS = "#TABLE#.IDMEETINGS,#TABLE#.CREATED_BY,#TABLE#.CREATION_DATE,#TABLE#.MODIFIED_BY,#TABLE#.MODIFICATION_DATE,#TABLE#._VOID,#TABLE#.STARTDATE,#TABLE#.ENDDATE,#TABLE#.TITLE,#TABLE#.CALENDAR_DOC";
+  private String TABLE = "MEETINGS";
   protected boolean debug = false;
-  public App_credentials_jdoManager(Connection con){
+  public Meetings_jdoManager(Connection con){
     this.m_con = con;
     try{
     	if(System.getProperty("debug").equals("Y")){
@@ -45,23 +45,23 @@ public class App_credentials_jdoManager {
   public void setTableName(String tablename){
     TABLE = tablename;
   }
-  public static App_credentials_jdo bindApp_credentials(ResultSet rs) throws SQLException{
-App_credentials_jdo retval = null;
-    retval = App_credentials_jdoManager.createObject(rs);
+  public static Meetings_jdo bindMeetings(ResultSet rs) throws SQLException{
+Meetings_jdo retval = null;
+    retval = Meetings_jdoManager.createObject(rs);
     return retval;
   }
 
-  public App_credentials_jdo getApp_credentials(Integer idapp_credentials){
+  public Meetings_jdo getMeetings(Integer idmeetings){
     PreparedStatement ps = null;
     ResultSet rs = null;
-    App_credentials_jdo retval = null;
+    Meetings_jdo retval = null;
     try{
       String sql = this.getSQL(SELECT.split("[~]")[0]+FIELDS+SELECT.split("[~]")[1]);
       ps = this.getConnection().prepareStatement(sql);
-      ps.setObject(1,idapp_credentials);
+      ps.setObject(1,idmeetings);
       rs = ps.executeQuery();
       if(rs.next()){
-        retval = App_credentials_jdoManager.createObject(rs);
+        retval = Meetings_jdoManager.createObject(rs);
       }
     }catch(Exception e){
 
@@ -76,9 +76,9 @@ App_credentials_jdo retval = null;
 * @return
 * @throws SQLException
 */
-  private static App_credentials_jdo createObject(ResultSet rs) throws SQLException {
-    App_credentials_jdo retval = null;
-    retval = new App_credentials_jdo();
+  private static Meetings_jdo createObject(ResultSet rs) throws SQLException {
+    Meetings_jdo retval = null;
+    retval = new Meetings_jdo();
     /*
      *
      * Insert values from Result Set into object
@@ -98,7 +98,7 @@ App_credentials_jdo retval = null;
 
     return retval;
   }
-  public void save(App_credentials_jdo record) throws Exception {
+  public void save(Meetings_jdo record) throws Exception {
     Connection con = this.getConnection();
     boolean finished = false;
     if(record.getDirtyFieldCount() == 0){
@@ -204,7 +204,7 @@ App_credentials_jdo retval = null;
           field_index ++;
         }
         int updated = insert_ps.executeUpdate();
-        record.setIdapp_credentials(NEXT_SQL.getIdentity(this.m_con));
+        record.setIdmeetings(NEXT_SQL.getIdentity(this.m_con));
         con.commit();
         finished = true;
         if(updated == 0){
@@ -223,10 +223,10 @@ App_credentials_jdo retval = null;
 			  con.setAutoCommit(true);
   }
 }
-	protected void handleAfterInsert(App_credentials_jdo record) {}
-	protected void handleAfterUpdate(App_credentials_jdo record) {}
-	protected void handleBeforeUpdate(App_credentials_jdo record) {}
-  private void setAllClean(App_credentials_jdo record){
+	protected void handleAfterInsert(Meetings_jdo record) {}
+	protected void handleAfterUpdate(Meetings_jdo record) {}
+	protected void handleBeforeUpdate(Meetings_jdo record) {}
+  private void setAllClean(Meetings_jdo record){
     try{
       for(int i = 0; i < record.getFieldCount();i++){
          String fieldname = record.getField(i);
@@ -236,7 +236,7 @@ App_credentials_jdo retval = null;
       }
     }catch(Exception e){}
   }
-  public void delete(App_credentials_jdo record) throws Exception {
+  public void delete(Meetings_jdo record) throws Exception {
     Connection con = this.getConnection();
     String sql_delete = this.getSQL(DELETE);
     PreparedStatement ps = con.prepareStatement(sql_delete);
@@ -250,9 +250,9 @@ App_credentials_jdo retval = null;
     PreparedStatement ps = this.getConnection().prepareStatement(sql);
     return ps;
   }
-public App_credentials_jdo newApp_credentials() {
-App_credentials_jdo retval = new App_credentials_jdo();
- retval.setIdapp_credentials(null);
+public Meetings_jdo newMeetings() {
+Meetings_jdo retval = new Meetings_jdo();
+ retval.setIdmeetings(null);
  return retval;
 }
   public String getSQL(String sql){
@@ -260,7 +260,7 @@ App_credentials_jdo retval = new App_credentials_jdo();
     retval = sql.replaceAll("#TABLE#",TABLE);
     return retval;
   }
-  public static JSONObject toJSONObject(App_credentials_jdo record) throws Exception {
+  public static JSONObject toJSONObject(Meetings_jdo record) throws Exception {
     JSONObject retval = null;
     if(record != null){
       JSONObject object = new JSONObject();
@@ -273,11 +273,11 @@ App_credentials_jdo retval = new App_credentials_jdo();
     }
     return retval;
   }
-  public static void bindApp_credentialsJSON(App_credentials_jdo record,String jsondata) throws Exception {
+  public static void bindMeetingsJSON(Meetings_jdo record,String jsondata) throws Exception {
     JSONObject jo = new JSONObject(jsondata);
-    App_credentials_jdoManager.bindApp_credentialsJSON(record,jo);
+    Meetings_jdoManager.bindMeetingsJSON(record,jo);
   }
-  public static void bindApp_credentialsJSON(App_credentials_jdo record, JSONObject jo) throws Exception {
+  public static void bindMeetingsJSON(Meetings_jdo record, JSONObject jo) throws Exception {
     Iterator keys = jo.keys();
     HashMap keymap = new HashMap();
     while(keys.hasNext()){
@@ -287,125 +287,104 @@ App_credentials_jdo retval = new App_credentials_jdo();
     }
     if(record != null && jo != null){
       try{
-        if(jo.isNull((String)keymap.get(App_credentials_jdo.IDAPP_CREDENTIALS))){
-          if(keymap.get(App_credentials_jdo.IDAPP_CREDENTIALS) != null)
-            record.setIdapp_credentials(null);
+        if(jo.isNull((String)keymap.get(Meetings_jdo.IDMEETINGS))){
+          if(keymap.get(Meetings_jdo.IDMEETINGS) != null)
+            record.setIdmeetings(null);
         }else{
-             record.setIdapp_credentials(new Integer(jo.getInt((String)keymap.get(App_credentials_jdo.IDAPP_CREDENTIALS))));
+             record.setIdmeetings(new Integer(jo.getInt((String)keymap.get(Meetings_jdo.IDMEETINGS))));
         }
       }catch(org.json.JSONException e){
       }
       try{
-        if(jo.isNull((String)keymap.get(App_credentials_jdo.REQUEST_TOKEN))){
-          if(keymap.get(App_credentials_jdo.REQUEST_TOKEN) != null)
-            record.setRequest_token(null);
-        }else{
-             record.setRequest_token(new String(jo.getString((String)keymap.get(App_credentials_jdo.REQUEST_TOKEN))));
-        }
-      }catch(org.json.JSONException e){
-      }
-      try{
-        if(jo.isNull((String)keymap.get(App_credentials_jdo.ACCESS_TOKEN))){
-          if(keymap.get(App_credentials_jdo.ACCESS_TOKEN) != null)
-            record.setAccess_token(null);
-        }else{
-             record.setAccess_token(new String(jo.getString((String)keymap.get(App_credentials_jdo.ACCESS_TOKEN))));
-        }
-      }catch(org.json.JSONException e){
-      }
-      try{
-        if(jo.isNull((String)keymap.get(App_credentials_jdo.CREATED_BY))){
-          if(keymap.get(App_credentials_jdo.CREATED_BY) != null)
+        if(jo.isNull((String)keymap.get(Meetings_jdo.CREATED_BY))){
+          if(keymap.get(Meetings_jdo.CREATED_BY) != null)
             record.setCreated_by(null);
         }else{
-             record.setCreated_by(new String(jo.getString((String)keymap.get(App_credentials_jdo.CREATED_BY))));
+             record.setCreated_by(new Integer(jo.getInt((String)keymap.get(Meetings_jdo.CREATED_BY))));
         }
       }catch(org.json.JSONException e){
       }
       try{
-        if(jo.isNull((String)keymap.get(App_credentials_jdo.CREATION_HOST))){
-          if(keymap.get(App_credentials_jdo.CREATION_HOST) != null)
-            record.setCreation_host(null);
-        }else{
-             record.setCreation_host(new String(jo.getString((String)keymap.get(App_credentials_jdo.CREATION_HOST))));
-        }
-      }catch(org.json.JSONException e){
-      }
-      try{
-        if(jo.isNull((String)keymap.get(App_credentials_jdo.EXPIRATION_DATE))){
-          if(keymap.get(App_credentials_jdo.EXPIRATION_DATE) != null)
-            record.setExpiration_date(null);
-        }else{
-          try{
-             record.setExpiration_date(new java.sql.Timestamp(jo.getLong((String)keymap.get(App_credentials_jdo.EXPIRATION_DATE))));
-          }catch(JSONException e){
-            java.text.SimpleDateFormat df = new java.text.SimpleDateFormat("yyyy-MM-dd kk:mm:ss.S");
-            long time = df.parse(jo.getString((String)keymap.get(App_credentials_jdo.EXPIRATION_DATE))).getTime();
-            record.setExpiration_date(new java.sql.Timestamp(time));
-          }
-        }
-      }catch(org.json.JSONException e){
-      }
-      try{
-        if(jo.isNull((String)keymap.get(App_credentials_jdo.CREATION_DATE))){
-          if(keymap.get(App_credentials_jdo.CREATION_DATE) != null)
+        if(jo.isNull((String)keymap.get(Meetings_jdo.CREATION_DATE))){
+          if(keymap.get(Meetings_jdo.CREATION_DATE) != null)
             record.setCreation_date(null);
         }else{
-          try{
-             record.setCreation_date(new java.sql.Timestamp(jo.getLong((String)keymap.get(App_credentials_jdo.CREATION_DATE))));
-          }catch(JSONException e){
-            java.text.SimpleDateFormat df = new java.text.SimpleDateFormat("yyyy-MM-dd kk:mm:ss.S");
-            long time = df.parse(jo.getString((String)keymap.get(App_credentials_jdo.CREATION_DATE))).getTime();
-            record.setCreation_date(new java.sql.Timestamp(time));
-          }
+             record.setCreation_date(new java.util.Date(jo.getString((String)keymap.get(Meetings_jdo.CREATION_DATE))));
         }
       }catch(org.json.JSONException e){
       }
       try{
-        if(jo.isNull((String)keymap.get(App_credentials_jdo.ACTIVE))){
-          if(keymap.get(App_credentials_jdo.ACTIVE) != null)
-            record.setActive(null);
+        if(jo.isNull((String)keymap.get(Meetings_jdo.MODIFIED_BY))){
+          if(keymap.get(Meetings_jdo.MODIFIED_BY) != null)
+            record.setModified_by(null);
         }else{
-             record.setActive(new Integer(jo.getInt((String)keymap.get(App_credentials_jdo.ACTIVE))));
+             record.setModified_by(new Integer(jo.getInt((String)keymap.get(Meetings_jdo.MODIFIED_BY))));
         }
       }catch(org.json.JSONException e){
       }
       try{
-        if(jo.isNull((String)keymap.get(App_credentials_jdo.IDAPPS))){
-          if(keymap.get(App_credentials_jdo.IDAPPS) != null)
-            record.setIdapps(null);
+        if(jo.isNull((String)keymap.get(Meetings_jdo.MODIFICATION_DATE))){
+          if(keymap.get(Meetings_jdo.MODIFICATION_DATE) != null)
+            record.setModification_date(null);
         }else{
-             record.setIdapps(new Integer(jo.getInt((String)keymap.get(App_credentials_jdo.IDAPPS))));
+             record.setModification_date(new java.util.Date(jo.getString((String)keymap.get(Meetings_jdo.MODIFICATION_DATE))));
         }
       }catch(org.json.JSONException e){
       }
       try{
-        if(jo.isNull((String)keymap.get(App_credentials_jdo.IDUSER))){
-          if(keymap.get(App_credentials_jdo.IDUSER) != null)
-            record.setIduser(null);
+        if(jo.isNull((String)keymap.get(Meetings_jdo._VOID))){
+          if(keymap.get(Meetings_jdo._VOID) != null)
+            record.set_void(null);
         }else{
-             record.setIduser(new Integer(jo.getInt((String)keymap.get(App_credentials_jdo.IDUSER))));
+             record.set_void(new Boolean(jo.getBoolean((String)keymap.get(Meetings_jdo._VOID))));
         }
       }catch(org.json.JSONException e){
       }
       try{
-        if(jo.isNull((String)keymap.get(App_credentials_jdo.TOKEN_SECRET))){
-          if(keymap.get(App_credentials_jdo.TOKEN_SECRET) != null)
-            record.setToken_secret(null);
+        if(jo.isNull((String)keymap.get(Meetings_jdo.STARTDATE))){
+          if(keymap.get(Meetings_jdo.STARTDATE) != null)
+            record.setStartdate(null);
         }else{
-             record.setToken_secret(new String(jo.getString((String)keymap.get(App_credentials_jdo.TOKEN_SECRET))));
+             record.setStartdate(new java.util.Date(jo.getString((String)keymap.get(Meetings_jdo.STARTDATE))));
+        }
+      }catch(org.json.JSONException e){
+      }
+      try{
+        if(jo.isNull((String)keymap.get(Meetings_jdo.ENDDATE))){
+          if(keymap.get(Meetings_jdo.ENDDATE) != null)
+            record.setEnddate(null);
+        }else{
+             record.setEnddate(new java.util.Date(jo.getString((String)keymap.get(Meetings_jdo.ENDDATE))));
+        }
+      }catch(org.json.JSONException e){
+      }
+      try{
+        if(jo.isNull((String)keymap.get(Meetings_jdo.TITLE))){
+          if(keymap.get(Meetings_jdo.TITLE) != null)
+            record.setTitle(null);
+        }else{
+             record.setTitle(new String(jo.getString((String)keymap.get(Meetings_jdo.TITLE))));
+        }
+      }catch(org.json.JSONException e){
+      }
+      try{
+        if(jo.isNull((String)keymap.get(Meetings_jdo.CALENDAR_DOC))){
+          if(keymap.get(Meetings_jdo.CALENDAR_DOC) != null)
+            record.setCalendar_doc(null);
+        }else{
+             record.setCalendar_doc(new String(jo.getString((String)keymap.get(Meetings_jdo.CALENDAR_DOC))));
         }
       }catch(org.json.JSONException e){
       }
     }
   }
-	public App_credentials_jdo bindApp_credentialsJSON(String jsondata) throws Exception {
-		App_credentials_jdo retval = null;
+	public Meetings_jdo bindMeetingsJSON(String jsondata) throws Exception {
+		Meetings_jdo retval = null;
 		JSONObject jo = new JSONObject(jsondata);
-		retval = this.bindApp_credentialsJSON(jo);
+		retval = this.bindMeetingsJSON(jo);
 		return retval;
 	}
-	private App_credentials_jdo bindApp_credentialsJSON(JSONObject jo) throws Exception{
+	private Meetings_jdo bindMeetingsJSON(JSONObject jo) throws Exception{
 		Iterator keys = jo.keys();
 		HashMap keymap = new HashMap();
 		while(keys.hasNext()){
@@ -413,15 +392,15 @@ App_credentials_jdo retval = new App_credentials_jdo();
 			String lc_key = key.toUpperCase();
 			keymap.put(lc_key, key);
 		}
-		App_credentials_jdo record = null;
+		Meetings_jdo record = null;
 		try{
 			if(!jo.isNull((String)keymap.get(IDENTITY))){
-			record = this.getApp_credentials(new Integer(jo.getInt((String)keymap.get(IDENTITY))));
+			record = this.getMeetings(new Integer(jo.getInt((String)keymap.get(IDENTITY))));
 			}
 		}catch(JSONException e){}
 		if(record == null){
-			record = this.newApp_credentials();
+			record = this.newMeetings();
 		}
-		App_credentials_jdoManager.bindApp_credentialsJSON(record, jo);
+		Meetings_jdoManager.bindMeetingsJSON(record, jo);
 		return record;
 	}}
