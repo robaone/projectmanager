@@ -99,7 +99,7 @@ public class Message_queue_jdoManager {
 	}
 	public void save(Message_queue_jdo record) throws Exception {
 		Connection con = this.getConnection();
-		con.setAutoCommit(false);
+		//con.setAutoCommit(false);
 		boolean finished = false;
 		if(record.getDirtyFieldCount() == 0){
 			return;
@@ -149,7 +149,7 @@ public class Message_queue_jdoManager {
 				}
 				update_ps.setObject(dirtyfieldcount+1,record.getField(record.getIdentityName())[0]);
 				int updated = update_ps.executeUpdate();
-				con.commit();
+				//con.commit();
 				finished = true;
 				if(updated == 0){
 					throw new Exception("No rows updated.");
@@ -212,7 +212,7 @@ public class Message_queue_jdoManager {
 				}
 				max_rs.close();
 				max_ps.close();
-				con.commit();
+				//con.commit();
 				finished = true;
 				if(updated == 0){
 					throw new Exception("No rows added.");
@@ -225,7 +225,7 @@ public class Message_queue_jdoManager {
 			}
 		}finally{
 			if(finished){
-				con.commit();
+				//con.commit();
 			}else{
 				con.rollback();
 			}
