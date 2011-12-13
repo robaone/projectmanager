@@ -29,7 +29,8 @@ public class Comments extends BaseRecordHandler<Comments_jdo> {
 	}
 	public void initialize(ConnectionBlock conb) throws SQLException {
 		Comments_jdoManager man = new Comments_jdoManager(conb.getConnection());
-		conb.setPreparedStatement(man.prepareStatement(Comments_jdo.IDCOMMENTS +" is not null limit ?,?"));
+		conb.setPreparedStatement(man.prepareStatement(Comments_jdo.IDCOMMENTS +
+				" is not null and "+Comments_jdo._VOID +" = 0 limit ?,?"));
 	}
 	public Comments_jdo initGet(final String id,ConnectionBlock conb) {
 		Comments_jdoManager man = new Comments_jdoManager(conb.getConnection());
