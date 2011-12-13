@@ -149,7 +149,7 @@ Comments_jdo retval = null;
         }
         update_ps.setObject(dirtyfieldcount+1,record.getField(record.getIdentityName())[0]);
         int updated = update_ps.executeUpdate();
-        con.commit();
+        //con.commit();
         finished = true;
         if(updated == 0){
           throw new Exception("No rows updated.");
@@ -205,7 +205,7 @@ Comments_jdo retval = null;
         }
         int updated = insert_ps.executeUpdate();
         record.setIdcomments(NEXT_SQL.getIdentity(this.m_con));
-        con.commit();
+        //con.commit();
         finished = true;
         if(updated == 0){
           throw new Exception("No rows added.");
@@ -218,7 +218,7 @@ Comments_jdo retval = null;
       }
   }finally{
 			 if(finished){
-				  con.commit();
+				 // con.commit();
 			  }
 			  con.setAutoCommit(true);
   }
