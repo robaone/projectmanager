@@ -116,6 +116,15 @@ public abstract class BaseRecordHandler<T> extends BaseAction<T> {
 
 						@Override
 						protected void run() throws Exception {
+							jo.remove("created_by");
+							jo.remove("creation_date");
+							jo.remove("modified_by");
+							jo.remove("modification_date");
+							jo.remove("modification_host");
+							jo.remove("creation_host");
+							jo.put("modification_date", new java.util.Date());
+							jo.put("modification_host", getSessionData().getRemoteHost());
+							jo.put("modified_by", getSessionData().getUser().getUsername());
 							T comment = save(jo, id,this);
 							getResponse().addData(comment);
 						}
@@ -137,6 +146,15 @@ public abstract class BaseRecordHandler<T> extends BaseAction<T> {
 
 					@Override
 					protected void run() throws Exception {
+						jo.remove("created_by");
+						jo.remove("creation_date");
+						jo.remove("modified_by");
+						jo.remove("modification_date");
+						jo.remove("modification_host");
+						jo.remove("creation_host");
+						jo.put("creation_date", new java.util.Date());
+						jo.put("creation_host", getSessionData().getRemoteHost());
+						jo.put("created_by", getSessionData().getUser().getUsername());
 						T newcomment = saveNew(jo,this);
 						getResponse().addData(newcomment);
 					}
@@ -152,7 +170,7 @@ public abstract class BaseRecordHandler<T> extends BaseAction<T> {
 		new FunctionCall(){
 
 			@Override
-			protected void run(JSONObject jo) throws Exception {
+			protected void run(final JSONObject jo) throws Exception {
 				final String id = this.findXPathString("//idcomments");
 				if(!FieldValidator.isNumber(id) || Integer.parseInt(id) < 1){
 					getResponse().setStatus(JSONResponse.FIELD_VALIDATION_ERROR);
