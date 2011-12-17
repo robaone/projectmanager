@@ -1,5 +1,6 @@
 package com.robaone.api.servlet;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -8,7 +9,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.XML;
 
 import com.robaone.api.business.ActionDispatcher;
 import com.robaone.api.data.AppDatabase;
@@ -54,16 +57,39 @@ public class DataServiceServlet extends HttpServlet {
 		}
 		sdata.setRemoteHost(request.getRemoteHost());
 		ActionDispatcher dsp = new ActionDispatcher(sdata,request);
+		String content_type = "text/plain";
 		try{
-			response.setContentType("text/html");
-			dsp.runFormAction(request.getParameterMap(),response.getOutputStream());
+			try{
+				String type = request.getParameter("_type");
+				if(type.equals("xml")){
+					content_type = "text/xml";
+				}
+			}catch(Exception e){}
+			response.setContentType(content_type);
+			if(content_type.equals("text/xml")){
+				ByteArrayOutputStream bout = new ByteArrayOutputStream();
+				dsp.runFormAction(request.getParameterMap(),bout);
+				String xml = XML.toString(new JSONObject(bout.toString()));
+				xml = "<?xml version=\"1.0\" ?>\n"+xml;
+				response.getOutputStream().print(xml);
+			}else{
+				dsp.runFormAction(request.getParameterMap(),response.getOutputStream());
+			}
 		}catch(Exception e){
 			DSResponse<Error> dsr = new DSResponse<Error>();
 			dsr.getResponse().setStatus(JSONResponse.GENERAL_ERROR);
 			dsr.getResponse().setError(e.getClass().getName()+": "+e.getMessage());
 			PrintWriter pw = new PrintWriter(response.getOutputStream());
 			JSONObject jo = new JSONObject(dsr);
-			pw.print(jo.toString());
+			if(content_type.equals("text/xml")){
+				try {
+					pw.print("<?xml version=\"1.0\" ?>\n"+XML.toString(jo));
+				} catch (JSONException e1) {
+					throw new ServletException(e1);
+				}
+			}else{
+				pw.print(jo.toString());
+			}
 			pw.flush();
 			pw.close();
 		}
