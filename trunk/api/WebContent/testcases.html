@@ -6,6 +6,7 @@
 </head>
 <body>
 <form action="DataService" method="POST" target="result">
+<input type="hidden" name="_type" value="xml"/>
 <b>Login</b><br/>
 Username:<input type="text" name="username" /><br/>
 Password:<input type="password" name="password" /><br/>
@@ -18,6 +19,7 @@ Password:<input type="password" name="password" /><br/>
 <hr/>
 <!-- register -->
 <form action="DataService" method="POST" target="result">
+<input type="hidden" name="_type" value="xml"/>
 <b>Register</b><br/>
 First Name:<input type="text" name="firstname"/><br/>
 Last Name:<input type="text" name="lastname"/><br/>
@@ -30,6 +32,7 @@ Re-type Password:<input type="password" name="password_repeat"/><br/>
 <hr/>
 <!-- Request Activation -->
 <form action="DataService" method="POST" target="result">
+<input type="hidden" name="_type" value="xml"/>
 <b>Request Activation</b><br/>
 Username:<input type="text" name="username"/><br/>
 Password:<input type="password" name="password"/><br/>
@@ -38,6 +41,7 @@ Password:<input type="password" name="password"/><br/>
 <hr/>
 <!-- Activate an account -->
 <form action="DataService" method="POST" target="result">
+<input type="hidden" name="_type" value="xml"/>
 <b>Activate Account</b><br/>
 Username:<input type="text" name="username"/><br/>
 Password:<input type="password" name="password"/><br/>
@@ -48,12 +52,14 @@ Token:<input type="text" name="token"/><br/>
 <!-- Request password reset -->
 <b>Request Password Reset</b><br/>
 <form action="DataService" method="POST" target="result">
+<input type="hidden" name="_type" value="xml"/>
 Username:<input type="text" name="username"/><br/>
 <input type="hidden" name="_action" value="Login.requestPasswordReset"/>
 <input type="submit"/></form>
 <hr/>
 <!-- Reset Password -->
 <form action="DataService" method="POST" target="result">
+<input type="hidden" name="_type" value="xml"/>
 <b>Create a new passord</b><br/>
 Username:<input type="text" name="username"/><br/>
 Password:<input type="password" name="password"/><br/>
@@ -67,6 +73,7 @@ Token:<input type="text" name="token"/><br/>
 <hr/>
 <!-- Perform an action -->
 <form action="function_call" method="POST" target="result">
+<input type="hidden" name="type" value="xml"/>
 <b>Perform Action</b><br/>
 <SELECT name="action">
 <OPTION>Users.list</OPTION>
@@ -77,6 +84,50 @@ Token:<input type="text" name="token"/><br/>
 <OPTION>Users.getRoles</OPTION>
 <OPTION>Users.addRole</OPTION>
 <OPTION>Users.removeRole</OPTION>
+<OPTION>Clients.create</OPTION>
+<option>Clients.delete</option>
+<option>Clients.get</option>
+<option>Clients.list</option>
+<option>Clients.put</option>
+<option>Comments.create</option>
+<option>Comments.delete</option>
+<option>Comments.get</option>
+<option>Comments.list</option>
+<option>Comments.put</option>
+<option>Contractors.list</option>
+<option>Contractors.get</option>
+<option>Contractors.create</option>
+<option>Contractors.put</option>
+<option>Contractors.delete</option>
+<option>Meetings.list</option>
+<option>Meetings.get</option>
+<option>Meetings.list</option>
+<option>Meetings.put</option>
+<option>Meetings.delete</option>
+<option>Payment.prepare</option>
+<option>Payment.status</option>
+<option>Payment.submit</option>
+<option>Projects.cancel</option>
+<option>Projects.create</option>
+<option>Projects.delete</option>
+<option>Projects.get</option>
+<option>Projects.list</option>
+<option>Projects.put</option>
+<option>Ratings.create</option>
+<option>Ratings.delete</option>
+<option>Ratings.get</option>
+<option>Ratings.list</option>
+<option>Ratings.put</option>
+<option>Settings.create</option>
+<option>Settings.delete</option>
+<option>Settings.get</option>
+<option>Settings.list</option>
+<option>Settings.put</option>
+<option>Vendor.create</option>
+<option>Vendor.delete</option>
+<option>Vendor.get</option>
+<option>Vendor.list</option>
+<option>Vendor.put</option>
 </SELECT>
 Data:<input type="text" name="data"/><br/>
 <input type="submit"/></form>
