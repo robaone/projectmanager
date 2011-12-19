@@ -47,7 +47,7 @@ public class ActionDispatcher {
 	}
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void runFormAction(Map parameterMap,
-			ServletOutputStream out) throws Exception {
+			OutputStream out) throws Exception {
 		try{
 			String action = this.getParameter(parameterMap,"_action");
 			AppDatabase.writeLog("00009: Running Action, "+action);
