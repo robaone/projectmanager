@@ -58,15 +58,13 @@ public class DataServiceServlet extends HttpServlet {
 		sdata.setRemoteHost(request.getRemoteHost());
 		ActionDispatcher dsp = new ActionDispatcher(sdata,request);
 		String content_type = "text/plain";
+		String type = "json";
 		try{
 			try{
-				String type = request.getParameter("_type");
-				if(type.equals("xml")){
-					content_type = "text/xml";
-				}
+				type = request.getParameter("_type");
 			}catch(Exception e){}
 			response.setContentType(content_type);
-			if(content_type.equals("text/xml")){
+			if(type.equalsIgnoreCase("xml")){
 				ByteArrayOutputStream bout = new ByteArrayOutputStream();
 				dsp.runFormAction(request.getParameterMap(),bout);
 				String xml = XML.toString(new JSONObject(bout.toString()));
@@ -81,7 +79,7 @@ public class DataServiceServlet extends HttpServlet {
 			dsr.getResponse().setError(e.getClass().getName()+": "+e.getMessage());
 			PrintWriter pw = new PrintWriter(response.getOutputStream());
 			JSONObject jo = new JSONObject(dsr);
-			if(content_type.equals("text/xml")){
+			if(type.equalsIgnoreCase("xml")){
 				try {
 					pw.print("<?xml version=\"1.0\" ?>\n"+XML.toString(jo));
 				} catch (JSONException e1) {
