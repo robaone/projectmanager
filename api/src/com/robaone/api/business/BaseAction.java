@@ -47,7 +47,7 @@ import com.robaone.api.oauth.ROAPIOAuthProvider;
 import com.robaone.dbase.hierarchial.ConfigManager;
 import com.robaone.dbase.hierarchial.ConnectionBlock;
 
-public class BaseAction<T> {
+abstract public class BaseAction<T> {
 	private OutputStream out;
 	private SessionData session;
 	private HttpServletRequest request;
@@ -89,7 +89,9 @@ public class BaseAction<T> {
 		builder = factory.newDocumentBuilder();
 		xfactory = XPathFactory.newInstance();
 		xpath = xfactory.newXPath();
+		this.setDSResponse(newDSResponse());
 	}
+	abstract public DSResponse<T> newDSResponse();
 	public String findXPathText(String xmldoc,String path) throws SAXException, IOException, XPathExpressionException{
 		ByteArrayInputStream bin = new ByteArrayInputStream(xmldoc.getBytes());
 		Document doc = builder.parse(bin);
@@ -121,7 +123,7 @@ public class BaseAction<T> {
 	public SessionData getSessionData(){
 		return session;
 	}
-	public void setDSResponse(DSResponse<T> r){
+	private void setDSResponse(DSResponse<T> r){
 		this.dsr = r;
 	}
 	public JSONResponse<T> getResponse(){

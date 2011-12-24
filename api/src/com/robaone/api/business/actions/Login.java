@@ -34,7 +34,6 @@ public class Login extends BaseAction<JSONObject> {
 	public static final String EMAILADDRESS_FIELD = "emailaddress";
 	public Login(OutputStream out,SessionData session,HttpServletRequest r) throws ParserConfigurationException{
 		super(out,session,r);
-		this.setDSResponse(new DSResponse<JSONObject>());
 	}
 	public void logout(final JSONObject data) throws Exception {
 		try{
@@ -568,5 +567,9 @@ public class Login extends BaseAction<JSONObject> {
 			getResponse().setStatus(JSONResponse.GENERAL_ERROR);
 			getResponse().setError(e.getClass().getName()+": "+e.getMessage());
 		}
+	}
+	@Override
+	public DSResponse<JSONObject> newDSResponse() {
+		return new DSResponse<JSONObject>();
 	}
 }

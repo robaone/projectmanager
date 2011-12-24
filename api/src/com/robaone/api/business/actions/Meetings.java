@@ -12,6 +12,7 @@ import com.robaone.api.business.BaseRecordHandler;
 import com.robaone.api.data.SessionData;
 import com.robaone.api.data.jdo.Meetings_jdo;
 import com.robaone.api.data.jdo.Meetings_jdoManager;
+import com.robaone.api.json.DSResponse;
 import com.robaone.api.json.JSONResponse;
 import com.robaone.dbase.hierarchial.ConnectionBlock;
 
@@ -72,6 +73,11 @@ public class Meetings extends BaseRecordHandler<Meetings_jdo> {
 			getResponse().setStatus(JSONResponse.GENERAL_ERROR);
 			getResponse().setError("Could not find meeting to delete");
 		}
+	}
+
+	@Override
+	public DSResponse<Meetings_jdo> newDSResponse() {
+		return new DSResponse<Meetings_jdo>();
 	}
 
 }

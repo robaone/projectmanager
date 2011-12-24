@@ -14,6 +14,7 @@ import org.json.JSONObject;
 import org.json.XML;
 
 import com.robaone.api.business.ActionDispatcher;
+import com.robaone.api.business.FieldValidator;
 import com.robaone.api.data.AppDatabase;
 import com.robaone.api.data.Error;
 import com.robaone.api.data.SessionData;
@@ -62,6 +63,9 @@ public class DataServiceServlet extends HttpServlet {
 		try{
 			try{
 				type = request.getParameter("_type");
+				if(!FieldValidator.exists(type)){
+					type = "json";
+				}
 			}catch(Exception e){}
 			response.setContentType(content_type);
 			if(type.equalsIgnoreCase("xml")){
