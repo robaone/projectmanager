@@ -21,7 +21,6 @@ public class Comments extends BaseRecordHandler<Comments_jdo> {
 	public Comments(OutputStream o, SessionData d, HttpServletRequest request)
 			throws ParserConfigurationException {
 		super(o, d, request);
-		this.setDSResponse(new DSResponse<Comments_jdo>());
 	}
 	public void setData(ConnectionBlock conb) throws SQLException {
 		Comments_jdo comment = Comments_jdoManager.bindComments(conb.getResultSet());
@@ -63,5 +62,9 @@ public class Comments extends BaseRecordHandler<Comments_jdo> {
 			getResponse().setStatus(JSONResponse.GENERAL_ERROR);
 			getResponse().setError("Could not find comment to delete");
 		}
+	}
+	@Override
+	public DSResponse<Comments_jdo> newDSResponse() {
+		return new DSResponse<Comments_jdo>();
 	}
 }

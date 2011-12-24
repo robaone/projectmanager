@@ -9,6 +9,7 @@ import org.json.JSONObject;
 
 import com.robaone.api.business.BaseAction;
 import com.robaone.api.data.SessionData;
+import com.robaone.api.json.DSResponse;
 
 public class Projects extends BaseAction<JSONObject> {
 
@@ -57,6 +58,10 @@ public class Projects extends BaseAction<JSONObject> {
 		}catch(Exception e){
 			this.sendError(e);
 		}
+	}
+	@Override
+	public DSResponse<JSONObject> newDSResponse() {
+		return new DSResponse<JSONObject>();
 	}
 
 }

@@ -16,6 +16,7 @@ import com.robaone.api.data.jdo.Bids_jdoManager;
 import com.robaone.api.data.jdo.Projects_jdo;
 import com.robaone.api.data.jdo.Projects_jdoManager;
 import com.robaone.api.data.jdo.User_jdo;
+import com.robaone.api.json.DSResponse;
 import com.robaone.api.json.JSONResponse;
 import com.robaone.dbase.hierarchial.ConnectionBlock;
 
@@ -152,5 +153,9 @@ public class Bids extends BaseAction<JSONObject> {
 		}catch(Exception e){
 			this.sendError(e);
 		}
+	}
+	@Override
+	public DSResponse<JSONObject> newDSResponse() {
+		return new DSResponse<JSONObject>();
 	}
 }

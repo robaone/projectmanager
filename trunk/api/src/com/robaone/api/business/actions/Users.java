@@ -36,7 +36,6 @@ public class Users extends BaseAction<JSONObject> implements Action {
 	public Users(OutputStream o, SessionData d, HttpServletRequest r)
 			throws ParserConfigurationException {
 		super(o, d, r);
-		this.setDSResponse(new DSResponse<JSONObject>());
 	}
 
 	protected void filterRoles(int... roles){
@@ -360,5 +359,10 @@ public class Users extends BaseAction<JSONObject> implements Action {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public DSResponse<JSONObject> newDSResponse() {
+		return new DSResponse<JSONObject>();
 	}
 }
