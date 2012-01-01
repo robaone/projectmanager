@@ -12,4 +12,9 @@ public class Bids_jdo extends RO_JDO {
 		return null;
 	}
 
+	public void setStatus(int retracted) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

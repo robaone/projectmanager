@@ -10,6 +10,7 @@ import org.json.XML;
 
 import com.robaone.api.business.BaseAction;
 import com.robaone.api.business.FieldValidator;
+import com.robaone.api.data.DatabaseImpl;
 import com.robaone.api.data.SessionData;
 import com.robaone.api.data.jdo.Bids_jdo;
 import com.robaone.api.data.jdo.Bids_jdoManager;
@@ -22,6 +23,10 @@ import com.robaone.dbase.hierarchial.ConnectionBlock;
 
 public class Bids extends BaseAction<JSONObject> {
 
+	public static final int RETRACTED = 3;
+	public static final int SUBMITTED = 0;
+	public static final int ACCEPTED = 1;
+	public static final int REJECTED = 2;
 	public Bids(OutputStream o, SessionData d, HttpServletRequest request)
 			throws ParserConfigurationException {
 		super(o, d, request);
@@ -71,88 +76,215 @@ public class Bids extends BaseAction<JSONObject> {
 		}.run(this, jo);
 	}
 	public void get(JSONObject jo){
-		try{
-			//TODO: Implement
-		}catch(Exception e){
-			this.sendError(e);
-		}
+		new FunctionCall(){
+
+			@Override
+			protected void run(JSONObject jo) throws Exception {
+				final String idbids = this.findXPathString("//idbids");
+				if(!FieldValidator.isNumber(idbids)){
+					getResponse().setStatus(JSONResponse.FIELD_VALIDATION_ERROR);
+					getResponse().addError("idbids", "You must enter a valid bid id");
+				}else{
+					new ConnectionBlock(){
+
+						@Override
+						protected void run() throws Exception {
+							Bids_jdoManager man = new Bids_jdoManager(this.getConnection());
+							Bids_jdo record = man.getBids(new Integer(idbids));
+							if(record != null){
+								JSONObject jo = man.toJSONObject(record);
+								getResponse().addData(jo);
+							}else{
+								getResponse().setStatus(JSONResponse.GENERAL_ERROR);
+								getResponse().setError("Could not find bid");
+							}
+						}
+
+					}.run(new DatabaseImpl().getConnectionManager());
+				}
+			}
+
+		}.run(this, jo);
 	}
 	public void put(JSONObject jo){
-		try{
-			//TODO: Implement
-		}catch(Exception e){
-			this.sendError(e);
-		}
+		new FunctionCall(){
+
+			@Override
+			protected void run(final JSONObject jo) throws Exception {
+				if(!FieldValidator.isNumber(findXPathString("//idbids"))){
+					getResponse().setStatus(JSONResponse.FIELD_VALIDATION_ERROR);
+					getResponse().addError("idbids", "You must enter a valid bid id");
+				}else{
+					new ConnectionBlock(){
+
+						@Override
+						protected void run() throws Exception {
+							Bids_jdoManager man = new Bids_jdoManager(this.getConnection());
+							Bids_jdo record = man.bindBidsJSON(jo);
+							man.save(record);
+						}
+
+					}.run(new DatabaseImpl().getConnectionManager());
+				}
+			}
+
+		}.run(this, jo);
 	}
 	public void create(JSONObject jo){
-		try{
-			//TODO: Implement
-		}catch(Exception e){
-			this.sendError(e);
-		}
+		new FunctionCall(){
+
+			@Override
+			protected void run(final JSONObject jo) throws Exception {
+				new ConnectionBlock(){
+
+					@Override
+					protected void run() throws Exception {
+						Bids_jdoManager man = new Bids_jdoManager(this.getConnection());
+						jo.remove("idbids");
+						Bids_jdo record = man.bindBidsJSON(jo);
+						man.save(record);
+					}
+
+				}.run(new DatabaseImpl().getConnectionManager());
+			}
+
+		}.run(this, jo);
 	}
 	public void delete(JSONObject jo){
-		try{
-			//TODO: Implement
-		}catch(Exception e){
-			this.sendError(e);
-		}
+		new FunctionCall(){
+
+			@Override
+			protected void run(JSONObject jo) throws Exception {
+				if(!FieldValidator.isNumber(findXPathString("//idbids"))){
+					getResponse().setStatus(JSONResponse.FIELD_VALIDATION_ERROR);
+					getResponse().addError("idbids", "You must enter a valid bid id");
+				}else{
+					new ConnectionBlock(){
+
+						@Override
+						protected void run() throws Exception {
+							Bids_jdoManager man = new Bids_jdoManager(this.getConnection());
+							Bids_jdo record = man.getBids(new Integer(findXPathString("//idbids")));
+							if(record != null){
+								man.delete(record);
+							}else{
+								getResponse().setStatus(JSONResponse.GENERAL_ERROR);
+								getResponse().setError("Could not find bid");
+							}
+						}
+
+					}.run(new DatabaseImpl().getConnectionManager());
+				}
+			}
+
+		}.run(this, jo);
 	}
 	public void retract(JSONObject jo){
-		try{
-			//TODO: Implement
-		}catch(Exception e){
-			this.sendError(e);
-		}
+		new FunctionCall(){
+
+			@Override
+			protected void run(JSONObject jo) throws Exception {
+				final String bidid = findXPathString("//idbids");
+				if(!FieldValidator.isNumber(bidid)){
+					getResponse().setStatus(JSONResponse.FIELD_VALIDATION_ERROR);
+					getResponse().addError("idbids", "You must enter a valid bid id");
+				}else{
+					new ConnectionBlock(){
+
+						@Override
+						protected void run() throws Exception {
+							Bids_jdoManager man = new Bids_jdoManager(this.getConnection());
+							Bids_jdo record = man.getBids(new Integer(bidid));
+							if(record != null){
+								record.setStatus(Bids.RETRACTED);
+							}else{
+								getResponse().setStatus(JSONResponse.GENERAL_ERROR);
+								getResponse().setError("Could not find bid");
+							}
+						}
+						
+					}.run(new DatabaseImpl().getConnectionManager());
+				}
+			}
+			
+		}.run(this, jo);
 	}
 	public void addcomment(JSONObject jo){
-		try{
-			//TODO: Implement
-		}catch(Exception e){
-			this.sendError(e);
-		}
+		new FunctionCall(){
+
+			@Override
+			protected void run(JSONObject jo) throws Exception {
+				// TODO Auto-generated method stub
+
+			}
+
+		}.run(this, jo);
 	}
 	public void accept(JSONObject jo){
-		try{
-			//TODO: Implement
-		}catch(Exception e){
-			this.sendError(e);
-		}
+		new FunctionCall(){
+
+			@Override
+			protected void run(JSONObject jo) throws Exception {
+				// TODO Auto-generated method stub
+
+			}
+
+		}.run(this, jo);
 	}
 	public void complete(JSONObject jo){
-		try{
-			//TODO: Implement
-		}catch(Exception e){
-			this.sendError(e);
-		}
+		new FunctionCall(){
+
+			@Override
+			protected void run(JSONObject jo) throws Exception {
+				// TODO Auto-generated method stub
+
+			}
+
+		}.run(this, jo);
 	}
 	public void cancel(JSONObject jo){
-		try{
-			//TODO: Implement
-		}catch(Exception e){
-			this.sendError(e);
-		}
+		new FunctionCall(){
+
+			@Override
+			protected void run(JSONObject jo) throws Exception {
+				// TODO Auto-generated method stub
+
+			}
+
+		}.run(this, jo);
 	}
 	public void schedulemeeting(JSONObject jo){
-		try{
-			//TODO: Implement
-		}catch(Exception e){
-			this.sendError(e);
-		}
+		new FunctionCall(){
+
+			@Override
+			protected void run(JSONObject jo) throws Exception {
+				// TODO Auto-generated method stub
+
+			}
+
+		}.run(this, jo);
 	}
 	public void reject(JSONObject jo){
-		try{
-			//TODO: Implement
-		}catch(Exception e){
-			this.sendError(e);
-		}
+		new FunctionCall(){
+
+			@Override
+			protected void run(JSONObject jo) throws Exception {
+				// TODO Auto-generated method stub
+
+			}
+
+		}.run(this, jo);
 	}
 	public void requestinformation(JSONObject jo){
-		try{
-			//TODO: Implement
-		}catch(Exception e){
-			this.sendError(e);
-		}
+		new FunctionCall(){
+
+			@Override
+			protected void run(JSONObject jo) throws Exception {
+				// TODO Auto-generated method stub
+
+			}
+
+		}.run(this, jo);
 	}
 	@Override
 	public DSResponse<JSONObject> newDSResponse() {
