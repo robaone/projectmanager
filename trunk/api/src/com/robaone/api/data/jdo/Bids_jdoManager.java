@@ -37,5 +37,22 @@ public class Bids_jdoManager {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	public Bids_jdo bindBidsJSON(JSONObject jo) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	public void save(Bids_jdo record) {
+		// TODO Auto-generated method stub
+	}
 
+	public Bids_jdo newBids() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void delete(Bids_jdo record) {
+		// TODO Auto-generated method stub
+		
+	}
 }
