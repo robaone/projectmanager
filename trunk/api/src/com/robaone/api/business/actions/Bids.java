@@ -47,13 +47,14 @@ public class Bids extends BaseAction<JSONObject> {
 
 						@Override
 						protected void run() throws Exception {
+							Projects_jdoManager pman = new Projects_jdoManager(this.getConnection());
 							Bids_jdoManager man = new Bids_jdoManager(this.getConnection());
 							String sql = "select "+man.getSQL(Bids_jdoManager.FIELDS)+" from "+Bids_jdoManager.getTableName()+
-									","+Projects_jdoManager.getTableName()+" where "+
-									Projects_jdoManager.getTableName()+"."+Projects_jdo.IDPROJECTS+" = "+
-									Bids_jdoManager.getTableName()+"."+Bids_jdo.IDPROJECTS+" and "+
-									Projects_jdoManager.getTableName()+"."+Projects_jdo.CONSUMERID+" = ? and "+
-									Projects_jdoManager.getTableName()+"."+Projects_jdo.IDPROJECTS+" = ?";
+									","+pman.getTableName()+" where "+
+									pman.getTableName()+"."+Projects_jdo.IDPROJECTS+" = "+
+									man.getTableName()+"."+Bids_jdo.IDPROJECTS+" and "+
+									pman.getTableName()+"."+Projects_jdo.CONSUMERID+" = ? and "+
+									pman.getTableName()+"."+Projects_jdo.IDPROJECTS+" = ?";
 							this.setPreparedStatement(this.getConnection().prepareStatement(sql));
 							this.getPreparedStatement().setInt(1, user.getIduser());
 							this.getPreparedStatement().setInt(2, new Integer(idprojects));
