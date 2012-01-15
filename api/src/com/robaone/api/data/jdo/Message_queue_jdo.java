@@ -1,5 +1,7 @@
 /*
-* Created on Aug 25, 2011
+* Created on Jan 15, 2012
+* Author Ansel Robateau
+* http://www.robaone.com
 *
 */
 package com.robaone.api.data.jdo;
@@ -115,13 +117,17 @@ public class Message_queue_jdo extends RO_JDO{
       return null;
     }
   }
-  public void setHtml(Boolean html){
+  public void setHtml(Integer html){
     this.setField(HTML,html);
   }
-  public Boolean getHtml(){
+  public Integer getHtml(){
     Object[] val = this.getField(HTML);
     if(val != null && val[0] != null){
-      return (Boolean)val[0];
+      if(val[0] instanceof java.lang.Short){
+        return new Integer(((java.lang.Short)val[0]).toString());
+      }else{
+        return (Integer)val[0];
+      }
     }else{
       return null;
     }

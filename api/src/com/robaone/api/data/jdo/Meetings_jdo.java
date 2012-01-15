@@ -1,5 +1,7 @@
 /*
-* Created on Dec 12, 2011
+* Created on Jan 15, 2012
+* Author Ansel Robateau
+* http://www.robaone.com
 *
 */
 package com.robaone.api.data.jdo;

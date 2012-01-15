@@ -8,7 +8,7 @@ import java.sql.Connection;
 import java.text.SimpleDateFormat;
 import java.util.Properties;
 
-import com.robaone.dbase.hierarchial.HDBConnectionManager;
+import com.robaone.dbase.HDBConnectionManager;
 
 abstract public class BaseProgram {
 	private FileOutputStream fout;
@@ -83,11 +83,6 @@ abstract public class BaseProgram {
 				m_con.close();
 			}
 
-			@Override
-			public String getDriver() {
-				return props.getProperty("db.driver");
-			}
-			
 		};
 	}
 }

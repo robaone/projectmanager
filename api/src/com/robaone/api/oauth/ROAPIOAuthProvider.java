@@ -43,7 +43,7 @@ import com.robaone.api.data.jdo.Apps_jdoManager;
 import com.robaone.api.data.jdo.User_jdo;
 import com.robaone.api.data.jdo.User_jdoManager;
 import com.robaone.dbase.hierarchial.ConfigManager;
-import com.robaone.dbase.hierarchial.ConnectionBlock;
+import com.robaone.dbase.ConnectionBlock;
 
 import net.oauth.OAuthAccessor;
 import net.oauth.OAuthConsumer;
@@ -83,7 +83,7 @@ public class ROAPIOAuthProvider {
 				this.getPreparedStatement().setString(1, consumer_key);
 				this.setResultSet(this.getPreparedStatement().executeQuery());
 				if(this.getResultSet().next()){
-					Apps_jdo app = Apps_jdoManager.bindApps(getResultSet());
+					Apps_jdo app = man.bindApps(getResultSet());
 					// Create OAuthConsumer w/ key and secret
 					AppDatabase.writeLog("00021:  Creating consumer object");
 					OAuthConsumer consumer = new OAuthConsumer(
@@ -128,7 +128,7 @@ public class ROAPIOAuthProvider {
 				this.getPreparedStatement().setString(2, consumer_token);
 				this.setResultSet(this.getPreparedStatement().executeQuery());
 				if(this.getResultSet().next()){
-					App_credentials_jdo cred = App_credentials_jdoManager.bindApp_credentials(getResultSet());
+					App_credentials_jdo cred = man.bindApp_credentials(getResultSet());
 					Apps_jdoManager aman = new Apps_jdoManager(this.getConnection());
 					Apps_jdo app = aman.getApps(cred.getIdapps());
 					OAuthConsumer consumer = new OAuthConsumer(app.getCallback_url(), app.getConsumer_key(), app.getConsumer_secret(), null);
@@ -176,7 +176,7 @@ public class ROAPIOAuthProvider {
 				this.getPreparedStatement().setString(1, accessor.requestToken);
 				this.setResultSet(this.getPreparedStatement().executeQuery());
 				if(this.getResultSet().next()){
-					final App_credentials_jdo cred = App_credentials_jdoManager.bindApp_credentials(getResultSet());
+					final App_credentials_jdo cred = man.bindApp_credentials(getResultSet());
 					cred.setActive(1);
 					ConnectionBlock block = new ConnectionBlock(){
 
@@ -187,7 +187,7 @@ public class ROAPIOAuthProvider {
 							this.getPreparedStatement().setString(1, userId);
 							this.setResultSet(this.getPreparedStatement().executeQuery());
 							if(this.getResultSet().next()){
-								User_jdo user = User_jdoManager.bindUser(getResultSet());
+								User_jdo user = uman.bindUser(getResultSet());
 								cred.setIduser(user.getIduser());
 								man.save(cred);
 							}else{
@@ -245,7 +245,7 @@ public class ROAPIOAuthProvider {
 				this.getPreparedStatement().setString(1, consumer_key);
 				this.setResultSet(this.getPreparedStatement().executeQuery());
 				if(this.getResultSet().next()){
-					final Apps_jdo app = Apps_jdoManager.bindApps(getResultSet());
+					final Apps_jdo app = aman.bindApps(getResultSet());
 					ConnectionBlock block = new ConnectionBlock(){
 
 						@Override
@@ -307,7 +307,7 @@ public class ROAPIOAuthProvider {
 				this.getPreparedStatement().setString(1, accessor.requestToken);
 				this.setResultSet(this.getPreparedStatement().executeQuery());
 				if(this.getResultSet().next()){
-					App_credentials_jdo cred = App_credentials_jdoManager.bindApp_credentials(getResultSet());
+					App_credentials_jdo cred = man.bindApp_credentials(getResultSet());
 					cred.setAccess_token(accessor.accessToken);
 					man.save(cred);
 				}else{

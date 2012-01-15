@@ -21,7 +21,7 @@ import com.robaone.api.data.AppDatabase;
 import com.robaone.api.data.jdo.Message_queue_jdo;
 import com.robaone.api.data.jdo.Message_queue_jdoManager;
 import com.robaone.api.util.BaseProgram;
-import com.robaone.dbase.hierarchial.ConnectionBlock;
+import com.robaone.dbase.ConnectionBlock;
 
 public class msgsend extends BaseProgram {
 
@@ -113,7 +113,7 @@ public class msgsend extends BaseProgram {
 
 			// We need a multipart message to hold the attachment.
 			MimeBodyPart mbp1 = new MimeBodyPart();
-			if(message_jdo.getHtml()){
+			if(message_jdo.getHtml() != null && message_jdo.getHtml() == 1){
 				mbp1.setContent(message_jdo.getBody(),"text/html");
 			}else{
 				mbp1.setText(text);

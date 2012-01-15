@@ -1,6 +1,8 @@
 /*
-* Created on Dec 12, 2011
+* Created on Jan 15, 2012
 *
+* Author: Ansel Robateau
+*         http://www.robaone.com
 */
 package com.robaone.api.data.jdo;
 
@@ -17,24 +19,29 @@ import java.util.Iterator;
 
 public class Comments_jdoManager {
   private Connection m_con;
-  private final static String SELECT = "select ~ from #TABLE# where idcomments = ?";
+  private String m_options = "";
+  private final static String SELECT = "select ~ from #TABLE# #OPTION#  where idcomments = ?";
   private final static String INSERT = "insert into #TABLE# ";
-  private final static String QUERY = "select ~ from #TABLE# where ";
+  private final static String QUERY = "select ~ from #TABLE# #OPTION#  where ";
   private final static String UPDATE = "update #TABLE# set ";
-  private final static String SEARCH = "select COUNT(#TABLE#.IDCOMMENTS) from #TABLE# where #TABLE#.IDCOMMENTS = ?";
+  private final static String SEARCH = "select COUNT(1) from #TABLE# #OPTION# where #TABLE#.IDCOMMENTS = ?";
   private final static String DELETE = "delete from #TABLE# where #TABLE#.IDCOMMENTS = ?";
   private final static String IDENTITY = "IDCOMMENTS";
-  private final static RO_JDO_IdentityManager NEXT_SQL = new RO_JDO_MySQL();
+  private RO_JDO_IdentityManager<Integer> NEXT_SQL;
   public final static String FIELDS = "#TABLE#.IDCOMMENTS,#TABLE#.REFERENCEID,#TABLE#.COMMENT,#TABLE#.CREATED_BY,#TABLE#.CREATION_DATE,#TABLE#.CREATION_HOST,#TABLE#.MODIFIED_BY,#TABLE#.MODIFIED_DATE,#TABLE#.MODIFICATION_HOST,#TABLE#._VOID";
   private String TABLE = "COMMENTS";
   protected boolean debug = false;
   public Comments_jdoManager(Connection con){
     this.m_con = con;
+    this.setIdentityClass();
     try{
     	if(System.getProperty("debug").equals("Y")){
     		debug = true;
     	}
     }catch(Exception e){}
+  }
+  protected void setIdentityClass(){
+     this.NEXT_SQL = new RO_JDO_MySQL<Integer>();
   }
   protected Connection getConnection(){
     return this.m_con;
@@ -45,7 +52,7 @@ public class Comments_jdoManager {
   public void setTableName(String tablename){
     TABLE = tablename;
   }
-  public static Comments_jdo bindComments(ResultSet rs) throws SQLException{
+  public Comments_jdo bindComments(ResultSet rs) throws SQLException{
 Comments_jdo retval = null;
     retval = Comments_jdoManager.createObject(rs);
     return retval;
@@ -98,8 +105,20 @@ Comments_jdo retval = null;
 
     return retval;
   }
+  private void setTableOptions(String str){
+    this.m_options = str;
+  }
+  private String getTableOptions(){
+    return this.m_options;
+  }
   public void save(Comments_jdo record) throws Exception {
+    this.save(record,false);
+  }
+  public void save(Comments_jdo record,boolean dirty) throws Exception {
     Connection con = this.getConnection();
+    if(dirty){
+      this.setTableOptions("");
+    }
     boolean finished = false;
     if(record.getDirtyFieldCount() == 0){
       return;
@@ -149,7 +168,6 @@ Comments_jdo retval = null;
         }
         update_ps.setObject(dirtyfieldcount+1,record.getField(record.getIdentityName())[0]);
         int updated = update_ps.executeUpdate();
-        //con.commit();
         finished = true;
         if(updated == 0){
           throw new Exception("No rows updated.");
@@ -204,8 +222,7 @@ Comments_jdo retval = null;
           field_index ++;
         }
         int updated = insert_ps.executeUpdate();
-        record.setIdcomments(NEXT_SQL.getIdentity(this.m_con));
-        //con.commit();
+        record.setIdcomments(new Integer(NEXT_SQL.getIdentity(this.getTableName(),this.m_con).toString()));
         finished = true;
         if(updated == 0){
           throw new Exception("No rows added.");
@@ -216,13 +233,8 @@ Comments_jdo retval = null;
         if(debug) System.out.println(updated+" rows added.");
         insert_ps.close();
       }
-  }finally{
-			 if(finished){
-				 // con.commit();
-			  }
-			  con.setAutoCommit(true);
+    }finally{}
   }
-}
 	protected void handleAfterInsert(Comments_jdo record) {}
 	protected void handleAfterUpdate(Comments_jdo record) {}
 	protected void handleBeforeUpdate(Comments_jdo record) {}
@@ -258,9 +270,10 @@ Comments_jdo retval = new Comments_jdo();
   public String getSQL(String sql){
     String retval = "";
     retval = sql.replaceAll("#TABLE#",TABLE);
+    retval = retval.replaceAll("#OPTION#",this.getTableOptions());
     return retval;
   }
-  public static JSONObject toJSONObject(Comments_jdo record) throws Exception {
+  public JSONObject toJSONObject(Comments_jdo record) throws Exception {
     JSONObject retval = null;
     if(record != null){
       JSONObject object = new JSONObject();
@@ -273,11 +286,11 @@ Comments_jdo retval = new Comments_jdo();
     }
     return retval;
   }
-  public static void bindCommentsJSON(Comments_jdo record,String jsondata) throws Exception {
+  public void bindCommentsJSON(Comments_jdo record,String jsondata) throws Exception {
     JSONObject jo = new JSONObject(jsondata);
-    Comments_jdoManager.bindCommentsJSON(record,jo);
+    bindCommentsJSON(record,jo);
   }
-  public static void bindCommentsJSON(Comments_jdo record, JSONObject jo) throws Exception {
+  public void bindCommentsJSON(Comments_jdo record, JSONObject jo) throws Exception {
     Iterator keys = jo.keys();
     HashMap keymap = new HashMap();
     while(keys.hasNext()){
@@ -413,6 +426,7 @@ Comments_jdo retval = new Comments_jdo();
 		if(record == null){
 			record = this.newComments();
 		}
-		Comments_jdoManager.bindCommentsJSON(record, jo);
+		bindCommentsJSON(record, jo);
 		return record;
-	}}
+	}
+}

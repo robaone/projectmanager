@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import com.robaone.api.business.BaseAction;
 import com.robaone.api.data.SessionData;
 import com.robaone.api.json.DSResponse;
+import com.robaone.dbase.ConnectionBlock;
 
 public class Payment extends BaseAction<JSONObject> {
 
@@ -19,7 +20,15 @@ public class Payment extends BaseAction<JSONObject> {
 	}
 	public void prepare(JSONObject jo){
 		try{
-			//TODO: Implement
+			new ConnectionBlock(){
+
+				@Override
+				protected void run() throws Exception {
+					// TODO Auto-generated method stub
+					
+				}
+				
+			}.run(db.getConnectionManager());
 		}catch(Exception e){
 			this.sendError(e);
 		}

@@ -8,7 +8,7 @@ import com.robaone.api.data.jdo.Credentials_jdoManager;
 import com.robaone.api.data.jdo.User_jdo;
 import com.robaone.api.data.jdo.User_jdoManager;
 import com.robaone.api.json.JSONResponse;
-import com.robaone.dbase.hierarchial.ConnectionBlock;
+import com.robaone.dbase.ConnectionBlock;
 
 public class ActivationBlock extends ConnectionBlock {
 

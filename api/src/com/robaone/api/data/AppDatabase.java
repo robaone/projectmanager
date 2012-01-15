@@ -33,7 +33,7 @@ import com.robaone.api.data.jdo.Roles_jdoManager;
 import com.robaone.api.data.jdo.User_jdo;
 import com.robaone.api.data.jdo.User_jdoManager;
 import com.robaone.dbase.hierarchial.ConfigManager;
-import com.robaone.dbase.hierarchial.ConnectionBlock;
+import com.robaone.dbase.ConnectionBlock;
 import com.robaone.util.INIFileReader;
 
 public class AppDatabase {
@@ -213,7 +213,7 @@ public class AppDatabase {
 				this.getPreparedStatement().setInt(2, iduser.intValue());
 				this.setResultSet(this.getPreparedStatement().executeQuery());
 				if(this.getResultSet().next()){
-					Roles_jdo record = Roles_jdoManager.bindRoles(this.getResultSet());
+					Roles_jdo record = man.bindRoles(this.getResultSet());
 					man.delete(record);
 				}
 			}

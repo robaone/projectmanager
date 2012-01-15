@@ -23,7 +23,7 @@ import com.robaone.api.data.jdo.User_jdoManager;
 import com.robaone.api.json.DSResponse;
 import com.robaone.api.json.JSONResponse;
 import com.robaone.dbase.hierarchial.ConfigManager;
-import com.robaone.dbase.hierarchial.ConnectionBlock;
+import com.robaone.dbase.ConnectionBlock;
 
 /**
  * 
@@ -89,8 +89,8 @@ public class Users extends BaseAction<JSONObject> implements Action {
 								this.setResultSet(this.getPreparedStatement().executeQuery());
 								int end = (pg*lim)-lim;
 								while(this.getResultSet().next()){
-									User_jdo user = User_jdoManager.bindUser(getResultSet());
-									JSONObject j = User_jdoManager.toJSONObject(user);
+									User_jdo user = new User_jdoManager(null).bindUser(getResultSet());
+									JSONObject j = new User_jdoManager(null).toJSONObject(user);
 									j.remove("password");
 									getResponse().addData(j);
 									end++;
@@ -149,7 +149,7 @@ public class Users extends BaseAction<JSONObject> implements Action {
 						getResponse().setError("Access Denied");
 					}else{
 						User_jdo user = AppDatabase.getUser(new Integer(iduser));
-						JSONObject juser = User_jdoManager.toJSONObject(user);
+						JSONObject juser = new User_jdoManager(null).toJSONObject(user);
 						juser.remove("password");
 						getResponse().addData(juser);
 					}
@@ -186,7 +186,7 @@ public class Users extends BaseAction<JSONObject> implements Action {
 								password = jo.getString("password");
 								jo.remove("password");
 							}catch(Exception e){}
-							User_jdoManager.bindUserJSON(record, jo);
+							new User_jdoManager(null).bindUserJSON(record, jo);
 							record.setModified_by(getSessionData().getUser().getUsername());
 							record.setModification_host(getSessionData().getRemoteHost());
 							record.setModified_date(AppDatabase.getTimestamp());
@@ -343,7 +343,7 @@ public class Users extends BaseAction<JSONObject> implements Action {
 					Vector<Roles_jdo> roles = new Vector<Roles_jdo>();
 					ConfigManager.runConnectionBlock(new UserRolesBlock(roles,new Integer(iduser)), db.getConnectionManager());
 					for(int i = 0; i < roles.size();i++){
-						getResponse().addData(Roles_jdoManager.toJSONObject(roles.get(i)));
+						getResponse().addData(new Roles_jdoManager(null).toJSONObject(roles.get(i)));
 					}
 				}
 			}
