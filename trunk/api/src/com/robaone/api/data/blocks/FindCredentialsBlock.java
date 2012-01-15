@@ -4,7 +4,7 @@ import java.util.Vector;
 
 import com.robaone.api.data.jdo.Credentials_jdo;
 import com.robaone.api.data.jdo.Credentials_jdoManager;
-import com.robaone.dbase.hierarchial.ConnectionBlock;
+import com.robaone.dbase.ConnectionBlock;
 
 public class FindCredentialsBlock extends ConnectionBlock {
 
@@ -30,7 +30,7 @@ public class FindCredentialsBlock extends ConnectionBlock {
 		this.getPreparedStatement().setString(2, authdata);
 		this.setResultSet(this.getPreparedStatement().executeQuery());
 		if(this.getResultSet().next()){
-			Credentials_jdo record = Credentials_jdoManager.bindCredentials(getResultSet());
+			Credentials_jdo record = man.bindCredentials(getResultSet());
 			retval.add(record);
 		}
 	}

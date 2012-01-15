@@ -1,6 +1,9 @@
 package com.robaone.api.business;
 
 import java.io.OutputStream;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -11,7 +14,7 @@ import org.json.JSONObject;
 import com.robaone.api.data.DatabaseImpl;
 import com.robaone.api.data.SessionData;
 import com.robaone.api.json.JSONResponse;
-import com.robaone.dbase.hierarchial.ConnectionBlock;
+import com.robaone.dbase.ConnectionBlock;
 
 public abstract class BaseRecordHandler<T> extends BaseAction<T> {
 
@@ -49,26 +52,23 @@ public abstract class BaseRecordHandler<T> extends BaseAction<T> {
 				if(getResponse().getStatus() == JSONResponse.OK){
 					final int page = Integer.parseInt(p);
 					final int limit = Integer.parseInt(lim);
-					new ConnectionBlock(){
-
+					class CB2 extends ConnectionBlock {
+						protected void initialize() throws SQLException{
+							this.setPreparedStatement(BaseRecordHandler.this.initialize(this.getConnection()));
+						}
 						@Override
 						protected void run() throws Exception {
-							initialize(this);
+							initialize();
 							int start = (page - 1) * limit;
 							this.getPreparedStatement().setInt(1, start);
 							this.getPreparedStatement().setInt(2, limit);
 							this.setResultSet(this.getPreparedStatement().executeQuery());
 							while(this.getResultSet().next()){
-								setData(this);
+								setData(this.getResultSet());
 							}
 						}
-
-						
-
-						
-
-
-					}.run(new DatabaseImpl().getConnectionManager());
+					}
+					new CB2().run(new DatabaseImpl().getConnectionManager());
 				}
 			}
 
@@ -88,7 +88,7 @@ public abstract class BaseRecordHandler<T> extends BaseAction<T> {
 
 						@Override
 						protected void run() throws Exception {
-							T comment = initGet(id,this);
+							T comment = initGet(id,this.getConnection());
 							if(comment != null){
 								getResponse().addData(comment);
 							}
@@ -125,7 +125,7 @@ public abstract class BaseRecordHandler<T> extends BaseAction<T> {
 							jo.put("modification_date", new java.util.Date());
 							jo.put("modification_host", getSessionData().getRemoteHost());
 							jo.put("modified_by", getSessionData().getUser().getUsername());
-							T comment = save(jo, id,this);
+							T comment = save(jo, id,this.getConnection());
 							getResponse().addData(comment);
 						}
 
@@ -155,7 +155,7 @@ public abstract class BaseRecordHandler<T> extends BaseAction<T> {
 						jo.put("creation_date", new java.util.Date());
 						jo.put("creation_host", getSessionData().getRemoteHost());
 						jo.put("created_by", getSessionData().getUser().getUsername());
-						T newcomment = saveNew(jo,this);
+						T newcomment = saveNew(jo,this.getConnection());
 						getResponse().addData(newcomment);
 					}
 
@@ -180,7 +180,7 @@ public abstract class BaseRecordHandler<T> extends BaseAction<T> {
 
 						@Override
 						protected void run() throws Exception {
-							deleteRecord(id,this);
+							deleteRecord(id,this.getConnection());
 						}
 
 						
@@ -192,13 +192,13 @@ public abstract class BaseRecordHandler<T> extends BaseAction<T> {
 		}.run(this, jo);
 	}
 
-	abstract public void setData(ConnectionBlock conb) throws SQLException;
-	abstract public void initialize(ConnectionBlock conb) throws SQLException;
-	abstract public T initGet(final String id,ConnectionBlock conb);
+	abstract public void setData(ResultSet rs) throws SQLException;
+	abstract public PreparedStatement initialize(Connection con) throws SQLException;
+	abstract public T initGet(final String id,Connection con);
 	abstract public T save(final JSONObject jo,
-			final String id,ConnectionBlock conb) throws Exception;
-	abstract public T saveNew(final JSONObject jo, ConnectionBlock conb)
+			final String id,Connection con) throws Exception;
+	abstract public T saveNew(final JSONObject jo, Connection con)
 			throws Exception;
-	abstract public void deleteRecord(final String id,ConnectionBlock conb)
+	abstract public void deleteRecord(final String id,Connection con)
 			throws Exception;
 }

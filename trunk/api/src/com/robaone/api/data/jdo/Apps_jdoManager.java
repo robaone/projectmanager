@@ -1,6 +1,8 @@
 /*
-* Created on Dec 12, 2011
+* Created on Jan 15, 2012
 *
+* Author: Ansel Robateau
+*         http://www.robaone.com
 */
 package com.robaone.api.data.jdo;
 
@@ -17,24 +19,29 @@ import java.util.Iterator;
 
 public class Apps_jdoManager {
   private Connection m_con;
-  private final static String SELECT = "select ~ from #TABLE# where idapps = ?";
+  private String m_options = "";
+  private final static String SELECT = "select ~ from #TABLE# #OPTION#  where idapps = ?";
   private final static String INSERT = "insert into #TABLE# ";
-  private final static String QUERY = "select ~ from #TABLE# where ";
+  private final static String QUERY = "select ~ from #TABLE# #OPTION#  where ";
   private final static String UPDATE = "update #TABLE# set ";
-  private final static String SEARCH = "select COUNT(#TABLE#.IDAPPS) from #TABLE# where #TABLE#.IDAPPS = ?";
+  private final static String SEARCH = "select COUNT(1) from #TABLE# #OPTION# where #TABLE#.IDAPPS = ?";
   private final static String DELETE = "delete from #TABLE# where #TABLE#.IDAPPS = ?";
   private final static String IDENTITY = "IDAPPS";
-  private final static RO_JDO_IdentityManager NEXT_SQL = new RO_JDO_MySQL();
+  private RO_JDO_IdentityManager<Integer> NEXT_SQL;
   public final static String FIELDS = "#TABLE#.IDAPPS,#TABLE#.NAME,#TABLE#.CALLBACK_URL,#TABLE#.DESCRIPTION,#TABLE#.CONSUMER_KEY,#TABLE#.CONSUMER_SECRET,#TABLE#.ACTIVE,#TABLE#.IDUSER,#TABLE#.MODIFIED_BY,#TABLE#.CREATED_BY,#TABLE#.CREATED_DATE,#TABLE#.MODIFIED_DATE,#TABLE#.CREATION_HOST,#TABLE#.MODIFICATION_HOST,#TABLE#.META_DATA";
   private String TABLE = "APPS";
   protected boolean debug = false;
   public Apps_jdoManager(Connection con){
     this.m_con = con;
+    this.setIdentityClass();
     try{
     	if(System.getProperty("debug").equals("Y")){
     		debug = true;
     	}
     }catch(Exception e){}
+  }
+  protected void setIdentityClass(){
+     this.NEXT_SQL = new RO_JDO_MySQL<Integer>();
   }
   protected Connection getConnection(){
     return this.m_con;
@@ -45,7 +52,7 @@ public class Apps_jdoManager {
   public void setTableName(String tablename){
     TABLE = tablename;
   }
-  public static Apps_jdo bindApps(ResultSet rs) throws SQLException{
+  public Apps_jdo bindApps(ResultSet rs) throws SQLException{
 Apps_jdo retval = null;
     retval = Apps_jdoManager.createObject(rs);
     return retval;
@@ -98,8 +105,20 @@ Apps_jdo retval = null;
 
     return retval;
   }
+  private void setTableOptions(String str){
+    this.m_options = str;
+  }
+  private String getTableOptions(){
+    return this.m_options;
+  }
   public void save(Apps_jdo record) throws Exception {
+    this.save(record,false);
+  }
+  public void save(Apps_jdo record,boolean dirty) throws Exception {
     Connection con = this.getConnection();
+    if(dirty){
+      this.setTableOptions("");
+    }
     boolean finished = false;
     if(record.getDirtyFieldCount() == 0){
       return;
@@ -149,7 +168,6 @@ Apps_jdo retval = null;
         }
         update_ps.setObject(dirtyfieldcount+1,record.getField(record.getIdentityName())[0]);
         int updated = update_ps.executeUpdate();
-        //con.commit();
         finished = true;
         if(updated == 0){
           throw new Exception("No rows updated.");
@@ -204,8 +222,7 @@ Apps_jdo retval = null;
           field_index ++;
         }
         int updated = insert_ps.executeUpdate();
-        record.setIdapps(NEXT_SQL.getIdentity(this.m_con));
-        //con.commit();
+        record.setIdapps(new Integer(NEXT_SQL.getIdentity(this.getTableName(),this.m_con).toString()));
         finished = true;
         if(updated == 0){
           throw new Exception("No rows added.");
@@ -216,13 +233,8 @@ Apps_jdo retval = null;
         if(debug) System.out.println(updated+" rows added.");
         insert_ps.close();
       }
-  }finally{
-			 if(finished){
-				 // con.commit();
-			  }
-			  con.setAutoCommit(true);
+    }finally{}
   }
-}
 	protected void handleAfterInsert(Apps_jdo record) {}
 	protected void handleAfterUpdate(Apps_jdo record) {}
 	protected void handleBeforeUpdate(Apps_jdo record) {}
@@ -258,9 +270,10 @@ Apps_jdo retval = new Apps_jdo();
   public String getSQL(String sql){
     String retval = "";
     retval = sql.replaceAll("#TABLE#",TABLE);
+    retval = retval.replaceAll("#OPTION#",this.getTableOptions());
     return retval;
   }
-  public static JSONObject toJSONObject(Apps_jdo record) throws Exception {
+  public JSONObject toJSONObject(Apps_jdo record) throws Exception {
     JSONObject retval = null;
     if(record != null){
       JSONObject object = new JSONObject();
@@ -273,11 +286,11 @@ Apps_jdo retval = new Apps_jdo();
     }
     return retval;
   }
-  public static void bindAppsJSON(Apps_jdo record,String jsondata) throws Exception {
+  public void bindAppsJSON(Apps_jdo record,String jsondata) throws Exception {
     JSONObject jo = new JSONObject(jsondata);
-    Apps_jdoManager.bindAppsJSON(record,jo);
+    bindAppsJSON(record,jo);
   }
-  public static void bindAppsJSON(Apps_jdo record, JSONObject jo) throws Exception {
+  public void bindAppsJSON(Apps_jdo record, JSONObject jo) throws Exception {
     Iterator keys = jo.keys();
     HashMap keymap = new HashMap();
     while(keys.hasNext()){
@@ -458,6 +471,7 @@ Apps_jdo retval = new Apps_jdo();
 		if(record == null){
 			record = this.newApps();
 		}
-		Apps_jdoManager.bindAppsJSON(record, jo);
+		bindAppsJSON(record, jo);
 		return record;
-	}}
+	}
+}

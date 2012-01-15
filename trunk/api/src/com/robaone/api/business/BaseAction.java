@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Properties;
@@ -45,7 +46,7 @@ import com.robaone.api.json.DSResponse;
 import com.robaone.api.json.JSONResponse;
 import com.robaone.api.oauth.ROAPIOAuthProvider;
 import com.robaone.dbase.hierarchial.ConfigManager;
-import com.robaone.dbase.hierarchial.ConnectionBlock;
+import com.robaone.dbase.ConnectionBlock;
 
 abstract public class BaseAction<T> {
 	private OutputStream out;
@@ -179,7 +180,7 @@ abstract public class BaseAction<T> {
 				this.getPreparedStatement().setString(2, accessor.requestToken);
 				this.setResultSet(this.getPreparedStatement().executeQuery());
 				if(this.getResultSet().next()){
-					App_credentials_jdo cred = App_credentials_jdoManager.bindApp_credentials(getResultSet());
+					App_credentials_jdo cred = man.bindApp_credentials(getResultSet());
 					User_jdoManager uman = new User_jdoManager(this.getConnection());
 					User_jdo user = uman.getUser(cred.getIduser());
 					getSessionData().setUser(user);
@@ -205,7 +206,7 @@ abstract public class BaseAction<T> {
 				this.getPreparedStatement().setString(2, accessor.requestToken);
 				this.setResultSet(this.getPreparedStatement().executeQuery());
 				if(this.getResultSet().next()){
-					App_credentials_jdo cred = App_credentials_jdoManager.bindApp_credentials(getResultSet());
+					App_credentials_jdo cred = man.bindApp_credentials(getResultSet());
 					cred.setActive(0);
 					man.save(cred);
 					AppDatabase.writeLog("00016: credentials deauthorized");
@@ -234,5 +235,20 @@ abstract public class BaseAction<T> {
 			}
 			getResponse().addData((T) jo);
 		}
+	}
+	public java.util.Date jsonDate(String str) throws ParseException{
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.S");
+		return df.parse(str);
+	}
+	public void fieldError(String field,String error){
+		getResponse().setStatus(JSONResponse.FIELD_VALIDATION_ERROR);
+		getResponse().addError(field, error);
+	}
+	public void generalError(String error){
+		getResponse().setStatus(JSONResponse.GENERAL_ERROR);
+		getResponse().setError(error);
+	}
+	public boolean isOK(){
+		return getResponse().getStatus() == JSONResponse.OK;
 	}
 }

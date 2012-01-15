@@ -10,16 +10,21 @@ import org.json.XML;
 
 import com.robaone.api.business.BaseAction;
 import com.robaone.api.business.FieldValidator;
+import com.robaone.api.data.AppDatabase;
 import com.robaone.api.data.DatabaseImpl;
 import com.robaone.api.data.SessionData;
 import com.robaone.api.data.jdo.Bids_jdo;
 import com.robaone.api.data.jdo.Bids_jdoManager;
+import com.robaone.api.data.jdo.Comments_jdo;
+import com.robaone.api.data.jdo.Comments_jdoManager;
+import com.robaone.api.data.jdo.Meetings_jdo;
+import com.robaone.api.data.jdo.Meetings_jdoManager;
 import com.robaone.api.data.jdo.Projects_jdo;
 import com.robaone.api.data.jdo.Projects_jdoManager;
 import com.robaone.api.data.jdo.User_jdo;
 import com.robaone.api.json.DSResponse;
 import com.robaone.api.json.JSONResponse;
-import com.robaone.dbase.hierarchial.ConnectionBlock;
+import com.robaone.dbase.ConnectionBlock;
 
 public class Bids extends BaseAction<JSONObject> {
 
@@ -27,6 +32,7 @@ public class Bids extends BaseAction<JSONObject> {
 	public static final int SUBMITTED = 0;
 	public static final int ACCEPTED = 1;
 	public static final int REJECTED = 2;
+	protected static final int COMPLETE = 4;
 	public Bids(OutputStream o, SessionData d, HttpServletRequest request)
 			throws ParserConfigurationException {
 		super(o, d, request);
@@ -49,10 +55,10 @@ public class Bids extends BaseAction<JSONObject> {
 						protected void run() throws Exception {
 							Projects_jdoManager pman = new Projects_jdoManager(this.getConnection());
 							Bids_jdoManager man = new Bids_jdoManager(this.getConnection());
-							String sql = "select "+man.getSQL(Bids_jdoManager.FIELDS)+" from "+Bids_jdoManager.getTableName()+
+							String sql = "select "+man.getSQL(Bids_jdoManager.FIELDS)+" from "+man.getTableName()+
 									","+pman.getTableName()+" where "+
 									pman.getTableName()+"."+Projects_jdo.IDPROJECTS+" = "+
-									man.getTableName()+"."+Bids_jdo.IDPROJECTS+" and "+
+									man.getTableName()+"."+Bids_jdo.PROJECTID+" and "+
 									pman.getTableName()+"."+Projects_jdo.CONSUMERID+" = ? and "+
 									pman.getTableName()+"."+Projects_jdo.IDPROJECTS+" = ?";
 							this.setPreparedStatement(this.getConnection().prepareStatement(sql));
@@ -121,7 +127,7 @@ public class Bids extends BaseAction<JSONObject> {
 						@Override
 						protected void run() throws Exception {
 							Bids_jdoManager man = new Bids_jdoManager(this.getConnection());
-							Bids_jdo record = man.bindBidsJSON(jo);
+							Bids_jdo record = man.bindBidsJSON(jo.toString());
 							man.save(record);
 						}
 
@@ -142,7 +148,7 @@ public class Bids extends BaseAction<JSONObject> {
 					protected void run() throws Exception {
 						Bids_jdoManager man = new Bids_jdoManager(this.getConnection());
 						jo.remove("idbids");
-						Bids_jdo record = man.bindBidsJSON(jo);
+						Bids_jdo record = man.bindBidsJSON(jo.toString());
 						man.save(record);
 					}
 
@@ -203,20 +209,46 @@ public class Bids extends BaseAction<JSONObject> {
 								getResponse().setError("Could not find bid");
 							}
 						}
-						
+
 					}.run(new DatabaseImpl().getConnectionManager());
 				}
 			}
-			
+
 		}.run(this, jo);
 	}
 	public void addcomment(JSONObject jo){
 		new FunctionCall(){
 
 			@Override
-			protected void run(JSONObject jo) throws Exception {
-				// TODO Auto-generated method stub
+			protected void run(final JSONObject jo) throws Exception {
+				if(!FieldValidator.isNumber(this.findXPathString("//bidid"))){
+					fieldError("bidid","You must enter a valid bid id");
+				}
+				if(!FieldValidator.exists(this.findXPathString("//comment"))){
+					fieldError("comment","You must enter a comment");
+				}
+				if(isOK()){
+					new ConnectionBlock(){
 
+						@Override
+						protected void run() throws Exception {
+							Comments_jdoManager man = new Comments_jdoManager(this.getConnection());
+							Comments_jdo record = man.newComments();
+							record.set_void(false);
+							record.setComment(jo.getString("comment"));
+							record.setCreated_by(getSessionData().getUser().getIduser());
+							record.setCreation_date(AppDatabase.getTimestamp());
+							record.setCreation_host(getSessionData().getRemoteHost());
+							record.setModification_host(getSessionData().getRemoteHost());
+							record.setModified_by(getSessionData().getUser().getIduser());
+							record.setModified_date(AppDatabase.getTimestamp());
+							record.setReferenceid("bid,"+jo.getInt("bidid"));
+							man.save(record);
+							getResponse().addData(man.toJSONObject(record));
+						}
+
+					}.run(db.getConnectionManager());
+				}
 			}
 
 		}.run(this, jo);
@@ -226,8 +258,31 @@ public class Bids extends BaseAction<JSONObject> {
 
 			@Override
 			protected void run(JSONObject jo) throws Exception {
-				// TODO Auto-generated method stub
+				final String id = findXPathString("//bidid");
+				if(!FieldValidator.isNumber(id)){
+					fieldError("bidid","You must enter a valid id");
+				}else{
+					new ConnectionBlock(){
 
+						@Override
+						protected void run() throws Exception {
+							/* Gavin */
+							Bids_jdoManager man = new Bids_jdoManager(getConnection());
+							Bids_jdo bid = man.getBids(new Integer(id));
+							if(bid != null){
+								bid.setStatus(Bids.ACCEPTED);
+								bid.setModified_by(getSessionData().getUser().getIduser());
+								bid.setModified_date(AppDatabase.getTimestamp());
+								bid.setModifier_host(getSessionData().getRemoteHost());
+								man.save(bid);
+								getResponse().addData(man.toJSONObject(bid));
+							}else{
+								generalError("Found not find record");
+							}
+						}
+
+					}.run(db.getConnectionManager());
+				}
 			}
 
 		}.run(this, jo);
@@ -237,8 +292,31 @@ public class Bids extends BaseAction<JSONObject> {
 
 			@Override
 			protected void run(JSONObject jo) throws Exception {
-				// TODO Auto-generated method stub
+				final String id = findXPathString("//bidid");
+				if(!FieldValidator.isNumber(id)){
+					fieldError("bidid","You must enter a valid id");
+				}else{
+					new ConnectionBlock(){
 
+						@Override
+						protected void run() throws Exception {
+							/* Gavin */
+							Bids_jdoManager man = new Bids_jdoManager(getConnection());
+							Bids_jdo bid = man.getBids(new Integer(id));
+							if(bid != null){
+								bid.setStatus(Bids.COMPLETE);
+								bid.setModified_by(getSessionData().getUser().getIduser());
+								bid.setModified_date(AppDatabase.getTimestamp());
+								bid.setModifier_host(getSessionData().getRemoteHost());
+								man.save(bid);
+								getResponse().addData(man.toJSONObject(bid));
+							}else{
+								generalError("Found not find record");
+							}
+						}
+
+					}.run(db.getConnectionManager());
+				}
 			}
 
 		}.run(this, jo);
@@ -248,8 +326,31 @@ public class Bids extends BaseAction<JSONObject> {
 
 			@Override
 			protected void run(JSONObject jo) throws Exception {
-				// TODO Auto-generated method stub
+				final String id = findXPathString("//bidid");
+				if(!FieldValidator.isNumber(id)){
+					fieldError("bidid","You must enter a valid id");
+				}else{
+					new ConnectionBlock(){
 
+						@Override
+						protected void run() throws Exception {
+							/* Gavin */
+							Bids_jdoManager man = new Bids_jdoManager(getConnection());
+							Bids_jdo bid = man.getBids(new Integer(id));
+							if(bid != null){
+								bid.setStatus(Bids.RETRACTED);
+								bid.setModified_by(getSessionData().getUser().getIduser());
+								bid.setModified_date(AppDatabase.getTimestamp());
+								bid.setModifier_host(getSessionData().getRemoteHost());
+								man.save(bid);
+								getResponse().addData(man.toJSONObject(bid));
+							}else{
+								generalError("Found not find record");
+							}
+						}
+
+					}.run(db.getConnectionManager());
+				}
 			}
 
 		}.run(this, jo);
@@ -258,20 +359,66 @@ public class Bids extends BaseAction<JSONObject> {
 		new FunctionCall(){
 
 			@Override
-			protected void run(JSONObject jo) throws Exception {
-				// TODO Auto-generated method stub
+			protected void run(final JSONObject jo) throws Exception {
+				new ConnectionBlock(){
 
+					@Override
+					protected void run() throws Exception {
+						Meetings_jdoManager man = new Meetings_jdoManager(this.getConnection());
+						Meetings_jdo record = man.newMeetings();
+						record.set_void(false);
+						record.setCalendar_doc(Bids.this.createCalendarDoc(jo));
+						record.setCreated_by(getSessionData().getUser().getIduser());
+						record.setCreation_date(AppDatabase.getTimestamp());
+						record.setModified_by(getSessionData().getUser().getIduser());
+						record.setModification_date(AppDatabase.getTimestamp());
+						record.setStartdate(jsonDate(jo.getString("startdate")));
+						record.setTitle(jo.getString("title"));
+						man.save(record);
+						getResponse().addData(man.toJSONObject(record));
+					}
+					
+				}.run(db.getConnectionManager());
 			}
 
 		}.run(this, jo);
+	}
+	protected String createCalendarDoc(JSONObject jo) {
+		// TODO Auto-generated method stub
+		/**
+		 * Possibly the last api to complete.
+		 * Add ability to have contractors define appointment windows 
+		 */
+		return null;
 	}
 	public void reject(JSONObject jo){
 		new FunctionCall(){
 
 			@Override
 			protected void run(JSONObject jo) throws Exception {
-				// TODO Auto-generated method stub
+				if(!FieldValidator.isNumber(this.findXPathString("//bidid"))){
+					fieldError("bidid","You must enter a valid bid id");
+				}else{
+					new ConnectionBlock(){
 
+						@Override
+						protected void run() throws Exception {
+							Bids_jdoManager man = new Bids_jdoManager(this.getConnection());
+							Bids_jdo record = man.getBids(new Integer(findXPathString("//bidid")));
+							if(record != null){
+								record.setStatus(Bids.REJECTED);
+								record.setModified_by(getSessionData().getUser().getIduser());
+								record.setModified_date(AppDatabase.getTimestamp());
+								record.setModifier_host(getSessionData().getRemoteHost());
+								man.save(record);
+								getResponse().addData(man.toJSONObject(record));
+							}else{
+								generalError("Cannot find record");
+							}
+						}
+						
+					}.run(db.getConnectionManager());
+				}
 			}
 
 		}.run(this, jo);
@@ -281,8 +428,25 @@ public class Bids extends BaseAction<JSONObject> {
 
 			@Override
 			protected void run(JSONObject jo) throws Exception {
-				// TODO Auto-generated method stub
+				final String id = findXPathString("//bidid");
+				if(!FieldValidator.isNumber(id)){
+					fieldError("bidid","You must enter a valid id");
+				}else{
+					new ConnectionBlock(){
 
+						@Override
+						protected void run() throws Exception {
+							Bids_jdoManager man = new Bids_jdoManager(this.getConnection());
+							Bids_jdo record = man.getBids(new Integer(id));
+							if(record != null){
+								
+							}else{
+								generalError("Cannot find record");
+							}
+						}
+						
+					}.run(db.getConnectionManager());
+				}
 			}
 
 		}.run(this, jo);

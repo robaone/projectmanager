@@ -1,6 +1,8 @@
 /*
-* Created on Dec 12, 2011
+* Created on Jan 15, 2012
 *
+* Author: Ansel Robateau
+*         http://www.robaone.com
 */
 package com.robaone.api.data.jdo;
 
@@ -17,24 +19,29 @@ import java.util.Iterator;
 
 public class App_credentials_jdoManager {
   private Connection m_con;
-  private final static String SELECT = "select ~ from #TABLE# where idapp_credentials = ?";
+  private String m_options = "";
+  private final static String SELECT = "select ~ from #TABLE# #OPTION#  where idapp_credentials = ?";
   private final static String INSERT = "insert into #TABLE# ";
-  private final static String QUERY = "select ~ from #TABLE# where ";
+  private final static String QUERY = "select ~ from #TABLE# #OPTION#  where ";
   private final static String UPDATE = "update #TABLE# set ";
-  private final static String SEARCH = "select COUNT(#TABLE#.IDAPP_CREDENTIALS) from #TABLE# where #TABLE#.IDAPP_CREDENTIALS = ?";
+  private final static String SEARCH = "select COUNT(1) from #TABLE# #OPTION# where #TABLE#.IDAPP_CREDENTIALS = ?";
   private final static String DELETE = "delete from #TABLE# where #TABLE#.IDAPP_CREDENTIALS = ?";
   private final static String IDENTITY = "IDAPP_CREDENTIALS";
-  private final static RO_JDO_IdentityManager NEXT_SQL = new RO_JDO_MySQL();
+  private RO_JDO_IdentityManager<Integer> NEXT_SQL;
   public final static String FIELDS = "#TABLE#.IDAPP_CREDENTIALS,#TABLE#.REQUEST_TOKEN,#TABLE#.ACCESS_TOKEN,#TABLE#.CREATED_BY,#TABLE#.CREATION_HOST,#TABLE#.EXPIRATION_DATE,#TABLE#.CREATION_DATE,#TABLE#.ACTIVE,#TABLE#.IDAPPS,#TABLE#.IDUSER,#TABLE#.TOKEN_SECRET";
   private String TABLE = "APP_CREDENTIALS";
   protected boolean debug = false;
   public App_credentials_jdoManager(Connection con){
     this.m_con = con;
+    this.setIdentityClass();
     try{
     	if(System.getProperty("debug").equals("Y")){
     		debug = true;
     	}
     }catch(Exception e){}
+  }
+  protected void setIdentityClass(){
+     this.NEXT_SQL = new RO_JDO_MySQL<Integer>();
   }
   protected Connection getConnection(){
     return this.m_con;
@@ -45,7 +52,7 @@ public class App_credentials_jdoManager {
   public void setTableName(String tablename){
     TABLE = tablename;
   }
-  public static App_credentials_jdo bindApp_credentials(ResultSet rs) throws SQLException{
+  public App_credentials_jdo bindApp_credentials(ResultSet rs) throws SQLException{
 App_credentials_jdo retval = null;
     retval = App_credentials_jdoManager.createObject(rs);
     return retval;
@@ -98,8 +105,20 @@ App_credentials_jdo retval = null;
 
     return retval;
   }
+  private void setTableOptions(String str){
+    this.m_options = str;
+  }
+  private String getTableOptions(){
+    return this.m_options;
+  }
   public void save(App_credentials_jdo record) throws Exception {
+    this.save(record,false);
+  }
+  public void save(App_credentials_jdo record,boolean dirty) throws Exception {
     Connection con = this.getConnection();
+    if(dirty){
+      this.setTableOptions("");
+    }
     boolean finished = false;
     if(record.getDirtyFieldCount() == 0){
       return;
@@ -149,7 +168,6 @@ App_credentials_jdo retval = null;
         }
         update_ps.setObject(dirtyfieldcount+1,record.getField(record.getIdentityName())[0]);
         int updated = update_ps.executeUpdate();
-        //con.commit();
         finished = true;
         if(updated == 0){
           throw new Exception("No rows updated.");
@@ -204,8 +222,7 @@ App_credentials_jdo retval = null;
           field_index ++;
         }
         int updated = insert_ps.executeUpdate();
-        record.setIdapp_credentials(NEXT_SQL.getIdentity(this.m_con));
-        //con.commit();
+        record.setIdapp_credentials(new Integer(NEXT_SQL.getIdentity(this.getTableName(),this.m_con).toString()));
         finished = true;
         if(updated == 0){
           throw new Exception("No rows added.");
@@ -216,13 +233,8 @@ App_credentials_jdo retval = null;
         if(debug) System.out.println(updated+" rows added.");
         insert_ps.close();
       }
-  }finally{
-			 if(finished){
-				  //con.commit();
-			  }
-			  con.setAutoCommit(true);
+    }finally{}
   }
-}
 	protected void handleAfterInsert(App_credentials_jdo record) {}
 	protected void handleAfterUpdate(App_credentials_jdo record) {}
 	protected void handleBeforeUpdate(App_credentials_jdo record) {}
@@ -258,9 +270,10 @@ App_credentials_jdo retval = new App_credentials_jdo();
   public String getSQL(String sql){
     String retval = "";
     retval = sql.replaceAll("#TABLE#",TABLE);
+    retval = retval.replaceAll("#OPTION#",this.getTableOptions());
     return retval;
   }
-  public static JSONObject toJSONObject(App_credentials_jdo record) throws Exception {
+  public JSONObject toJSONObject(App_credentials_jdo record) throws Exception {
     JSONObject retval = null;
     if(record != null){
       JSONObject object = new JSONObject();
@@ -273,11 +286,11 @@ App_credentials_jdo retval = new App_credentials_jdo();
     }
     return retval;
   }
-  public static void bindApp_credentialsJSON(App_credentials_jdo record,String jsondata) throws Exception {
+  public void bindApp_credentialsJSON(App_credentials_jdo record,String jsondata) throws Exception {
     JSONObject jo = new JSONObject(jsondata);
-    App_credentials_jdoManager.bindApp_credentialsJSON(record,jo);
+    bindApp_credentialsJSON(record,jo);
   }
-  public static void bindApp_credentialsJSON(App_credentials_jdo record, JSONObject jo) throws Exception {
+  public void bindApp_credentialsJSON(App_credentials_jdo record, JSONObject jo) throws Exception {
     Iterator keys = jo.keys();
     HashMap keymap = new HashMap();
     while(keys.hasNext()){
@@ -422,6 +435,7 @@ App_credentials_jdo retval = new App_credentials_jdo();
 		if(record == null){
 			record = this.newApp_credentials();
 		}
-		App_credentials_jdoManager.bindApp_credentialsJSON(record, jo);
+		bindApp_credentialsJSON(record, jo);
 		return record;
-	}}
+	}
+}

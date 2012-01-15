@@ -16,8 +16,8 @@ import com.robaone.api.json.DSResponse;
 import com.robaone.api.json.JSONResponse;
 import com.robaone.dbase.hierarchial.ConfigManager;
 import com.robaone.dbase.hierarchial.ConfigStruct;
-import com.robaone.dbase.hierarchial.HDBConnectionManager;
-import com.robaone.dbase.hierarchial.HDBSessionData;
+import com.robaone.dbase.HDBConnectionManager;
+import com.robaone.dbase.HDBSessionData;
 
 public class Settings extends BaseAction<ConfigManager> {
 	private SettingsJDO m_settings = new SettingsJDO();

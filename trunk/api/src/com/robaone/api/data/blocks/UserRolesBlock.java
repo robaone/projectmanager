@@ -4,7 +4,7 @@ import java.util.Vector;
 
 import com.robaone.api.data.jdo.Roles_jdo;
 import com.robaone.api.data.jdo.Roles_jdoManager;
-import com.robaone.dbase.hierarchial.ConnectionBlock;
+import com.robaone.dbase.ConnectionBlock;
 
 public class UserRolesBlock extends ConnectionBlock{
 	private Vector<Roles_jdo> retval;
@@ -20,7 +20,7 @@ public class UserRolesBlock extends ConnectionBlock{
 		this.getPreparedStatement().setInt(1, iduser);
 		this.setResultSet(this.getPreparedStatement().executeQuery());
 		while(this.getResultSet().next()){
-			Roles_jdo role = Roles_jdoManager.bindRoles(this.getResultSet());
+			Roles_jdo role = man.bindRoles(this.getResultSet());
 			retval.add(role);
 		}
 	}

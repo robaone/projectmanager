@@ -10,8 +10,8 @@ import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
 import com.robaone.dbase.hierarchial.ConfigManager;
-import com.robaone.dbase.hierarchial.ConnectionBlock;
-import com.robaone.dbase.hierarchial.HDBConnectionManager;
+import com.robaone.dbase.ConnectionBlock;
+import com.robaone.dbase.HDBConnectionManager;
 
 public class DatabaseImpl{
 	public static final String INSUFFICIENT_RIGHTS_MSG = "You do not have access rights to perform this action";
@@ -81,10 +81,6 @@ public class DatabaseImpl{
 				m_con.close();
 			}
 
-			@Override
-			public String getDriver() {
-				return "org.hsqldb.";
-			}
 
 		};
 	}

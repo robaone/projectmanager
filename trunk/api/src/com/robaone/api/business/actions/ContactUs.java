@@ -18,7 +18,7 @@ import com.robaone.api.data.jdo.Message_queue_jdoManager;
 import com.robaone.api.json.DSResponse;
 import com.robaone.api.json.JSONResponse;
 import com.robaone.dbase.hierarchial.ConfigManager;
-import com.robaone.dbase.hierarchial.ConnectionBlock;
+import com.robaone.dbase.ConnectionBlock;
 
 public class ContactUs {
 	private OutputStream out;
@@ -70,7 +70,7 @@ public class ContactUs {
 						record.setSubject(AppDatabase.getProperty("contact.subject"));
 						record.setFrom(AppDatabase.getProperty("contact.from"));
 						record.setCreationdate(new java.sql.Timestamp(new java.util.Date().getTime()));
-						record.setHtml(new Boolean(true));
+						record.setHtml(1);
 						String xml;
 						JSONObject jo = data;
 						xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><contact>"+XML.toString(jo)+"</contact>";

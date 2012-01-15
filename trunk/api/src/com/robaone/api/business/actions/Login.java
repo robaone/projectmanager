@@ -26,7 +26,7 @@ import com.robaone.api.data.jdo.User_jdoManager;
 import com.robaone.api.json.DSResponse;
 import com.robaone.api.json.JSONResponse;
 import com.robaone.dbase.hierarchial.ConfigManager;
-import com.robaone.dbase.hierarchial.ConnectionBlock;
+import com.robaone.dbase.ConnectionBlock;
 
 public class Login extends BaseAction<JSONObject> {
 	public static final String TOKEN_FIELD = "token";
@@ -51,7 +51,7 @@ public class Login extends BaseAction<JSONObject> {
 			User_jdo user = this.getSessionData().getUser();
 			if(user != null){
 				user.setPassword("");
-				JSONObject jdata = User_jdoManager.toJSONObject(user);
+				JSONObject jdata = new User_jdoManager(null).toJSONObject(user);
 				jdata.remove("password");
 				this.getResponse().addData(jdata);
 			}else{
@@ -92,7 +92,7 @@ public class Login extends BaseAction<JSONObject> {
 					/**
 					 * The username exists.
 					 */
-					final User_jdo user = User_jdoManager.bindUser(getResultSet());
+					final User_jdo user = man.bindUser(getResultSet());
 					/**
 					 * Check the password
 					 */
@@ -121,7 +121,7 @@ public class Login extends BaseAction<JSONObject> {
 									message.setFrom(AppDatabase.getProperty("contact.from"));
 									message.setTo(emailaddr);
 									message.setSubject("Account Activation Request");
-									message.setHtml(true);
+									message.setHtml(1);
 									message.setCreationdate(new java.sql.Timestamp(new java.util.Date().getTime()));
 									ROTransformer trn = new ROTransformer(AppDatabase.getStylesheet("accountactivation"));
 									String msg_data = "";
@@ -248,7 +248,7 @@ public class Login extends BaseAction<JSONObject> {
 								message.setFrom(AppDatabase.getProperty("contact.from"));
 								message.setTo(emailaddr);
 								message.setSubject("Password Reset Request");
-								message.setHtml(true);
+								message.setHtml(1);
 								message.setCreationdate(new java.sql.Timestamp(new java.util.Date().getTime()));
 								ROTransformer trn = new ROTransformer(AppDatabase.getStylesheet("passwordreset"));
 								String msg_data = "";
@@ -356,7 +356,7 @@ public class Login extends BaseAction<JSONObject> {
 					new_message.setFrom(AppDatabase.getProperty("contact.from"));
 					new_message.setSubject("Registration Confirmation");
 					new_message.setTo(emailaddress);
-					new_message.setHtml(true);
+					new_message.setHtml(1);
 					JSONObject jo = new JSONObject();
 					jo.put("firstname", new_user.getFirst_name());
 					jo.put("lastname", new_user.getLast_name());
@@ -410,7 +410,7 @@ public class Login extends BaseAction<JSONObject> {
 					this.getPreparedStatement().setString(1, username);
 					this.setResultSet(this.getPreparedStatement().executeQuery());
 					if(this.getResultSet().next()){
-						User_jdo account_record = User_jdoManager.bindUser(this.getResultSet());
+						User_jdo account_record = man.bindUser(this.getResultSet());
 						/**
 						 * Update the roles if this is the root user
 						 */
@@ -532,7 +532,7 @@ public class Login extends BaseAction<JSONObject> {
 						/**
 						 * The authentication string is valid.  Retrieve the user object
 						 */
-						final Credentials_jdo cred = Credentials_jdoManager.bindCredentials(getResultSet());
+						final Credentials_jdo cred = man.bindCredentials(getResultSet());
 						ConnectionBlock block = new ConnectionBlock(){
 
 							@Override
