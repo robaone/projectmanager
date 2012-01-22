@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -13,6 +14,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Properties;
+import java.util.Vector;
 
 import javax.naming.NamingException;
 import javax.servlet.http.HttpServletRequest;
@@ -54,6 +56,7 @@ import com.robaone.dbase.ConnectionBlock;
 import com.robaone.dbase.HDBConnectionManager;
 
 abstract public class BaseAction<T> {
+	protected static final String NOT_FOUND_ERROR = "Record Not Found";
 	public static String NOT_SUPPORTED = "Not Supported";
 	private OutputStream out;
 	private SessionData session;
@@ -156,7 +159,43 @@ abstract public class BaseAction<T> {
 			XPathExpression expr = xpath.compile(path);
 			return (NodeList)expr.evaluate(this.query_doc, XPathConstants.NODESET);
 		}
+		protected int executeUpdate(final JSONObject jo,final int p, final int lim,final String query) throws Exception {
+			final Vector<Integer> retval = new Vector<Integer>();
+			new ConnectionBlock(){
 
+				@Override
+				protected void run() throws Exception {
+					jo.put("result_page", p);
+					jo.put("result_limit", lim);
+					String query_str = getQueryStatement(query);
+					this.prepareStatement(query_str);
+					applyParameters(jo,query,getPS());
+					int updated = this.executeUpdate();
+					retval.add(updated);
+				}
+				
+			}.run(db.getConnectionManager());
+			return retval.size() > 0 ? retval.get(0) : 0;
+		}
+		protected void applyParameters(final JSONObject jo,
+				final String list_query,PreparedStatement ps) throws Exception, SQLException {
+			NodeList parameters = getParameters(list_query);
+			for(int i = 0 ; i < parameters.getLength();i++){
+				Node attrib = parameters.item(i).getAttributes().getNamedItem("name");
+				String name = attrib.getTextContent();
+				try{
+					Object o = jo.get(name);
+					if(name.equals("filter")){
+						ps.setString(i+1, "%"+o.toString()+"%");
+					}else{
+						ps.setObject(i+1, o);
+					}
+				}catch(JSONException e){
+					getResponse().setStatus(JSONResponse.FIELD_VALIDATION_ERROR);
+					getResponse().addError(name, ""+e.getMessage());
+				}
+			}
+		}
 		protected void getList(final JSONObject jo,final int p ,final int lim,final String list_query,final String count_query) throws Exception {
 			new ConnectionBlock(){
 
@@ -168,22 +207,7 @@ abstract public class BaseAction<T> {
 					jo.put("result_limit", lim);
 					String query_str = getQueryStatement(list_query);
 					this.prepareStatement(query_str);
-					NodeList parameters = getParameters(list_query);
-					for(int i = 0 ; i < parameters.getLength();i++){
-						Node attrib = parameters.item(i).getAttributes().getNamedItem("name");
-						String name = attrib.getTextContent();
-						try{
-							Object o = jo.get(name);
-							if(name.equals("filter")){
-								getPS().setString(i+1, "%"+o.toString()+"%");
-							}else{
-								getPS().setObject(i+1, o);
-							}
-						}catch(JSONException e){
-							getResponse().setStatus(JSONResponse.FIELD_VALIDATION_ERROR);
-							getResponse().addError(name, ""+e.getMessage());
-						}
-					}
+					applyParameters(jo, list_query,getPS());
 					this.executeQuery();
 					if(getResponse().getStatus() == JSONResponse.OK){
 						convert(getResultSet());
@@ -193,22 +217,7 @@ abstract public class BaseAction<T> {
 							protected void run() throws Exception {
 								String count_str = getQueryStatement(count_query);
 								this.prepareStatement(count_str);
-								NodeList parameters = getParameters(count_query);
-								for(int i = 0; i < parameters.getLength();i++){
-									Node attrib = parameters.item(i).getAttributes().getNamedItem("name");
-									String name = attrib.getTextContent();
-									try{
-										Object o = jo.get(name);
-										if(name.equals("filter")){
-											getPS().setString(i+1, "%"+o.toString()+"%");
-										}else{
-											getPS().setObject(i+1, o);
-										}
-									}catch(JSONException e){
-										getResponse().setStatus(JSONResponse.FIELD_VALIDATION_ERROR);
-										getResponse().addError(name, ""+e.getMessage());
-									}
-								}
+								applyParameters(jo, count_query,getPS());
 								if(getResponse().getStatus() == JSONResponse.OK){
 									this.executeQuery();
 									if(next()){
@@ -223,6 +232,8 @@ abstract public class BaseAction<T> {
 					endindex = (endindex-1) < getResponse().getTotalRows() ? endindex-1 : getResponse().getTotalRows()-1;
 					getResponse().setEndRow(endindex);
 				}
+
+				
 
 			}.run(getConnectionManager());
 
@@ -401,5 +412,13 @@ abstract public class BaseAction<T> {
 	}
 	public boolean isOK(){
 		return getResponse().getStatus() == JSONResponse.OK;
+	}
+	public void removeReservedFields(JSONObject jo){
+		jo.remove("created_by");
+		jo.remove("creation_date");
+		jo.remove("creation_host");
+		jo.remove("modified_by");
+		jo.remove("modified_date");
+		jo.remove("modification_host");
 	}
 }
