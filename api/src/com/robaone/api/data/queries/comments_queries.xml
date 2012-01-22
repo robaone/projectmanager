@@ -3,38 +3,35 @@
   <ResultSet name="list">
     <Query>
       <PreparedStatement>select * from comments where referenceid = ? order by creation_date desc limit ?, ?</PreparedStatement>
-      	<Parameter name="referenceid" type="int"></Parameter>
+      	<Parameter name="referenceid" type="string"></Parameter>
 		<Parameter name="result_page" type="int"></Parameter>
 		<Parameter name="result_limit" type="int"></Parameter>
     </Query>
   </ResultSet>
-  <ResultSet name="count">
+  <ResultSet name="list_count">
   	<Query>
-  		<PreparedStatement>select count(1) from clients where idowner = ?</PreparedStatement>
-  		<Parameter name="owner" type="int"></Parameter>
+  		<PreparedStatement>select count(1) from comments where referenceid = ?</PreparedStatement>
+  		<Parameter name="referenceid" type="string"></Parameter>
   	</Query>
   </ResultSet>
   <ResultSet name="get">
   	<Query>
-  		<PreparedStatement>select clients.idclients,user.* from clients,user where clients.iduser = user.iduser and idowner = ? and idclients = ?</PreparedStatement>
-  		<Parameter name="owner" type="int"></Parameter>
-  		<Parameter name="idclients" type="int"/>
+  		<PreparedStatement>select * from comments where referenceid = ? and idcomments = ?</PreparedStatement>
+  		<Parameter name="referenceid" type="string"></Parameter>
+  		<Parameter name="idcomments" type="int"/>
   	</Query>
   </ResultSet>
   <ResultSet name="get_count">
   	<Query>
-  		<PreparedStatement>select count(1) from clients where idowner = ? and idclients = ?</PreparedStatement>
-  		<Parameter name="owner" type="int"></Parameter>
-  		<Parameter name="idclients" type="int"/>
+  		<PreparedStatement>select count(1) from comments where referenceid = ? and idcomments = ?</PreparedStatement>
+  		<Parameter name="referenceid" type="string"></Parameter>
+  		<Parameter name="idcomments" type="int"/>
   	</Query>
   </ResultSet>
   <ResultSet name="list_filtered">
   	<Query>
-  		<PreparedStatement>select clients.idclients,user.* from clients,user where clients.iduser
-  		 = user.iduser and idowner = ? and (user.last_name like ? or user.first_name like ?) 
-  		 order by last_name,first_name limit ?, ?</PreparedStatement>
-		<Parameter name="owner" type="int"></Parameter>
-		<Parameter name="filter" type="string"></Parameter>
+  		<PreparedStatement>select * from comments where referenceid = ? and comment like ? order by creation_date desc limit ?, ?</PreparedStatement>
+		<Parameter name="referenceid" type="string"></Parameter>
 		<Parameter name="filter" type="string"></Parameter>
 		<Parameter name="result_page" type="int"></Parameter>
 		<Parameter name="result_limit" type="int"></Parameter>
@@ -42,12 +39,16 @@
   </ResultSet>
   <ResultSet name="count_filtered">
   	<Query>
-  		<PreparedStatement>select count(1) from clients,user where 
-  		clients.iduser = user.iduser and idowner = ?
-  		and (user.last_name like ? or user.first_name like ?)</PreparedStatement>
-  		<Parameter name="owner" type="int"></Parameter>
+  		<PreparedStatement>select count(1) from comments where referenceid = ? and comment like ?</PreparedStatement>
+  		<Parameter name="referenceid" type="string"></Parameter>
 		<Parameter name="filter" type="string"></Parameter>
-		<Parameter name="filter" type="string"></Parameter>
+  	</Query>
+  </ResultSet>
+  <ResultSet name="delete">
+  	<Query>
+  		<PreparedStatement>delete from comments where referenceid = ? and idcomments = ?</PreparedStatement>
+  		<Parameter name="referenceid" type="string"></Parameter>
+		<Parameter name="idcomments" type="int"></Parameter>
   	</Query>
   </ResultSet>
 </Report>
