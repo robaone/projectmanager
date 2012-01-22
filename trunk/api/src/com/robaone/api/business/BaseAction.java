@@ -437,4 +437,14 @@ abstract public class BaseAction<T> {
 		jo.remove("modified_date");
 		jo.remove("modification_host");
 	}
+	public void setCreationFields(JSONObject jo) throws Exception{
+		jo.put("created_by", getSessionData().getUser().getIduser());
+		jo.put("creation_date", AppDatabase.getTimestamp());
+		jo.put("creation_host", getSessionData().getRemoteHost());
+	}
+	public void setModificationFields(JSONObject jo) throws Exception {
+		jo.put("modified_by",getSessionData().getUser().getIduser());
+		jo.put("modified_date", AppDatabase.getTimestamp());
+		jo.put("modification_host", getSessionData().getRemoteHost());
+	}
 }

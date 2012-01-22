@@ -2,8 +2,8 @@
 <Report xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="Report.xsd">
   <ResultSet name="list">
     <Query>
-      <PreparedStatement>select clients.idclients,user.* from clients,user where clients.iduser = user.iduser and idowner = ? order by last_name,first_name limit ?, ?</PreparedStatement>
-      	<Parameter name="owner" type="int"></Parameter>
+      <PreparedStatement>select * from comments where referenceid = ? order by creation_date desc limit ?, ?</PreparedStatement>
+      	<Parameter name="referenceid" type="int"></Parameter>
 		<Parameter name="result_page" type="int"></Parameter>
 		<Parameter name="result_limit" type="int"></Parameter>
     </Query>

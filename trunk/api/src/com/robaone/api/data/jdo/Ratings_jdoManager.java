@@ -31,4 +31,9 @@ public class Ratings_jdoManager {
 		
 	}
 
+	public Ratings_jdo newRatings() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
