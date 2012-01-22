@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="Report.xsd">
+  <ResultSet name="list">
+    <Query>
+      <PreparedStatement>select * from apps order by name limit ?, ?</PreparedStatement>
+		<Parameter name="result_page" type="int"></Parameter>
+		<Parameter name="result_limit" type="int"></Parameter>
+    </Query>
+  </ResultSet>
+  <ResultSet name="count">
+  	<Query>
+  		<PreparedStatement>select count(1) from apps</PreparedStatement>
+  	</Query>
+  </ResultSet>
+  <ResultSet name="list_filtered">
+  	<Query>
+  		<PreparedStatement>select * from apps
+where (apps.name like ? or apps.created_by like ?)</PreparedStatement>
+		<Parameter name="filter" type="string"></Parameter>
+		<Parameter name="filter" type="string"></Parameter>
+		<Parameter name="start_index" type="int"></Parameter>
+		<Parameter name="end_index" type="int"></Parameter>
+  	</Query>
+  </ResultSet>
+  <ResultSet name="count_filtered">
+  	<Query>
+  		<PreparedStatement>select count(1) from apps with (nolock) where 
+(apps.name like ? or apps.created_by like ?);</PreparedStatement>
+		<Parameter name="filter" type="string"></Parameter>
+		<Parameter name="filter" type="string"></Parameter>
+  	</Query>
+  </ResultSet>
+</Report>
