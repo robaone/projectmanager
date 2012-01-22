@@ -24,10 +24,14 @@ public class DatabaseImpl{
 		Context envContext  = (Context)initContext.lookup("java:/comp/env");
 		String env = AppDatabase.getProperty("env");
 		DataSource ds;
-		if(env != null && env.equals("dev"))
+		if(env != null && env.equals("dev")){
 			ds = (DataSource)envContext.lookup("jdbc/mydatabase_dev");
-		else
+		}else{
 			ds = (DataSource)envContext.lookup("jdbc/mydatabase");
+		}
+		if(ds == null || ds.getConnection() == null){
+			throw new Exception("Unable to establish database connection");
+		}
 		Connection conn = ds.getConnection();
 		return conn;
 	}

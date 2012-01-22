@@ -305,10 +305,10 @@ abstract public class BaseAction<T> {
 			return false;
 		}
 	}
-	public void writeResonse(){
+	public void writeResonse() throws JSONException{
 		PrintWriter pw = new PrintWriter(this.out);
 		JSONObject jo = new JSONObject(this.dsr);
-		pw.print(jo.toString());
+		pw.print(jo.toString(3));
 		AppDatabase.writeLog("00011: Response = "+jo.toString());
 		pw.flush();
 		pw.close();

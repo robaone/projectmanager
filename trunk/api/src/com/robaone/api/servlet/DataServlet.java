@@ -90,7 +90,11 @@ public class DataServlet extends HttpServlet {
 					throw new ServletException(e1);
 				}
 			}else{
-				pw.print(jo.toString());
+				try {
+					pw.print(jo.toString(3));
+				} catch (JSONException e1) {
+					e1.printStackTrace();
+				}
 			}
 			pw.flush();
 			pw.close();
