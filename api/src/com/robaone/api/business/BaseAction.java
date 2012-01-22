@@ -139,13 +139,17 @@ abstract public class BaseAction<T> {
 
 		abstract protected void filteredSearch(JSONObject jo, int p, int lim, String filter) throws Exception;
 		protected void buildQueryDoc(String name) throws Exception {
-			InputStream in = BaseAction.class.getResourceAsStream("/com/robaone/api/data/queries/"+name+".xml");
+			String resource = "/com/robaone/api/data/queries/"+name+".xml";
+			AppDatabase.writeLog("00096: Retrieving resource: "+resource);
+			InputStream in = BaseAction.class.getResourceAsStream(resource);
 			this.query_doc = builder.parse(in);
 		}
 
 		protected String getQueryStatement(String name) throws Exception {
 			XPathExpression expr = xpath.compile("//ResultSet[@name=\""+name+"\"]//PreparedStatement");
-			return (String)expr.evaluate(this.query_doc, XPathConstants.STRING);
+			String query = (String)expr.evaluate(this.query_doc, XPathConstants.STRING);
+			AppDatabase.writeLog("00097: Extracting query: "+query);
+			return query;
 		}
 
 		protected Integer getParameterCount(String name) throws Exception {
