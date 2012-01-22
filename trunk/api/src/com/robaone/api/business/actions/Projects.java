@@ -17,14 +17,15 @@ import com.robaone.dbase.ConnectionBlock;
 
 public class Projects extends BaseAction<JSONObject> {
 
-	private static final String QUERIES = "project_queries";
+	private static String QUERIES = "project_queries";
 	protected static final String LIST = "list";
 	protected static final String LIST_COUNT = "list_count";
 	protected static final String FILTERED_LIST = "filtered_list";
 	protected static final String FILTERED_COUNT = "filtered_count";
 	protected static final String GET = "get";
 	protected static final String GET_COUNT = "get_count";
-	protected static final String CANCEL_PROJECT = null;
+	protected static String CANCEL_PROJECT = "cancel_project";
+	protected static String ID = "idprojects";
 	public Projects(OutputStream o, SessionData d, HttpServletRequest request)
 	throws ParserConfigurationException {
 		super(o, d, request);
@@ -68,15 +69,15 @@ public class Projects extends BaseAction<JSONObject> {
 
 			@Override
 			protected void run(final JSONObject jo) throws Exception {
-				final String id = this.findXPathString("//idprojects");
+				final String id = this.findXPathString("//"+ID);
 				if(!FieldValidator.isNumber(id)){
-					fieldError("idprojects","You must enter a valid id");
+					fieldError(ID,"You must enter a valid id");
 				}else{
 					new ConnectionBlock(){
 
 						@Override
 						protected void run() throws Exception {
-							jo.remove("idprojects");
+							jo.remove(ID);
 							removeReservedFields(jo);
 							Projects_jdoManager man = new Projects_jdoManager(this.getConnection());
 							Projects_jdo project = man.getProjects(new Integer(id));
@@ -104,7 +105,7 @@ public class Projects extends BaseAction<JSONObject> {
 
 					@Override
 					protected void run() throws Exception {
-						jo.remove("idprojects");
+						jo.remove(ID);
 						removeReservedFields(jo);
 						Projects_jdoManager man = new Projects_jdoManager(this.getConnection());
 						Projects_jdo project = man.newProjects();
@@ -128,9 +129,9 @@ public class Projects extends BaseAction<JSONObject> {
 
 			@Override
 			protected void run(final JSONObject jo) throws Exception {
-				final String id = this.findXPathString("//idprojects");
+				final String id = this.findXPathString("//"+ID);
 				if(!FieldValidator.isNumber(id)){
-					fieldError("idprojects","You must enter a valid id");
+					fieldError(ID,"You must enter a valid id");
 				}else{
 					new ConnectionBlock(){
 
