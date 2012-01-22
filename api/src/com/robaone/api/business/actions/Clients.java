@@ -10,6 +10,8 @@ import org.json.JSONObject;
 import com.robaone.api.business.BaseAction;
 import com.robaone.api.business.FieldValidator;
 import com.robaone.api.data.SessionData;
+import com.robaone.api.data.jdo.Clients_jdo;
+import com.robaone.api.data.jdo.Clients_jdoManager;
 import com.robaone.api.data.jdo.User_jdo;
 import com.robaone.api.data.jdo.User_jdoManager;
 import com.robaone.api.json.DSResponse;
@@ -60,16 +62,18 @@ public class Clients extends BaseAction<JSONObject> {
 
 			@Override
 			protected void run(final JSONObject jo) throws Exception {
-				final String id = findXPathString("//iduser");
+				final String id = findXPathString("//idclients");
 				if(!FieldValidator.isNumber(id)){
-					fieldError("iduser","You must enter a valid id");
+					fieldError("idclients","You must enter a valid id");
 				}else{
 					new ConnectionBlock(){
 
 						@Override
 						protected void run() throws Exception {
+							jo.remove("idclients");
+							removeReservedFields(jo);
 							Clients_jdoManager man = new Clients_jdoManager(this.getConnection());
-							Clients_jdo client = man.getUser(new Integer(id));
+							Clients_jdo client = man.getClients(new Integer(id));
 							man.bindUserJSON(client, jo);
 							man.save(client);
 							getResponse().addData(man.toJSONObject(client));
@@ -91,6 +95,12 @@ public class Clients extends BaseAction<JSONObject> {
 					@Override
 					protected void run() throws Exception {
 						jo.remove("idclients");
+						removeReservedFields(jo);
+						Clients_jdoManager man = new Clients_jdoManager(this.getConnection());
+						Clients_jdo client = man.newClients();
+						man.bindUserJSON(client, jo);
+						man.save(client);
+						getResponse().addData(man.toJSONObject(client));
 					}
 					
 				}.run(db.getConnectionManager());
@@ -99,11 +109,32 @@ public class Clients extends BaseAction<JSONObject> {
 		}.run(this, jo);
 	}
 	public void delete(JSONObject jo){
-		try{
-			//TODO: Implement
-		}catch(Exception e){
-			this.sendError(e);
-		}
+		new FunctionCall(){
+
+			@Override
+			protected void run(JSONObject jo) throws Exception {
+				final String id = this.findXPathString("//idclients");
+				if(!FieldValidator.isNumber(id)){
+					fieldError("idclients","You must enter a valid id");
+				}else{
+					new ConnectionBlock(){
+
+						@Override
+						protected void run() throws Exception {
+							Clients_jdoManager man = new Clients_jdoManager(this.getConnection());
+							Clients_jdo client = man.getClients(new Integer(id));
+							if(client != null){
+								man.delete(client);
+							}else{
+								generalError(BaseAction.NOT_FOUND_ERROR);
+							}
+						}
+						
+					}.run(db.getConnectionManager());
+				}
+			}
+			
+		}.run(this,jo);
 	}
 	@Override
 	public DSResponse<JSONObject> newDSResponse() {
