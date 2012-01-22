@@ -46,4 +46,18 @@ public class Ratings extends RecordHandler {
 		}
 	}
 
+	@Override
+	protected void create_record(JSONObject jo, Connection con)
+			throws Exception {
+		Ratings_jdoManager man = new Ratings_jdoManager(con);
+		Ratings_jdo record = man.newRatings();
+		if(record != null){
+			man.bindRatingsJSON(record,jo);
+			man.save(record);
+			getResponse().addData(man.toJSONObject(record));
+		}else{
+			generalError(NOT_FOUND_ERROR);
+		}
+	}
+
 }

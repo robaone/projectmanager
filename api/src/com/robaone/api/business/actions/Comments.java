@@ -50,4 +50,18 @@ public class Comments extends RecordHandler {
 			generalError(NOT_FOUND_ERROR);
 		}
 	}
+
+	@Override
+	protected void create_record(JSONObject jo, Connection con)
+			throws Exception {
+		Comments_jdoManager man = new Comments_jdoManager(con);
+		Comments_jdo record = man.newComments();
+		if(record != null){
+			man.bindCommentsJSON(record, jo);
+			man.save(record);
+			getResponse().addData(man.toJSONObject(record));
+		}else{
+			generalError(NOT_FOUND_ERROR);
+		}
+	}
 }

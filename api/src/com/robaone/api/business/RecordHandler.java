@@ -10,6 +10,7 @@ import org.json.JSONObject;
 
 import com.robaone.api.business.BaseAction;
 import com.robaone.api.business.FieldValidator;
+import com.robaone.api.data.AppDatabase;
 import com.robaone.api.data.SessionData;
 import com.robaone.api.data.jdo.Projects_jdo;
 import com.robaone.api.data.jdo.Projects_jdoManager;
@@ -38,6 +39,7 @@ abstract public class RecordHandler extends BaseAction<JSONObject> {
 	abstract protected String getIdentity();
 	abstract protected void put_record(final JSONObject jo,
 			final String id,Connection con) throws Exception;
+	abstract protected void create_record(final JSONObject jo,Connection con) throws Exception;
 	public void list(JSONObject jo){
 		new PagedFunctionCall(QUERIES){
 
@@ -87,6 +89,7 @@ abstract public class RecordHandler extends BaseAction<JSONObject> {
 						protected void run() throws Exception {
 							jo.remove(ID);
 							removeReservedFields(jo);
+							setModificationFields(jo);
 							put_record(jo, id,this.getConnection());
 						}
 
@@ -109,15 +112,8 @@ abstract public class RecordHandler extends BaseAction<JSONObject> {
 					protected void run() throws Exception {
 						jo.remove(ID);
 						removeReservedFields(jo);
-						Projects_jdoManager man = new Projects_jdoManager(this.getConnection());
-						Projects_jdo project = man.newProjects();
-						if(project != null){
-							man.bindProjectsJSON(project, jo);
-							man.save(project);
-							getResponse().addData(man.toJSONObject(project));
-						}else{
-							generalError(NOT_FOUND_ERROR);
-						}
+						setCreationFields(jo);
+						create_record(jo,this.getConnection());
 					}
 
 				}.run(db.getConnectionManager());
