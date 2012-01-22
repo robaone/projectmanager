@@ -2,6 +2,7 @@ package com.robaone.api.business;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.sql.ResultSet;
@@ -13,6 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Properties;
 
+import javax.naming.NamingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.parsers.DocumentBuilder;
@@ -33,6 +35,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.XML;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.robaone.api.data.AppDatabase;
@@ -47,8 +51,10 @@ import com.robaone.api.json.JSONResponse;
 import com.robaone.api.oauth.ROAPIOAuthProvider;
 import com.robaone.dbase.hierarchial.ConfigManager;
 import com.robaone.dbase.ConnectionBlock;
+import com.robaone.dbase.HDBConnectionManager;
 
 abstract public class BaseAction<T> {
+	public static String NOT_SUPPORTED = "Not Supported";
 	private OutputStream out;
 	private SessionData session;
 	private HttpServletRequest request;
@@ -58,6 +64,7 @@ abstract public class BaseAction<T> {
 	XPathFactory xfactory;
 	XPath xpath;
 	protected DatabaseImpl db = new DatabaseImpl();
+	private Document query_doc;
 	abstract public class FunctionCall{
 		protected BaseAction action;
 		private String xml;
@@ -80,6 +87,150 @@ abstract public class BaseAction<T> {
 				action.sendError(e);
 			}
 		}
+	}
+	abstract public class PagedFunctionCall extends FunctionCall {
+		private Document query_doc;
+		private String m_query_name;
+		public PagedFunctionCall(String query_name) {
+			m_query_name = query_name;
+		}
+		@Override
+		protected void run(JSONObject jo) throws Exception {
+			this.buildQueryDoc(m_query_name);
+			String filter = this.findXPathString("//filter");
+			String page = this.findXPathString("//page");
+			String limit = this.findXPathString("//limit");
+			int p = 0;
+			int lim = 5;
+			if(FieldValidator.exists(page) && (!FieldValidator.isNumber(page) || Integer.parseInt(page) < 0)){
+				getResponse().setStatus(JSONResponse.FIELD_VALIDATION_ERROR);
+				getResponse().addError("page", "You must enter a number greater than or equal to zero");
+			}else if(FieldValidator.exists(page)){
+				p = Integer.parseInt(page);
+			}
+			if(FieldValidator.exists(limit) && (!FieldValidator.isNumber(limit) || Integer.parseInt(limit) < 1)){
+				getResponse().setStatus(JSONResponse.FIELD_VALIDATION_ERROR);
+				getResponse().addError("limit", "You must enter a limit that is greater than zero");
+			}else if(FieldValidator.exists(limit)){
+				lim = Integer.parseInt(limit);
+				lim = lim > 100 ? 100 : lim;
+			}
+			if(FieldValidator.exists(filter)){
+				/**
+				 * Search for failed jobs based on the filter
+				 */
+				if(getResponse().getStatus() == JSONResponse.OK){
+					filteredSearch(jo,p,lim,filter);
+				}
+			}else{
+				/**
+				 * Search for all failed jobs
+				 */
+				if(getResponse().getStatus() == JSONResponse.OK){
+					unfilteredSearch(jo,p,lim);
+				}
+			}
+		}
+
+		abstract protected void unfilteredSearch(JSONObject jo, int p, int lim) throws Exception;
+
+		abstract protected void filteredSearch(JSONObject jo, int p, int lim, String filter) throws Exception;
+		protected void buildQueryDoc(String name) throws Exception {
+			InputStream in = BaseAction.class.getResourceAsStream("/com/robaone/api/data/queries/"+name+".xml");
+			this.query_doc = builder.parse(in);
+		}
+
+		protected String getQueryStatement(String name) throws Exception {
+			XPathExpression expr = xpath.compile("//ResultSet[@name=\""+name+"\"]//PreparedStatement");
+			return (String)expr.evaluate(this.query_doc, XPathConstants.STRING);
+		}
+
+		protected Integer getParameterCount(String name) throws Exception {
+			String path = "count(//ResultSet[@name=\""+name+"\"]//Parameter)";
+			XPathExpression expr = xpath.compile(path);
+			return (Integer)expr.evaluate(this.query_doc, XPathConstants.NUMBER);
+		}
+
+		protected NodeList getParameters(String name) throws Exception {
+			String path = "//ResultSet[@name=\""+name+"\"]//Parameter";
+			XPathExpression expr = xpath.compile(path);
+			return (NodeList)expr.evaluate(this.query_doc, XPathConstants.NODESET);
+		}
+
+		protected void getList(final JSONObject jo,final int p ,final int lim,final String list_query,final String count_query) throws Exception {
+			new ConnectionBlock(){
+
+				@Override
+				protected void run() throws Exception {
+					int startindex = (lim*p) + 1;
+					int endindex = startindex + lim -1;
+					jo.put("result_page", p);
+					jo.put("result_limit", lim);
+					String query_str = getQueryStatement(list_query);
+					this.prepareStatement(query_str);
+					NodeList parameters = getParameters(list_query);
+					for(int i = 0 ; i < parameters.getLength();i++){
+						Node attrib = parameters.item(i).getAttributes().getNamedItem("name");
+						String name = attrib.getTextContent();
+						try{
+							Object o = jo.get(name);
+							if(name.equals("filter")){
+								getPS().setString(i+1, "%"+o.toString()+"%");
+							}else{
+								getPS().setObject(i+1, o);
+							}
+						}catch(JSONException e){
+							getResponse().setStatus(JSONResponse.FIELD_VALIDATION_ERROR);
+							getResponse().addError(name, ""+e.getMessage());
+						}
+					}
+					this.executeQuery();
+					if(getResponse().getStatus() == JSONResponse.OK){
+						convert(getResultSet());
+						new ConnectionBlock(){
+
+							@Override
+							protected void run() throws Exception {
+								String count_str = getQueryStatement(count_query);
+								this.prepareStatement(count_str);
+								NodeList parameters = getParameters(count_query);
+								for(int i = 0; i < parameters.getLength();i++){
+									Node attrib = parameters.item(i).getAttributes().getNamedItem("name");
+									String name = attrib.getTextContent();
+									try{
+										Object o = jo.get(name);
+										if(name.equals("filter")){
+											getPS().setString(i+1, "%"+o.toString()+"%");
+										}else{
+											getPS().setObject(i+1, o);
+										}
+									}catch(JSONException e){
+										getResponse().setStatus(JSONResponse.FIELD_VALIDATION_ERROR);
+										getResponse().addError(name, ""+e.getMessage());
+									}
+								}
+								if(getResponse().getStatus() == JSONResponse.OK){
+									this.executeQuery();
+									if(next()){
+										int count = this.getResultSet().getInt(1);
+										getResponse().setTotalRows(count);
+									}
+								}
+							}
+
+						}.run(getConnectionManager());
+					}
+					endindex = (endindex-1) < getResponse().getTotalRows() ? endindex-1 : getResponse().getTotalRows()-1;
+					getResponse().setEndRow(endindex);
+				}
+
+			}.run(getConnectionManager());
+
+		}
+		protected HDBConnectionManager getConnectionManager() throws NamingException {
+			return db.getConnectionManager();
+		}
+
 	}
 	public BaseAction(OutputStream o, SessionData d, HttpServletRequest request) throws ParserConfigurationException{
 		this.out = o;
@@ -188,7 +339,7 @@ abstract public class BaseAction<T> {
 					AppDatabase.writeLog("00014: Credentials Saved");
 				}
 			}
-			
+
 		};
 		ConfigManager.runConnectionBlock(block, this.db.getConnectionManager());
 	}
@@ -212,7 +363,7 @@ abstract public class BaseAction<T> {
 					AppDatabase.writeLog("00016: credentials deauthorized");
 				}
 			}
-			
+
 		};
 		ConfigManager.runConnectionBlock(block, db.getConnectionManager());
 	}
