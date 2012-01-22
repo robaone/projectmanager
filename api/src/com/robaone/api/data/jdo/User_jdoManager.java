@@ -280,7 +280,9 @@ User_jdo retval = new User_jdo();
       for(int i = 0; i < record.getFieldCount(); i++){
         String fieldname = record.getField(i);
         Object value = record.getField(fieldname)[0];
-        object.put(fieldname.toLowerCase(), value);
+        if(!fieldname.equalsIgnoreCase("password")){
+        	object.put(fieldname.toLowerCase(), value);
+        }
       }
       retval = object;
     }

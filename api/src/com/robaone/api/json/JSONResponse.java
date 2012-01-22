@@ -69,7 +69,7 @@ public class JSONResponse<D> {
 	}
 
 	public int getEndRow() {
-		return endRow;
+		return endRow < 0 ? 0 : endRow > getTotalRows() ? getTotalRows() : endRow;
 	}
 
 	public void setTotalRows(int totalRows) {
@@ -77,7 +77,7 @@ public class JSONResponse<D> {
 	}
 
 	public int getTotalRows() {
-		return totalRows;
+		return totalRows < endRow ? endRow : totalRows;
 	}
 	public int getPage() {
 		return page;

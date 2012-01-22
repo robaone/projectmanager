@@ -80,7 +80,7 @@ abstract public class BaseAction<T> {
 				this.action = action;
 				action.validate();
 				if(action.requireLogin() == false){
-					String xml = XML.toString(jo, "request");
+					this.xml = XML.toString(jo, "request");
 					run(jo);
 				}else{
 					action.getResponse().setStatus(JSONResponse.LOGIN_REQUIRED);
@@ -141,14 +141,23 @@ abstract public class BaseAction<T> {
 		protected void buildQueryDoc(String name) throws Exception {
 			String resource = "/com/robaone/api/data/queries/"+name+".xml";
 			AppDatabase.writeLog("00096: Retrieving resource: "+resource);
-			InputStream in = BaseAction.class.getResourceAsStream(resource);
-			this.query_doc = builder.parse(in);
+			try{
+				InputStream in = BaseAction.class.getResourceAsStream(resource);
+				this.query_doc = builder.parse(in);
+			}catch(Exception e){
+				AppDatabase.writeLog("00099: Could not open resource");
+				throw e;
+			}
 		}
 
 		protected String getQueryStatement(String name) throws Exception {
 			XPathExpression expr = xpath.compile("//ResultSet[@name=\""+name+"\"]//PreparedStatement");
+			AppDatabase.writeLog("00097: Extracting query: "+name);
 			String query = (String)expr.evaluate(this.query_doc, XPathConstants.STRING);
-			AppDatabase.writeLog("00097: Extracting query: "+query);
+			if(!FieldValidator.exists(query)){
+				AppDatabase.writeLog("00098: Query,"+name+", could not be found in xml");
+				throw new Exception("Query,"+name+", not found");
+			}
 			return query;
 		}
 
@@ -177,7 +186,7 @@ abstract public class BaseAction<T> {
 					int updated = this.executeUpdate();
 					retval.add(updated);
 				}
-				
+
 			}.run(db.getConnectionManager());
 			return retval.size() > 0 ? retval.get(0) : 0;
 		}
@@ -237,7 +246,7 @@ abstract public class BaseAction<T> {
 					getResponse().setEndRow(endindex);
 				}
 
-				
+
 
 			}.run(getConnectionManager());
 
@@ -386,17 +395,20 @@ abstract public class BaseAction<T> {
 		this.getResponse().setStatus(JSONResponse.GENERAL_ERROR);
 		this.getResponse().setError(e.getClass().getName()+": "+e.getMessage());
 	}
+	@SuppressWarnings("unchecked")
 	protected void convert(ResultSet resultSet) throws SQLException, JSONException {
 		ResultSetMetaData rsmdata = resultSet.getMetaData();
 		while(resultSet.next()){
 			JSONObject jo = new JSONObject();
 			for(int i = 0; i < rsmdata.getColumnCount();i++){
-				String column = rsmdata.getColumnName(i);
-				int type = rsmdata.getColumnType(i);
-				if(type == Types.DATE){
-					jo.put(column, resultSet.getTimestamp(i));
-				}else{
-					jo.put(column, resultSet.getObject(i));
+				String column = rsmdata.getColumnName(i+1);
+				if(!column.equalsIgnoreCase("password")){
+					int type = rsmdata.getColumnType(i+1);
+					if(type == Types.DATE){
+						jo.put(column, resultSet.getTimestamp(i+1));
+					}else{
+						jo.put(column, resultSet.getObject(i+1));
+					}
 				}
 			}
 			getResponse().addData((T) jo);
