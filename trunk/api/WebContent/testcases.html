@@ -6,7 +6,7 @@
 </head>
 <body>
 <form action="DataService" method="POST" target="result">
-<input type="hidden" name="_type" value="xml"/>
+<input type="hidden" name="_type" value="json"/>
 <b>Login</b><br/>
 Username:<input type="text" name="username" /><br/>
 Password:<input type="password" name="password" /><br/>
@@ -19,7 +19,7 @@ Password:<input type="password" name="password" /><br/>
 <hr/>
 <!-- register -->
 <form action="DataService" method="POST" target="result">
-<input type="hidden" name="_type" value="xml"/>
+<input type="hidden" name="_type" value="json"/>
 <b>Register</b><br/>
 First Name:<input type="text" name="firstname"/><br/>
 Last Name:<input type="text" name="lastname"/><br/>
@@ -32,7 +32,7 @@ Re-type Password:<input type="password" name="password_repeat"/><br/>
 <hr/>
 <!-- Request Activation -->
 <form action="DataService" method="POST" target="result">
-<input type="hidden" name="_type" value="xml"/>
+<input type="hidden" name="_type" value="json"/>
 <b>Request Activation</b><br/>
 Username:<input type="text" name="username"/><br/>
 Password:<input type="password" name="password"/><br/>
@@ -41,7 +41,7 @@ Password:<input type="password" name="password"/><br/>
 <hr/>
 <!-- Activate an account -->
 <form action="DataService" method="POST" target="result">
-<input type="hidden" name="_type" value="xml"/>
+<input type="hidden" name="_type" value="json"/>
 <b>Activate Account</b><br/>
 Username:<input type="text" name="username"/><br/>
 Password:<input type="password" name="password"/><br/>
@@ -52,14 +52,14 @@ Token:<input type="text" name="token"/><br/>
 <!-- Request password reset -->
 <b>Request Password Reset</b><br/>
 <form action="DataService" method="POST" target="result">
-<input type="hidden" name="_type" value="xml"/>
+<input type="hidden" name="_type" value="json"/>
 Username:<input type="text" name="username"/><br/>
 <input type="hidden" name="_action" value="Login.requestPasswordReset"/>
 <input type="submit"/></form>
 <hr/>
 <!-- Reset Password -->
 <form action="DataService" method="POST" target="result">
-<input type="hidden" name="_type" value="xml"/>
+<input type="hidden" name="_type" value="json"/>
 <b>Create a new passord</b><br/>
 Username:<input type="text" name="username"/><br/>
 Password:<input type="password" name="password"/><br/>
@@ -73,7 +73,7 @@ Token:<input type="text" name="token"/><br/>
 <hr/>
 <!-- Perform an action -->
 <form action="function_call" method="POST" target="result">
-<input type="hidden" name="type" value="xml"/>
+<input type="hidden" name="type" value="json"/>
 <b>Perform Action</b><br/>
 <SELECT name="action">
 <OPTION>Users.list</OPTION>
