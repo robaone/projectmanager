@@ -27,7 +27,7 @@ public class Bids_jdoManager {
   private final static String SEARCH = "select COUNT(1) from #TABLE# #OPTION# where #TABLE#.IDBIDS = ?";
   private final static String DELETE = "delete from #TABLE# where #TABLE#.IDBIDS = ?";
   private final static String IDENTITY = "IDBIDS";
-  private RO_JDO_IdentityManager<Integer> NEXT_SQL;
+  private RO_JDO_IdentityManager<Long> NEXT_SQL;
   public final static String FIELDS = "#TABLE#.IDBIDS,#TABLE#.CONTRACTORID,#TABLE#.PROJECTID,#TABLE#.TOTAL,#TABLE#.DETAILS,#TABLE#.CREATED_BY,#TABLE#.CREATION_DATE,#TABLE#.CREATION_HOST,#TABLE#.MODIFIED_BY,#TABLE#.MODIFIED_DATE,#TABLE#.MODIFIER_HOST,#TABLE#.STATUS";
   private String TABLE = "BIDS";
   protected boolean debug = false;
@@ -41,7 +41,7 @@ public class Bids_jdoManager {
     }catch(Exception e){}
   }
   protected void setIdentityClass(){
-     this.NEXT_SQL = new RO_JDO_MySQL<Integer>();
+     this.NEXT_SQL = new RO_JDO_MySQL<Long>();
   }
   protected Connection getConnection(){
     return this.m_con;

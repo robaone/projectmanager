@@ -24,7 +24,7 @@ public class Projects_jdoManager {
   private final static String SEARCH = "select COUNT(#TABLE#.IDPROJECTS) from #TABLE# where #TABLE#.IDPROJECTS = ?";
   private final static String DELETE = "delete from #TABLE# where #TABLE#.IDPROJECTS = ?";
   private final static String IDENTITY = "IDPROJECTS";
-  private final static RO_JDO_IdentityManager<Integer> NEXT_SQL = new RO_JDO_MySQL<Integer>();
+  private final static RO_JDO_IdentityManager<Long> NEXT_SQL = new RO_JDO_MySQL<Long>();
   public final static String FIELDS = "#TABLE#.IDPROJECTS,#TABLE#.CONSUMERID,#TABLE#.NAME,#TABLE#.CREATED_BY,#TABLE#.CREATION_DATE,#TABLE#.CREATION_HOST,#TABLE#.MODIFIED_BY,#TABLE#.MODIFIED_DATE,#TABLE#.MODIFIER_HOST";
   private String TABLE = "PROJECTS";
   protected boolean debug = false;

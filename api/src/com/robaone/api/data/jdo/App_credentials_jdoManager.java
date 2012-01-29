@@ -27,7 +27,7 @@ public class App_credentials_jdoManager {
   private final static String SEARCH = "select COUNT(1) from #TABLE# #OPTION# where #TABLE#.IDAPP_CREDENTIALS = ?";
   private final static String DELETE = "delete from #TABLE# where #TABLE#.IDAPP_CREDENTIALS = ?";
   private final static String IDENTITY = "IDAPP_CREDENTIALS";
-  private RO_JDO_IdentityManager<Integer> NEXT_SQL;
+  private RO_JDO_IdentityManager<Long> NEXT_SQL;
   public final static String FIELDS = "#TABLE#.IDAPP_CREDENTIALS,#TABLE#.REQUEST_TOKEN,#TABLE#.ACCESS_TOKEN,#TABLE#.CREATED_BY,#TABLE#.CREATION_HOST,#TABLE#.EXPIRATION_DATE,#TABLE#.CREATION_DATE,#TABLE#.ACTIVE,#TABLE#.IDAPPS,#TABLE#.IDUSER,#TABLE#.TOKEN_SECRET";
   private String TABLE = "APP_CREDENTIALS";
   protected boolean debug = false;
@@ -41,7 +41,7 @@ public class App_credentials_jdoManager {
     }catch(Exception e){}
   }
   protected void setIdentityClass(){
-     this.NEXT_SQL = new RO_JDO_MySQL<Integer>();
+     this.NEXT_SQL = new RO_JDO_MySQL<Long>();
   }
   protected Connection getConnection(){
     return this.m_con;
