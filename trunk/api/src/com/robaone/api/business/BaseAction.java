@@ -33,6 +33,10 @@ import net.oauth.OAuthMessage;
 import net.oauth.OAuthProblemException;
 import net.oauth.server.OAuthServlet;
 
+import org.apache.commons.fileupload.FileItemIterator;
+import org.apache.commons.fileupload.FileItemStream;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.fileupload.util.Streams;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.XML;
@@ -255,6 +259,34 @@ abstract public class BaseAction<T> {
 			return db.getConnectionManager();
 		}
 
+	}
+	protected class UploadFunctionCall extends FunctionCall{
+		private DataScriptor m_scriptor;
+		public UploadFunctionCall(DataScriptor scriptor){
+			this.m_scriptor = scriptor;
+		}
+		@Override
+		protected void run(JSONObject jo) throws Exception {
+			AppDatabase.writeLog("Upload.city_state_zip");
+			boolean isMultipart = ServletFileUpload.isMultipartContent(getRequest());
+			if(isMultipart){
+				ServletFileUpload upload = new ServletFileUpload();
+				
+				// Parse the request
+				FileItemIterator iter = upload.getItemIterator(getRequest());
+				while(iter.hasNext()){
+					FileItemStream item = iter.next();
+					String name = item.getFieldName();
+					InputStream stream = item.openStream();
+					if(item.isFormField()){
+						m_scriptor.handleField(name,Streams.asString(stream));
+					}else{
+						m_scriptor.handleStream(name,stream,item.getContentType());
+					}
+				}
+			}
+		}
+		
 	}
 	public BaseAction(OutputStream o, SessionData d, HttpServletRequest request) throws ParserConfigurationException{
 		this.out = o;
