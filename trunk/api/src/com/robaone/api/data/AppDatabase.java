@@ -43,6 +43,7 @@ public class AppDatabase {
 	public static final int ROLE_SERVICEPROVIDER = 3;
 	public static final int ROLE_VENDOR = 4;
 	private static final String PAGE_NOT_FOUND_ERROR = "<h1>Page Not Found</h1>";
+	public static final String CONTEXT = "context";
 	private static INIFileReader inifile;
 	public static String getProperty(String prop){
 		if(inifile == null){
@@ -99,10 +100,10 @@ public class AppDatabase {
 		AppDatabase.putSession(instanceid, session);
 		return instanceid;
 	}
-	public static String generatePage(String page,Map<String,String> parameters,JSONObject session) throws Exception {
+	public static String generatePage(String page,Map<String,String[]> parameters,JSONObject session) throws Exception {
 		return generatePage(page,null,parameters,session);
 	}
-	public static String generatePage(String page,String section,Map<String,String> parameters,JSONObject session) throws Exception{
+	public static String generatePage(String page,String section,Map<String,String[]> parameters,JSONObject session) throws Exception{
 		String retval = null;
 		String instanceid = storeSessionData(session);
 		try{
@@ -116,6 +117,7 @@ public class AppDatabase {
 			jo.put("page", page);
 			jo.put("instanceid", instanceid);
 			String xml = XML.toString(jo, "data");
+			AppDatabase.writeLog("00101: "+xml);
 			StreamSource source = new StreamSource(new StringReader(xml));
 			StreamSource stylesource = new StreamSource(xsl_folder+System.getProperty("file.separator")+page+".xsl");
 			
