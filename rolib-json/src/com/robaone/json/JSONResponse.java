@@ -1,16 +1,24 @@
 package com.robaone.json;
 
 import java.util.HashMap;
+import java.util.Properties;
 import java.util.Vector;
 
 public class JSONResponse<D> {
+	public static final int OK = 0;
+	public static final int FIELD_VALIDATION_ERROR = 2;
+	public static final int LOGIN_REQUIRED = 3;
+	public static final int GENERAL_ERROR = 1;
+
 	private int status;
-	@SuppressWarnings("rawtypes")
-	private HashMap m_errors = new HashMap();
-	private Vector<D> m_data = new Vector<D>();
+	private HashMap<String,String> m_errors = new HashMap<String,String>();
+	private Vector<D> m_data;
 	private int startRow;
 	private int endRow;
 	private int totalRows;
+	private String generalerror;
+	private int page;
+	private Properties m_props;
 	public JSONResponse(){}
 
 	public void setStatus(int i) {
@@ -20,26 +28,21 @@ public class JSONResponse<D> {
 	public int getStatus(){
 		return this.status;
 	}
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public void addError(String field, String message) {
-		Vector errors = (Vector)this.m_errors.get(field);
-		if(errors == null){
-			errors = new Vector<Object>();
-			this.m_errors.put(field,errors);
-		}
-		HashMap<String,String> msg = new HashMap<String,String>();
-		msg.put("errorMessage", message);
-		errors.add(msg);
+	public void setError(String message){
+		this.generalerror = message;
 	}
-	@SuppressWarnings("rawtypes")
-	public HashMap getErrors(){
+	public String getError(){
+		return this.generalerror;
+	}
+	public void addError(String field, String message) {
+		this.m_errors.put(field, message);
+	}
+	public HashMap<String,String> getErrors(){
 		return this.m_errors;
 	}
 
-	@SuppressWarnings("rawtypes")
 	protected void setErrors(
-			HashMap mErrors) {
+			HashMap<String, String> mErrors) {
 		this.m_errors = mErrors;
 	}
 	public Vector<D> getData(){
@@ -65,7 +68,7 @@ public class JSONResponse<D> {
 	}
 
 	public int getEndRow() {
-		return endRow;
+		return endRow < 0 ? 0 : endRow > getTotalRows() ? getTotalRows() : endRow;
 	}
 
 	public void setTotalRows(int totalRows) {
@@ -73,7 +76,18 @@ public class JSONResponse<D> {
 	}
 
 	public int getTotalRows() {
-		return totalRows;
+		return totalRows < endRow ? endRow : totalRows;
 	}
-	
+	public int getPage() {
+		return page;
+	}
+	public void setPage(int p){
+		this.page = p;
+	}
+	public Properties getProperties(){
+		if(m_props == null){
+			m_props = new Properties();
+		}
+		return m_props;
+	}
 }
