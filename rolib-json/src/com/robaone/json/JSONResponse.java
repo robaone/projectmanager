@@ -3,10 +3,11 @@ package com.robaone.json;
 import java.util.HashMap;
 import java.util.Vector;
 
-public class JSONResponse {
+public class JSONResponse<D> {
 	private int status;
+	@SuppressWarnings("rawtypes")
 	private HashMap m_errors = new HashMap();
-	private Vector m_data = new Vector();
+	private Vector<D> m_data = new Vector<D>();
 	private int startRow;
 	private int endRow;
 	private int totalRows;
@@ -20,30 +21,33 @@ public class JSONResponse {
 		return this.status;
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void addError(String field, String message) {
 		Vector errors = (Vector)this.m_errors.get(field);
 		if(errors == null){
-			errors = new Vector();
+			errors = new Vector<Object>();
 			this.m_errors.put(field,errors);
 		}
-		HashMap msg = new HashMap();
+		HashMap<String,String> msg = new HashMap<String,String>();
 		msg.put("errorMessage", message);
 		errors.add(msg);
 	}
+	@SuppressWarnings("rawtypes")
 	public HashMap getErrors(){
 		return this.m_errors;
 	}
 
+	@SuppressWarnings("rawtypes")
 	protected void setErrors(
 			HashMap mErrors) {
 		this.m_errors = mErrors;
 	}
-	public Vector getData(){
+	public Vector<D> getData(){
 		return this.m_data;
 	}
-	public void addData(Object data){
+	public void addData(D data){
 		if(this.m_data == null){
-			this.m_data = new Vector();
+			this.m_data = new Vector<D>();
 		}
 		this.m_data.add(data);
 	}
