@@ -12,7 +12,7 @@ public class JSONResponse<D> {
 
 	private int status;
 	private HashMap<String,String> m_errors = new HashMap<String,String>();
-	private Vector<D> m_data;
+	private Vector<D> m_data = new Vector<D>();
 	private int startRow;
 	private int endRow;
 	private int totalRows;
