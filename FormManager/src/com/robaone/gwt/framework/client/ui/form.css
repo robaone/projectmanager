@@ -1,0 +1,73 @@
+@CHARSET "ISO-8859-1";
+
+.title{
+}
+.question{
+}
+.general_error{
+ background-color:pink;
+ padding:10px;
+ border:1px solid red;
+ margin-bottom:10px;
+ color:red;
+}
+.description{
+ color:rgb(50,50,50);
+ margin-bottom:10px;
+}
+.label{
+ font-weight:bold;
+ display:inline;
+ margin-right:5px;
+}
+.more{
+ display:inline;
+ margin-right:5px;
+ height:13pt;
+ cursor:pointer;
+}
+.required{
+ display:inline;
+ color:red;
+ margin-right:5px;
+}
+.error{
+ display:inline;
+ color:red;
+}
+input.text{
+ width:400px;
+ border:solid 1px rgb(200,200,200);
+ height:30px;
+ padding:5px 3px;
+ font-size:14pt;
+ color:rgb(50,70,20);
+}
+select.select{
+ border:solid 1px rgb(200,200,200);
+ height:35px;
+ padding:5px 3px;
+ font-size:14pt;
+ color:rgb(50,70,20);
+}
+textarea.text{
+ width:100%;
+ height:100px;
+ color:rgb(50,70,20);
+}
+input.error{
+ border-color:red;
+ background-color:pink;
+}
+.field_description{
+ margin-top:5px;
+ margin-bottom:10px;
+ color:rgb(50,50,50);
+ font-size:9pt;
+}
+div.submit{
+ margin-top:10px;
+}
+div.submit button{
+ margin-right:10px;
+}

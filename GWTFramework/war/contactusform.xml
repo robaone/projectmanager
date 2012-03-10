@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<formui>
+	<title>Contact Us</title>
+	<description>Please feel free to contact us at any time with any
+		questions or for additional information. We would be happy to assist
+		you.</description>
+	<field name="name" required="true" type="Text">
+		<description>Please enter your full name.</description>
+		<title>Name:</title>
+	</field>
+	<field name="company" required="false" type="Text">
+		<title>Company Name:</title>
+	</field>
+	<field name="email" required="true" type="Text">
+		<description>Please enter your e-mail address.</description>
+		<title>E-mail:</title>
+	</field>
+	<field name="phone" required="false" type="Text">
+		<description>(Optional)</description>
+		<title>Phone:</title>
+	</field>
+	<field name="address" required="false" type="Text">
+		<description>Please enter your street address.</description>
+		<title>Address:</title>
+	</field>
+	<field name="zip" required="false" type="Text">
+		<description>Please enter your zip code.</description>
+		<title>Zip Code:</title>
+	</field>
+	<field name="comments" required="true" type="TextArea">
+		<title>Questions/Comments:</title>
+	</field>
+</formui>

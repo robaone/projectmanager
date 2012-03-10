@@ -1,0 +1,25 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style src="form.css" />
+	<ui:style field="local">
+		
+	</ui:style>
+	<g:HTMLPanel>
+	<h1 class="{style.title}"><g:InlineLabel ui:field="title"/></h1>
+		<div class="{style.submit}">
+			<g:Button ui:field="back" visible="false">Back</g:Button>
+			<g:Button ui:field="edit" visible="false">Edit</g:Button>
+			<g:Button ui:field="cancel" visible="false">Cancel</g:Button>
+			<g:Button ui:field="next" visible="false">Next</g:Button>
+		</div>
+		<g:FlowPanel styleName="{style.general_error}" ui:field="errors">
+		</g:FlowPanel>
+		<g:Label ui:field="description" styleName="{style.description}"></g:Label>
+
+		<!-- Form Field -->
+		<g:FlowPanel ui:field="fields"></g:FlowPanel>
+		<!-- End Form Field -->
+
+	</g:HTMLPanel>
+</ui:UiBinder> 
