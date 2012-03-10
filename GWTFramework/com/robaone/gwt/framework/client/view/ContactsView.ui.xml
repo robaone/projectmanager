@@ -1,0 +1,19 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui">
+	<ui:style>
+	
+	</ui:style>
+	<g:HTMLPanel>
+		<h1>Contacts</h1>
+		<table width="100%">
+			<tbody>
+				<tr>
+					<td>Display Name</td>
+					<td width="20px">&nbsp;</td>
+				</tr>
+			</tbody>
+		</table>
+		<g:FlexTable width="100%" ui:field="table"></g:FlexTable>
+	</g:HTMLPanel>
+</ui:UiBinder> 
