@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+    <!-- Specify a JDBC datasource -->
+     <Resource name="jdbc/mydatabase_dev" 
+              auth="Container"
+              type="javax.sql.DataSource" 
+              username="ansel" 
+              password="mysql.ansel"
+              factory="com.sohvac.data.SohvacDataStoreFactory"
+              driverClassName="com.mysql.jdbc.Driver"
+              url="jdbc:mysql://5.176.6.197:3306/sohvac?autoReconnect=true"
+              validationQuery="select 1"
+              maxActive="10" 
+              maxIdle="4"/> 
+   <Resource name="jdbc/mydatabase" 
+              auth="Container"
+              type="javax.sql.DataSource" 
+              username="root"
+              password="mysql.root"
+              factory="com.sohvac.data.SohvacDataStoreFactory" 
+              driverClassName="com.mysql.jdbc.Driver"
+              url="jdbc:mysql://localhost:3306/sohvac?autoReconnect=true"
+              validationQuery="select 1"
+              maxActive="10" 
+              maxIdle="4"/>
+    <!-- password="671FycybIF6dta2aBQ4r" -->
+    <!-- Specify the security realm and location of the users file
+    <Realm className="org.apache.catalina.realm.MemoryRealm" 
+           pathname="/tomcat/webapps/ROOT/WEB-INF/users.xml" />
+    -->
+</Context>
