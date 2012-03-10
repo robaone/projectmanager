@@ -9,4 +9,14 @@
     <welcome-file>default.htm</welcome-file>
     <welcome-file>default.jsp</welcome-file>
   </welcome-file-list>
+  <servlet>
+    <description>Remote Procedure Call</description>
+    <display-name>RPCServlet</display-name>
+    <servlet-name>RPCServlet</servlet-name>
+    <servlet-class>com.robaone.page_service.servlet.DataServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>RPCServlet</servlet-name>
+    <url-pattern>/function_call</url-pattern>
+  </servlet-mapping>
 </web-app>
