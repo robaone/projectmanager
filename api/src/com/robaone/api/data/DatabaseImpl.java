@@ -2,6 +2,9 @@ package com.robaone.api.data;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.OutputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -9,6 +12,7 @@ import java.util.Vector;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
+import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -17,12 +21,17 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
+import org.json.JSONObject;
 import org.w3c.dom.Document;
 
+import com.robaone.api.business.BaseAction;
+import com.robaone.api.business.FieldValidator;
 import com.robaone.dbase.hierarchial.ConfigManager;
 import com.robaone.dbase.ConnectionBlock;
 import com.robaone.dbase.DBManager;
 import com.robaone.dbase.HDBConnectionManager;
+import com.robaone.dbase.RODataSourceFactory;
+import com.robaone.dbase.ROPasswordStoreInterface;
 
 public class DatabaseImpl{
 	public static final String INSUFFICIENT_RIGHTS_MSG = "You do not have access rights to perform this action";
@@ -52,6 +61,7 @@ public class DatabaseImpl{
 	public int getConnectionCount(){
 		return allocated_connections;
 	}
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public java.sql.Connection getConnection() throws Exception {
 		String context_file = AppDatabase.getProperty(AppDatabase.CONTEXT);
 		FileInputStream fin = null;
@@ -67,10 +77,21 @@ public class DatabaseImpl{
 			String url_path = "//Resource[@name='"+source+"']/@url";
 			String username_path = "//Resource[@name='"+source+"']/@username";
 			String password_path = "//Resource[@name='"+source+"']/@password";
+			String factory_path = "//Resource[@name='"+source+"']/@factory";
 			String driver = (String) xpath.compile(driver_path).evaluate(doc,  XPathConstants.STRING);
 			String url = (String) xpath.compile(url_path).evaluate(doc, XPathConstants.STRING);
 			String username = (String) xpath.compile(username_path).evaluate(doc, XPathConstants.STRING);
 			String password = (String) xpath.compile(password_path).evaluate(doc, XPathConstants.STRING);
+			String factory = (String) xpath.compile(factory_path).evaluate(doc,XPathConstants.STRING);
+			if(FieldValidator.exists(factory)){
+				Class myClass = Class.forName(factory);
+				Class[] constrpartypes = new Class[]{};
+				Constructor constr = myClass.getConstructor(constrpartypes);
+				Object o = constr.newInstance(new Object[]{});
+				if(o instanceof RODataSourceFactory){
+					password = ((RODataSourceFactory)o).getPasswordStore().getPassword(password);
+				}
+			}
 			Connection con = DBManager.getConnection(driver, url, username, password);
 			allocated_connections++;
 			return con;
