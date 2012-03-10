@@ -24,5 +24,5 @@ abstract public class RODataSourceFactory extends BasicDataSourceFactory {
 			return null;
 		}
 	}
-	abstract protected ROPasswordStoreInterface getPasswordStore();
+	abstract public ROPasswordStoreInterface getPasswordStore();
 }
