@@ -29,7 +29,7 @@ public class ActionDispatcher {
 			}catch(Exception e){}
 			AppDatabase.writeLog("00040: Data = "+data);
 			Class[] parameterTypes = new Class[]{JSONObject.class};
-			Class myClass = Class.forName("com.sohvac.business.actions."+action.split("[.]")[0]);
+			Class myClass = Class.forName("com.robaone.page_service.business.actions."+action.split("[.]")[0]);
 			Method meth = myClass.getMethod(action.split("[.]")[1], parameterTypes);
 			Class[] constrpartypes = new Class[]{OutputStream.class,SessionData.class,HttpServletRequest.class};
 			Constructor constr = myClass.getConstructor(constrpartypes);
@@ -61,7 +61,7 @@ public class ActionDispatcher {
 			JSONObject data = new JSONObject(parameterMap);
 			AppDatabase.writeLog("00042: Data = "+data.toString());
 			Class[] parameterTypes = new Class[]{JSONObject.class};
-			Class myClass = Class.forName("com.sohvac.business.actions."+action.split("[.]")[0]);
+			Class myClass = Class.forName("com.robaone.page_service.business.actions."+action.split("[.]")[0]);
 			Method meth = myClass.getMethod(action.split("[.]")[1], parameterTypes);
 			Class[] constrpartypes = new Class[]{OutputStream.class,SessionData.class,HttpServletRequest.class};
 			Constructor constr = myClass.getConstructor(constrpartypes);

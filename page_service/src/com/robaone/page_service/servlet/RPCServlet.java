@@ -3,8 +3,6 @@ package com.robaone.page_service.servlet;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -16,7 +14,6 @@ import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
 
 import com.robaone.api.data.AppDatabase;
-import com.robaone.page_service.business.ParameterUtils;
 import com.robaone.page_service.data.SessionData;
 
 /**
@@ -30,7 +27,6 @@ public class RPCServlet extends HttpServlet {
      */
     public RPCServlet() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
 	/**
@@ -54,20 +50,10 @@ public class RPCServlet extends HttpServlet {
 		IOUtils.copy(in, bout);
 		String datastr = bout.toString();
 		AppDatabase.writeLog("00079: Data = "+datastr);
-		Map<String,String> parameters = null;
-		if(datastr == null || datastr.length() == 0){
-			parameters = new HashMap<String,String>();
-			@SuppressWarnings("unchecked")
-			Enumeration<String> names = request.getParameterNames();
-			while(names.hasMoreElements()){
-				String name = names.nextElement();
-				parameters.put(name, request.getParameter(name));
-			}
-		}else{
-			parameters = ParameterUtils.parse(datastr);
-		}
-		String section = parameters.get("section");
-		String page = parameters.get("page");
+		@SuppressWarnings("unchecked")
+		Map<String,String[]> parameters = request.getParameterMap();
+		String page = request.getParameter("page");
+		String section = request.getParameter("section");
 		SessionData data = (SessionData) request.getSession().getAttribute("appsessiondata");
 		if(data == null){
 			data = new SessionData();

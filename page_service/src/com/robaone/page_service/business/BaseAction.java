@@ -16,7 +16,10 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import net.oauth.OAuthAccessor;
 import net.oauth.OAuthMessage;
+import net.oauth.OAuthProblemException;
+import net.oauth.server.OAuthServlet;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,8 +28,16 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import com.robaone.api.data.AppDatabase;
+import com.robaone.api.data.DatabaseImpl;
+import com.robaone.api.data.jdo.App_credentials_jdo;
+import com.robaone.api.data.jdo.App_credentials_jdoManager;
+import com.robaone.api.data.jdo.User_jdo;
+import com.robaone.api.data.jdo.User_jdoManager;
 import com.robaone.api.json.DSResponse;
 import com.robaone.api.json.JSONResponse;
+import com.robaone.api.oauth.ROAPIOAuthProvider;
+import com.robaone.dbase.hierarchial.ConfigManager;
+import com.robaone.dbase.hierarchial.ConnectionBlock;
 import com.robaone.page_service.data.SessionData;
 
 public class BaseAction<T> {
@@ -38,6 +49,29 @@ public class BaseAction<T> {
 	DocumentBuilder builder;
 	XPathFactory xfactory;
 	XPath xpath;
+	abstract public class FunctionCall{
+		protected BaseAction action;
+		private String xml;
+		abstract protected void run(JSONObject jo) throws Exception;
+		public String findXPathString(String xpath) throws Exception{
+			return action.findXPathText(xml, xpath);
+		}
+		public void run(BaseAction action,JSONObject jo){
+			try{
+				this.action = action;
+				action.validate();
+				if(action.requireLogin() == false){
+					String xml = XML.toString(jo, "request");
+					run(jo);
+				}else{
+					action.getResponse().setStatus(JSONResponse.LOGIN_REQUIRED);
+					action.getResponse().setError("Login Required");
+				}
+			}catch(Exception e){
+				action.sendError(e);
+			}
+		}
+	}
 	public BaseAction(OutputStream o, SessionData d, HttpServletRequest request) throws ParserConfigurationException{
 		this.out = o;
 		this.session = d;
@@ -47,6 +81,18 @@ public class BaseAction<T> {
 		builder = factory.newDocumentBuilder();
 		xfactory = XPathFactory.newInstance();
 		xpath = xfactory.newXPath();
+	}
+	public boolean requireLogin(){
+		String user = this.getSessionData().getUser();
+		if(user == null){
+			this.getResponse().setStatus(JSONResponse.LOGIN_REQUIRED);
+			return true;
+		}else{
+			return false;
+		}
+	}
+	public void validate() throws Exception {
+		
 	}
 	public String findXPathText(JSONObject jo,String tagname,String path) throws XPathExpressionException, SAXException, IOException, JSONException {
 		return findXPathText(XML.toString(jo,tagname),path);
