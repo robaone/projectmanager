@@ -8,11 +8,7 @@ import javax.naming.Name;
 import org.apache.tomcat.dbcp.dbcp.BasicDataSource;
 import org.apache.tomcat.dbcp.dbcp.BasicDataSourceFactory;
 
-public class RODataSourceFactory extends BasicDataSourceFactory {
-	private static ROPasswordStoreInterface m_password_store;
-	public RODataSourceFactory(ROPasswordStoreInterface store){
-		RODataSourceFactory.m_password_store = store;
-	}
+abstract public class RODataSourceFactory extends BasicDataSourceFactory {
 	@Override
 	public Object getObjectInstance(Object obj, Name name, Context nameCtx,
 			@SuppressWarnings("rawtypes") Hashtable environment) throws Exception {
@@ -20,7 +16,7 @@ public class RODataSourceFactory extends BasicDataSourceFactory {
 		if(o != null){
 			BasicDataSource ds = (BasicDataSource) o;
 			if (ds.getPassword() != null && ds.getPassword().length() > 0){
-				String pwd = RODataSourceFactory.m_password_store.getPassword(ds.getPassword());
+				String pwd = getPasswordStore().getPassword(ds.getPassword());
 				ds.setPassword(pwd);
 			}
 			return ds;
@@ -28,5 +24,5 @@ public class RODataSourceFactory extends BasicDataSourceFactory {
 			return null;
 		}
 	}
-
+	abstract protected ROPasswordStoreInterface getPasswordStore();
 }
