@@ -1,0 +1,1 @@
+I'm creating this application because I wanted something to fit the way I like to work. I deal with lots of requests that come in constantly and I need to be able to respond to all of them in a timely manner, provide updates, share progress information and look for related information quickly.
